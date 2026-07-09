@@ -18,7 +18,7 @@ const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimitMiddleware');
 
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const { sequelize } = require('./models/index'); 
 const permCache = require('./utils/permCache');
 const { Role } = require('./models');
@@ -32,7 +32,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.CLIENT_URL || "*",
+        origin: process.env.CLIENT_URL || "http://localhost:3000",
     }
 })
 
@@ -193,4 +193,3 @@ app.use('/api/order-transfers', orderTransferRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/revenue', revenueRoutes);
 app.use('/api/shifts', shiftRoutes);
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
