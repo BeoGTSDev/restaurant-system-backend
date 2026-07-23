@@ -51,6 +51,11 @@ const Product = sequelize.define('Product', {
         type: DataTypes.INTEGER,
         allowNull: true,
         defaultValue: null
+    },
+    availabilityDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        defaultValue: null
     }
 }, {
     timestamps: true

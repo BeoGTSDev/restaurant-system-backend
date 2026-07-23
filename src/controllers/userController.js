@@ -1,10 +1,10 @@
 // backend/src/controllers/userController.js
-const User = require('../models/User');
+const { User, Role } = require('../models');
 const bcrypt = require('bcryptjs');
 
 
 const createUser = async (req, res, next) => {
-  const { fullName, email, password, pin, staffCode } = req.body;
+  const { fullName, email, password, pin, staffCode, roleId } = req.body;
   const secret = password || pin;
 
   const existingUser = await User.findOne({ where: { email } });
@@ -18,6 +18,19 @@ const createUser = async (req, res, next) => {
   if (!staffCode) {
     const err = new Error('Staff code is required');
     err.status = 400;
+    return next(err);
+  }
+
+  if (!roleId) {
+    const err = new Error('Role is required');
+    err.status = 400;
+    return next(err);
+  }
+
+  const role = await Role.findByPk(roleId);
+  if (!role) {
+    const err = new Error('Role not found');
+    err.status = 404;
     return next(err);
   }
 
@@ -43,15 +56,19 @@ const createUser = async (req, res, next) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(String(secret), salt);
 
-  const newUser = await User.create({ fullName, email, password: hashedPassword, staffCode, isActive: true });
+  const newUser = await User.create({ fullName, email, password: hashedPassword, staffCode, roleId: role.id, isActive: true });
 
-  res.status(201).json({ success: true, message: 'Create Staff successfully!', user: { id: newUser.id, email: newUser.email, staffCode: newUser.staffCode } });
+  res.status(201).json({
+    success: true,
+    message: 'Create Staff successfully!',
+    user: { id: newUser.id, email: newUser.email, staffCode: newUser.staffCode, roleId: newUser.roleId }
+  });
 };
 
 const getAllUser = async (req, res, next) => {
   const users = await User.findAll({
     attributes: { exclude: ['password'] },
-    // roles removed
+    include: [{ model: Role, as: 'role', attributes: ['id', 'name', 'label'] }]
   });
 
   res.status(200).json({
@@ -63,7 +80,7 @@ const getAllUser = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   const { id } = req.params;
-  const { fullName, email, password, pin, isActive, staffCode } = req.body;
+  const { fullName, email, password, pin, isActive, staffCode, roleId } = req.body;
 
   const user = await User.findByPk(id);
   if (!user) {
@@ -90,6 +107,16 @@ const updateUser = async (req, res, next) => {
     }
   }
 
+  if (roleId !== undefined) {
+    const role = await Role.findByPk(roleId);
+    if (!role) {
+      const err = new Error('Role not found');
+      err.status = 404;
+      return next(err);
+    }
+    user.roleId = role.id;
+  }
+
   const secret = password || pin;
   if (secret) {
     if (!/^\d{4}$/.test(String(secret))) {
@@ -104,12 +131,15 @@ const updateUser = async (req, res, next) => {
   if (fullName !== undefined) user.fullName = fullName;
   if (email !== undefined) user.email = email;
   if (staffCode !== undefined) user.staffCode = staffCode;
-  // roleId handling removed
   if (isActive !== undefined) user.isActive = isActive;
 
   await user.save();
 
-  res.status(200).json({ success: true, message: 'User updated', user: { id: user.id, fullName: user.fullName, email: user.email, isActive: user.isActive } });
+  res.status(200).json({
+    success: true,
+    message: 'User updated',
+    user: { id: user.id, fullName: user.fullName, email: user.email, roleId: user.roleId, isActive: user.isActive }
+  });
 };
 
 const deleteUser = async (req, res, next) => {

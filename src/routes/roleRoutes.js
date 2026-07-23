@@ -5,7 +5,7 @@ const { verifyToken } = require('../middleware/authMiddleware');
 const authorize = require('../middleware/authorize');
 
 // Roles
-router.get('/', verifyToken, authorize(['Admin', 'manage_roles']), roleController.listRoles);
+router.get('/', verifyToken, authorize(['Admin', 'manage_roles', 'manage_users']), roleController.listRoles);
 router.get('/:id', verifyToken, authorize(['Admin', 'manage_roles']), roleController.getRole);
 router.post('/', verifyToken, authorize(['Admin', 'manage_roles']), roleController.createRole);
 router.put('/:id', verifyToken, authorize(['Admin', 'manage_roles']), roleController.updateRole);

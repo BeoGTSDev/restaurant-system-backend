@@ -1,85 +1,114 @@
 const { Order, OrderItem, Product, Table, sequelize } = require('../models');
+const { resetExpiredDailyAvailability } = require('../utils/productAvailability');
 
 const createOrder = async (req, res, next) => {
     const { tableId, items } = req.body;
-
-    const table = await Table.findByPk(tableId);
-    if (!table) {
-        const err = new Error('Table not found');
-        err.status = 404;
-        return next(err);
-    }
-
-    if (['BillCheck', 'CustomerPaid', 'Ready'].includes(table.status)) {
-        const err = new Error('Cannot order! Table is checking out.');
+    if (!Array.isArray(items) || items.length === 0) {
+        const err = new Error('Order must contain at least one item');
         err.status = 400;
         return next(err);
     }
 
-    if (table.status === 'Ready') {
-        const err = new Error('Please escort guest (Open Table) first!');
-        err.status = 400;
-        return next(err);
-    }
-
+    let table;
+    let order;
     let statusChanged = false;
-
-    if (['Escort', 'OrderCheck'].includes(table.status)) {
-        table.status = 'Order';
-        await table.save();
-        statusChanged = true;
-    }
-
     let additionalPrice = 0;
     let orderItemsData = [];
     let itemDetailsForSocket = [];
 
-    for (const item of items) {
-        const product = await Product.findByPk(item.productId);
-        if (!product) {
-            const err = new Error(`Product ID ${item.productId} not found`);
+    await sequelize.transaction(async (transaction) => {
+        await resetExpiredDailyAvailability(Product, transaction);
+        table = await Table.findByPk(tableId, {
+            transaction,
+            lock: transaction.LOCK.UPDATE
+        });
+        if (!table) {
+            const err = new Error('Table not found');
             err.status = 404;
-            return next(err);
+            throw err;
         }
-        additionalPrice += product.price * item.quantity;
-
-        orderItemsData.push({
-            productId: item.productId,
-            quantity: item.quantity,
-            price: product.price
-        });
-
-        itemDetailsForSocket.push({
-            productName: product.name,
-            quantity: item.quantity,
-            image: product.image
-        });
-    }
-
-    let order = await Order.findOne({
-        where: {
-            tableId: tableId,
-            status: 'Order'
+        if (['BillCheck', 'CustomerPaid'].includes(table.status)) {
+            const err = new Error('Cannot order! Table is checking out.');
+            err.status = 400;
+            throw err;
         }
+        if (table.status === 'Ready') {
+            const err = new Error('Please escort guest (Open Table) first!');
+            err.status = 400;
+            throw err;
+        }
+        if (['Escort', 'OrderCheck'].includes(table.status)) {
+            table.status = 'Order';
+            await table.save({ transaction });
+            statusChanged = true;
+        }
+
+        for (const item of items) {
+            const quantity = Number(item.quantity);
+            if (!Number.isInteger(quantity) || quantity <= 0) {
+                const err = new Error('Item quantity must be a positive whole number');
+                err.status = 400;
+                throw err;
+            }
+            const product = await Product.findByPk(item.productId, {
+                transaction,
+                lock: transaction.LOCK.UPDATE
+            });
+            if (!product) {
+                const err = new Error(`Product ID ${item.productId} not found`);
+                err.status = 404;
+                throw err;
+            }
+            if (product.status !== 'In Stock') {
+                const err = new Error(`${product.name} is sold out`);
+                err.status = 409;
+                throw err;
+            }
+            if (product.remainingQty !== null && quantity > product.remainingQty) {
+                const err = new Error(`${product.name} only has ${product.remainingQty} left today`);
+                err.status = 409;
+                throw err;
+            }
+
+            if (product.remainingQty !== null) {
+                product.remainingQty -= quantity;
+                if (product.remainingQty === 0) product.status = 'Out of Stock';
+                await product.save({ transaction });
+            }
+            additionalPrice += product.price * quantity;
+            orderItemsData.push({
+                productId: item.productId,
+                quantity,
+                price: product.price,
+                note: item.note || null
+            });
+            itemDetailsForSocket.push({
+                productName: product.name,
+                quantity,
+                image: product.imageUrl
+            });
+        }
+
+        order = await Order.findOne({
+            where: { tableId, status: 'Order' },
+            transaction,
+            lock: transaction.LOCK.UPDATE
+        });
+        if (order) {
+            order.totalPrice += additionalPrice;
+            await order.save({ transaction });
+        } else {
+            order = await Order.create({
+                tableId,
+                totalPrice: additionalPrice,
+                status: 'Pending'
+            }, { transaction });
+        }
+        await OrderItem.bulkCreate(
+            orderItemsData.map(item => ({ ...item, orderId: order.id })),
+            { transaction }
+        );
     });
-
-    if (order) {
-        order.totalPrice += additionalPrice;
-        await order.save();
-    } else {
-        order = await Order.create({
-            tableId,
-            totalPrice: additionalPrice, 
-            status: 'Pending'
-        });
-    }
-
-    const itemsWithOrderId = orderItemsData.map(item => ({
-        ...item,
-        orderId: order.id
-    }));
-
-    await OrderItem.bulkCreate(itemsWithOrderId);
 
     req.io.emit('new_order', {
         tableId: tableId,

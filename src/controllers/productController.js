@@ -1,4 +1,31 @@
 const { Product, Category } = require('../models/index');
+const { getBusinessDate, resetExpiredDailyAvailability } = require('../utils/productAvailability');
+
+const parseRemainingQty = (value) => {
+    if (value === undefined || value === null || value === '') return null;
+    const quantity = Number(value);
+    if (!Number.isInteger(quantity) || quantity < 0) {
+        const err = new Error('Remaining quantity must be a non-negative whole number');
+        err.status = 400;
+        throw err;
+    }
+    return quantity;
+};
+
+const availabilityValues = (status, remainingQty) => {
+    if (status === 'Disabled') {
+        return { status, remainingQty: null, availabilityDate: null };
+    }
+
+    const quantity = parseRemainingQty(remainingQty);
+    if (status === 'Out of Stock' || quantity === 0) {
+        return { status: 'Out of Stock', remainingQty: 0, availabilityDate: getBusinessDate() };
+    }
+    if (quantity !== null) {
+        return { status: 'In Stock', remainingQty: quantity, availabilityDate: getBusinessDate() };
+    }
+    return { status: 'In Stock', remainingQty: null, availabilityDate: null };
+};
 
 const createProduct = async (req, res, next) => {
     const { name, internalName, displayName, description, price, categoryId, status, remainingQty } = req.body;
@@ -19,6 +46,7 @@ const createProduct = async (req, res, next) => {
         return next(err);
     }
 
+    const availability = availabilityValues(status || 'In Stock', remainingQty);
     const newProduct = await Product.create({
         name,
         internalName: internalName || null,
@@ -27,8 +55,7 @@ const createProduct = async (req, res, next) => {
         price,
         imageUrl,
         categoryId,
-        status: status || 'In Stock',
-        remainingQty: remainingQty != null ? parseInt(remainingQty, 10) : null
+        ...availability
     });
 
     res.status(201).json({
@@ -88,6 +115,7 @@ const bulkCreateProducts = async (req, res, next) => {
 };
 
 const getAllProducts = async (req, res, next) => {
+    await resetExpiredDailyAvailability(Product);
     const products = await Product.findAll({
         include: [{ model: Category, as: 'category', attributes: ['name'] }]
     });
@@ -132,8 +160,15 @@ const updateProduct = async (req, res, next) => {
     if (internalName !== undefined) product.internalName = internalName || null;
     if (displayName !== undefined) product.displayName = displayName || null;
     if (price !== undefined) product.price = price;
-    if (status !== undefined) product.status = status;
-    if (remainingQty !== undefined) product.remainingQty = remainingQty != null && remainingQty !== '' ? parseInt(remainingQty, 10) : null;
+    if (status !== undefined || remainingQty !== undefined) {
+        const availability = availabilityValues(
+            status !== undefined ? status : product.status,
+            remainingQty !== undefined ? remainingQty : product.remainingQty
+        );
+        product.status = availability.status;
+        product.remainingQty = availability.remainingQty;
+        product.availabilityDate = availability.availabilityDate;
+    }
     if (req.file) product.imageUrl = req.file.path;
 
     await product.save();

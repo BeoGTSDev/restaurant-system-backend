@@ -124,6 +124,13 @@ const startServer = async () => {
             });
             console.log('Added displayName column to Products table');
         }
+        if (productTable && !productTable.availabilityDate) {
+            await queryInterface.addColumn('Products', 'availabilityDate', {
+                type: DataTypes.DATEONLY,
+                allowNull: true
+            });
+            console.log('Added availabilityDate column to Products table');
+        }
 
         // Ensure PostgreSQL ENUM includes 'Disabled' before sync
         try {
