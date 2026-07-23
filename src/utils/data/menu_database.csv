@@ -1,0 +1,251 @@
+Menu_Type,Item_No,Full_Name,Internal_Name,Price_VND,Category,Description
+Food,1,Burrata & Tomato Salad,S-Bur Tom,160000,Salad,Organic tomatoes with whole house-made burrata.
+Food,2,Parma Ham & Arugula Salad,S-Par Arg,180000,Salad,"Peppery arugula, aged parma ham, parmesan."
+Food,3,Salmon Carpaccio Salad,S-Sal Carp,195000,Salad,Thinly sliced salmon on mixed greens.
+Food,4,Seasonal Fruit Burrata Salad,S-Fru Bur,180000,Salad,Tropical seasonal fruits with creamy burrata.
+Food,5,Classic Caesar Salad,S-Caesar,140000,Salad,"Romaine, bacon, croutons, parmesan dressing."
+Food,6,Grilled Chicken Caesar,S-Chk Cae,160000,Salad,Classic Caesar topped with grilled chicken.
+Food,7,Avocado & Shrimp Salad,S-Avo Shr,175000,Salad,"Fresh avocado, poached shrimp, citrus dressing."
+Food,8,Quinoa & Roasted Veg Salad,S-Qui Veg,150000,Salad,Healthy quinoa mixed with oven-roasted veggies.
+Food,9,Mozzarella Caprese,S-Caprese,160000,Salad,"Sliced mozzarella, tomatoes, basil, balsamic."
+Food,10,Mixed Green Garden Salad,S-Mix Grn,120000,Salad,Simple organic house greens with vinaigrette.
+Food,11,Tuna & Egg Niçoise,S-Tuna Nic,165000,Salad,"Seared tuna, boiled egg, olives, greens."
+Food,12,Mushroom & Spinach Salad,S-Mush Spi,145000,Salad,Warm sautéed mushrooms on baby spinach.
+Food,13,Duck Breast & Orange Salad,S-Duc Org,190000,Salad,Smoked duck slices with fresh orange segments.
+Food,14,Kale & Pomegranate Salad,S-Kale Pom,155000,Salad,Superfood kale with pomegranate seeds.
+Food,15,Seafood Ceviche Salad,S-Sea Cev,210000,Salad,Marinated mixed seafood with lime and chili.
+Food,16,House-made Cheese Plate (3),ST-Chz 3,150000,Starter,Selection of 3 house-made artisan cheeses.
+Food,17,House-made Cheese Plate (5),ST-Chz 5,220000,Starter,Selection of 5 house-made artisan cheeses.
+Food,18,Parma Ham Platter,ST-Parma,180000,Starter,Premium aged Italian prosciutto.
+Food,19,Cold Cuts & Cheese Board,ST-CC Chz,290000,Starter,Mixed cured meats and signature cheeses.
+Food,20,Garlic Bread,ST-Gar Brd,60000,Starter,Wood-fired bread with garlic butter.
+Food,21,Cheese Fondue with Bread,ST-Fon Brd,190000,Starter,Melted cheese blend served with crusty bread.
+Food,22,Oven-baked Garlic Clams,ST-Bak Clm,140000,Starter,Clams baked in garlic butter and herbs.
+Food,23,Fried Calamari,ST-Fri Cal,150000,Starter,Crispy squid rings with tartar sauce.
+Food,24,Beef Carpaccio,ST-Bef Car,195000,Starter,Raw beef slices with truffle oil and parmesan.
+Food,25,Salmon Tartare,ST-Sal Tar,180000,Starter,Diced fresh salmon with avocado and soy.
+Food,26,Arancini (Cheese Rice Balls),ST-Aran,110000,Starter,Deep-fried risotto balls stuffed with cheese.
+Food,27,Truffle French Fries,ST-Tru Fry,95000,Starter,Crispy fries tossed in truffle oil and parmesan.
+Food,28,Sweet Potato Fries,ST-Swt Fry,85000,Starter,Fried sweet potatoes with chili mayo.
+Food,29,Grilled Vegetables Plate,ST-Gri Veg,120000,Starter,Assorted wood-fired seasonal vegetables.
+Food,30,Bruschetta Pomodoro,ST-Bru Pom,90000,Starter,Toasted bread topped with tomato and basil.
+Food,31,Bruschetta Parma & Ricotta,ST-Bru Par,120000,Starter,Toasted bread with ricotta and parma ham.
+Food,32,Oven-baked Camembert,ST-Bak Cam,170000,Starter,Whole camembert baked until gooey.
+Food,33,Spicy Garlic Shrimp (Gambas),ST-Shr Gam,180000,Starter,"Shrimp sautéed in olive oil, garlic, and chili."
+Food,34,Chicken Liver Pâté,ST-Chk Pat,130000,Starter,Smooth pâté served with toasted baguette.
+Food,35,Mushroom Soup,SO-Msh Sup,85000,Soup,Creamy blended mushroom soup.
+Food,36,Minestrone Soup,SO-Min Sup,80000,Soup,Classic Italian vegetable and tomato soup.
+Food,37,Clam Chowder,SO-Clm Sup,95000,Soup,"Rich, creamy soup with clams and potatoes."
+Food,38,Pumpkin Soup,SO-Pmp Sup,75000,Soup,Sweet and savory roasted pumpkin soup.
+Food,39,Tomato Basil Soup,SO-Tom Sup,75000,Soup,Tangy tomato soup finished with basil oil.
+Food,40,Onion Gratin Soup,SO-Oni Sup,110000,Soup,French onion soup with melted cheese crust.
+Food,41,Wood-Fired Ribeye Steak,M-Ribeye,550000,Main Course,"250g Australian ribeye, wood-fire grilled."
+Food,42,Grilled Salmon Fillet,M-Sal Fil,320000,Main Course,Pan-seared salmon with lemon butter sauce.
+Food,43,Duck Confit,M-Duc Con,290000,Main Course,Slow-cooked duck leg with mashed potatoes.
+Food,44,Roasted Half Chicken,M-Rst Chk,250000,Main Course,Herb-marinated chicken roasted in the oven.
+Food,45,Braised Beef Cheeks,M-Bef Chk,380000,Main Course,Slow-braised beef cheeks in red wine reduction.
+Food,46,Pork Ribs with BBQ Sauce,M-Prk Rib,310000,Main Course,Fall-off-the-bone ribs with house BBQ sauce.
+Food,47,Pan-seared Scallops,M-Sca Pan,350000,Main Course,Jumbo scallops with cauliflower purée.
+Food,48,Grilled Lamb Chops,M-Lam Chp,420000,Main Course,Herb-crusted lamb chops with mint sauce.
+Food,49,Eggplant Parmigiana,M-Egg Par,180000,Main Course,Baked eggplant slices with tomato and cheese.
+Food,50,Seafood Stew (Cioppino),M-Sea Stw,360000,Main Course,Mixed seafood simmered in tomato broth.
+Food,51,Margherita Pizza,P-Marg,150000,Pizza,"Classic tomato, mozzarella, and fresh basil."
+Food,52,Burrata Parma Margherita,P-Bur Par,290000,Pizza,Margherita topped with whole burrata & parma.
+Food,53,4 Cheese Pizza (Quattro Formaggi),P-4 Chz,240000,Pizza,"Mozzarella, gorgonzola, parmesan, camembert."
+Food,54,5 Cheese Pizza,P-5 Chz,270000,Pizza,4 Cheese plus house-made ricotta.
+Food,55,Teriyaki Chicken Pizza,P-Ter Chk,210000,Pizza,"Teriyaki chicken, seaweed, mayo drizzle."
+Food,56,Salmon Sashimi Pizza,P-Sal Sas,260000,Pizza,Cold fresh salmon sashimi on a hot crust.
+Food,57,Seafood Spicy Tomato Pizza,P-Sea Spi,280000,Pizza,Mixed seafood with a spicy chili tomato base.
+Food,58,Prosciutto Margherita,P-Pro Mar,230000,Pizza,Classic Margherita topped with prosciutto.
+Food,59,Mushroom & Truffle Pizza,P-Msh Tru,250000,Pizza,"Earthy mushrooms, mozzarella, truffle oil."
+Food,60,Salami & Chorizo Pizza,P-Sal Cho,220000,Pizza,"Spicy chorizo, milano salami, tomato base."
+Food,61,Hawaiian Pizza,P-Hawaii,190000,Pizza,"Ham, fresh pineapple, mozzarella."
+Food,62,Vegetarian Pizza,P-Veggie,180000,Pizza,"Bell peppers, zucchini, eggplant, mushrooms."
+Food,63,Beef Yakiniku Pizza,P-Bef Yak,240000,Pizza,"Japanese BBQ beef, onions, sesame."
+Food,64,Smoked Cheese & Bacon Pizza,P-Smk Bac,210000,Pizza,"House-smoked cheese, crispy bacon bits."
+Food,65,Anchovy & Olive Pizza,P-Anc Oli,200000,Pizza,"Salty anchovies, black olives, capers."
+Food,66,Spicy Nduja Pizza,P-Nduja,230000,Pizza,"Spreadable spicy pork sausage, stracciatella."
+Food,67,Pesto & Chicken Pizza,P-Pes Chk,210000,Pizza,"Basil pesto base, grilled chicken, tomatoes."
+Food,68,Tuna & Onion Pizza,P-Tun Oni,190000,Pizza,"Canned tuna, sliced red onions, mayo."
+Food,69,Garlic & Shrimp Pizza,P-Gar Shr,240000,Pizza,"Garlic butter base, marinated shrimp, parsley."
+Food,70,Gorgonzola & Honey Pizza,P-Gor Hon,220000,Pizza,Blue cheese base served with a side of honey.
+Food,71,Burrata & Anchovy Pizza,P-Bur Anc,270000,Pizza,Whole burrata with salty anchovy fillets.
+Food,72,Calzone (Folded Pizza),P-Calzone,210000,Pizza,"Folded crust stuffed with ham, mushrooms, cheese."
+Food,73,Meat Lover's Pizza,P-Meat Lvr,260000,Pizza,"Sausage, bacon, salami, ham, beef."
+Food,74,Spinach & Ricotta Pizza,P-Spi Ric,200000,Pizza,Creamy ricotta base topped with fresh spinach.
+Food,75,Camembert & Apple Pizza,P-Cam App,230000,Pizza,"Melted camembert, sliced apple, honey drizzle."
+Food,76,Half & Half: Marg / 4 Cheese,HH-Mar/4C,200000,Pizza,"Half Margherita, Half Quattro Formaggi."
+Food,77,Half & Half: Teriyaki / Salmon,HH-Ter/Sal,235000,Pizza,"Half Teriyaki Chicken, Half Salmon Sashimi."
+Food,78,Half & Half: Burrata / Veggie,HH-Bur/Veg,235000,Pizza,"Half Burrata Parma, Half Vegetarian."
+Food,79,Half & Half: Truffle / Salami,HH-Tru/Sal,235000,Pizza,"Half Mushroom Truffle, Half Salami Chorizo."
+Food,80,Half & Half: Beef / Seafood,HH-Bef/Sea,260000,Pizza,"Half Beef Yakiniku, Half Seafood Spicy."
+Food,81,Margherita Extra (Buffalo),P-Mar Ext,190000,Pizza,Margherita made with imported Buffalo Mozzarella.
+Food,82,Double Cheese Margherita,P-Dbl Mar,180000,Pizza,Classic Margherita with 2x the mozzarella.
+Food,83,Italian Sausage Pizza,P-Ita Sau,220000,Pizza,"Crumbled Italian sausage, fennel, mozzarella."
+Food,84,Fig & Prosciutto Pizza,P-Fig Pro,250000,Pizza,"Fresh figs, prosciutto, balsamic glaze."
+Food,85,Carbonara Pizza,P-Carbon,210000,Pizza,"White base, bacon, egg yolk, black pepper."
+Food,86,Rosemary Potato Pizza,P-Ros Pot,170000,Pizza,"Thinly sliced potatoes, rosemary, olive oil."
+Food,87,Jalapeño & Pepperoni,P-Jal Pep,210000,Pizza,Classic pepperoni with spicy jalapeño slices.
+Food,88,Roasted Garlic & Ricotta,P-Rst Gar,190000,Pizza,Sweet roasted garlic cloves and fresh ricotta.
+Food,89,Egg & Bacon Pizza,P-Egg Bac,200000,Pizza,Sunny-side-up egg baked over crispy bacon.
+Food,90,Smoked Salmon & Cream Cheese,P-Smk Crm,250000,Pizza,"Cream cheese base, smoked salmon, dill."
+Food,91,BBQ Chicken Pizza,P-BBQ Chk,210000,Pizza,"BBQ sauce base, chicken breast, red onions."
+Food,92,Mexican Spicy Beef Pizza,P-Mex Bef,230000,Pizza,"Spiced minced beef, corn, jalapeños, cheddar."
+Food,93,Asparagus & Pancetta Pizza,P-Asp Pan,220000,Pizza,Fresh asparagus spears and Italian bacon.
+Food,94,Artichoke & Olive Pizza,P-Art Oli,210000,Pizza,Marinated artichoke hearts and kalamata olives.
+Food,95,Squid Ink & Seafood Pizza,P-Sqd Sea,270000,Pizza,Black squid ink dough topped with mixed seafood.
+Food,96,Spicy Korean Pork Pizza,P-Kor Prk,220000,Pizza,"Gochujang marinated pork, kimchi, scallions."
+Food,97,Brie & Cranberry Pizza,P-Bri Cra,210000,Pizza,Creamy brie cheese with tart cranberry sauce.
+Food,98,Caprese Pizza,P-Caprese,190000,Pizza,"Cold cherry tomatoes, mozzarella, basil on hot crust."
+Food,99,Vegan Cheese & Veg Pizza,P-Veg Chz,200000,Pizza,"Plant-based cheese, seasonal vegetables."
+Food,100,Nutella & Banana Pizza,P-Nut Ban,150000,Pizza,Sweet pizza crust topped with Nutella and banana.
+Food,101,Crab Tomato Cream Spaghetti,PA-Cra Crm,250000,Pasta,Rich tomato cream sauce with fresh crab meat.
+Food,102,Soy Garlic Beef Spaghetti,PA-Bef Soy,220000,Pasta,"Japanese-style soy butter sauce, tender beef."
+Food,103,Classic Carbonara,PA-Carbon,190000,Pasta,"Creamy egg yolk sauce, pancetta, black pepper."
+Food,104,Seafood Tomato Spaghetti,PA-Sea Tom,240000,Pasta,"Shrimp, squid, clams in rich marinara sauce."
+Food,105,Clam & Garlic (Vongole),PA-Vongole,195000,Pasta,"Fresh clams, white wine, garlic, olive oil."
+Food,106,Bolognese Fettuccine,PA-Bolog,185000,Pasta,Slow-cooked beef ragu with flat ribbon pasta.
+Food,107,Salmon Cream Penne,PA-Sal Crm,210000,Pasta,Penne tubes in a rich salmon and dill cream sauce.
+Food,108,Pesto Genovese Spaghetti,PA-Pesto,170000,Pasta,"Fresh basil pesto, pine nuts, parmesan."
+Food,109,Truffle Cream Mushroom Pasta,PA-Tru Msh,230000,Pasta,Earthy mushroom cream sauce infused with truffle.
+Food,110,Spicy Arrabiata Penne,PA-Arra,150000,Pasta,Spicy garlic and chili tomato sauce.
+Food,111,Aglio e Olio Spaghetti,PA-Aglio,140000,Pasta,"Simple, classic garlic, olive oil, and chili flakes."
+Food,112,Lasagna Al Forno,PA-Lasagna,220000,Pasta,"Baked layers of pasta, meat ragu, and bechamel."
+Food,113,Squid Ink Spaghetti,PA-Sqd Ink,240000,Pasta,Black pasta tossed with fresh squid and tomatoes.
+Food,114,Shrimp & Asparagus Cream,PA-Shr Asp,215000,Pasta,Cream sauce with plump shrimp and asparagus.
+Food,115,Chicken & Broccoli Alfredo,PA-Chk Bro,180000,Pasta,Creamy parmesan sauce with chicken and broccoli.
+Food,116,Eggplant & Ricotta Rigatoni,PA-Egg Ric,175000,Pasta,"Tube pasta, roasted eggplant, fresh ricotta."
+Food,117,Mentaiko (Cod Roe) Spaghetti,PA-Mentaiko,210000,Pasta,Japanese-fusion pasta with spicy cod roe and nori.
+Food,118,Sausage & Pepper Penne,PA-Sau Pep,185000,Pasta,Italian sausage and bell peppers in tomato sauce.
+Food,119,Gorgonzola Cream Gnocchi,PA-Gnoc Gor,200000,Pasta,Potato dumplings in a rich blue cheese sauce.
+Food,120,Tomato Basil Gnocchi,PA-Gnoc Tom,180000,Pasta,Potato dumplings in fresh tomato basil sauce.
+Food,121,Mushroom Risotto,RI-Mush,210000,Risotto,Creamy arborio rice with mixed mushrooms.
+Food,122,Seafood Saffron Risotto,RI-Sea Saf,260000,Risotto,Luxurious saffron rice packed with mixed seafood.
+Food,123,Parman & Butter Risotto,RI-Parm,180000,Risotto,"Simple, rich parmesan cheese and butter risotto."
+Food,124,Pumpkin & Bacon Risotto,RI-Pmp Bac,195000,Risotto,Sweet roasted pumpkin contrasting with salty bacon.
+Food,125,Truffle & Asparagus Risotto,RI-Tru Asp,240000,Risotto,Premium truffle oil and fresh asparagus.
+Food,126,Lemon Chicken Linguine,PA-Lem Chk,180000,Pasta,Light lemon butter sauce with grilled chicken.
+Food,127,Meatball Spaghetti,PA-Meatball,190000,Pasta,Giant beef meatballs in rustic tomato sauce.
+Food,128,Scallop & Spinach Cream,PA-Sca Spi,250000,Pasta,Pan-seared scallops in spinach cream sauce.
+Food,129,Anchovy & Caper Linguine,PA-Anc Cap,175000,Pasta,"Briny, salty, olive oil-based linguine."
+Food,130,Macaroni & Cheese,PA-Mac Chz,160000,Pasta,Oven-baked mac and cheese with 4P's cheese blend.
+Food,131,House-made Cheese Tart,D-Chz Tart,80000,Dessert,Signature buttery tart filled with cream cheese.
+Food,132,Matcha Fondant Chocolate,D-Mat Fon,95000,Dessert,"Lava cake with warm matcha center, vanilla ice cream."
+Food,133,Classic Tiramisu,D-Tiramisu,90000,Dessert,"Coffee-soaked ladyfingers, mascarpone, cocoa."
+Food,134,Panna Cotta with Berries,D-Panna,85000,Dessert,Vanilla bean panna cotta with mixed berry compote.
+Food,135,Affogato al Caffè,D-Affogato,75000,Dessert,Vanilla ice cream 'drowned' in hot espresso.
+Food,136,Crème Brûlée,D-Creme Bru,85000,Dessert,Rich vanilla custard with a hard caramel shell.
+Food,137,Chocolate Brownie,D-Brownie,80000,Dessert,"Warm, fudgy brownie served with vanilla ice cream."
+Food,138,Lemon Sorbet,D-Lem Sor,60000,Dessert,"Refreshing, palate-cleansing icy lemon sorbet."
+Food,139,Mango Sorbet,D-Man Sor,60000,Dessert,Sweet and tangy tropical mango sorbet.
+Food,140,Vanilla Gelato (1 Scoop),D-Van Gel,50000,Dessert,Single scoop of premium Italian vanilla ice cream.
+Food,141,Chocolate Gelato (1 Scoop),D-Cho Gel,50000,Dessert,"Single scoop of rich, dark chocolate ice cream."
+Food,142,Pistachio Gelato (1 Scoop),D-Pis Gel,65000,Dessert,Premium nutty pistachio ice cream.
+Food,143,Strawberry Cheesecake,D-Str Chz,95000,Dessert,Baked cheesecake topped with fresh strawberries.
+Food,144,Apple Crumble,D-App Cru,90000,Dessert,Warm cinnamon apples with crispy oat topping.
+Food,145,Chocolate Mousse,D-Cho Mou,85000,Dessert,"Light, airy, and rich dark chocolate mousse."
+Food,146,Passion Fruit Pavlova,D-Pavlova,90000,Dessert,Meringue nest filled with cream and passion fruit.
+Food,147,Caramel Flan,D-Car Flan,70000,Dessert,Traditional smooth egg custard with caramel syrup.
+Food,148,Ricotta & Honey Cannoli,D-Cannoli,85000,Dessert,Crispy pastry tubes filled with sweet ricotta.
+Food,149,Earl Grey Chiffon Cake,D-Earl Cke,80000,Dessert,"Fluffy, light sponge cake infused with Earl Grey tea."
+Food,150,Seasonal Fruit Platter,D-Fru Pla,120000,Dessert,"A curated plate of fresh, seasonal local fruits."
+Beverage,1,Fresh Watermelon Juice,J-Watermln,65000,Juice,100% freshly pressed watermelon.
+Beverage,2,Fresh Pineapple Juice,J-Pineappl,65000,Juice,"Sweet, freshly pressed tropical pineapple."
+Beverage,3,Fresh Passion Fruit Juice,J-Passion,65000,Juice,Tangy passion fruit mixed with water and syrup.
+Beverage,4,Fresh Orange Juice,J-Orange,75000,Juice,Classic 100% freshly squeezed oranges.
+Beverage,5,Fresh Apple Juice,J-Apple,75000,Juice,Cold-pressed crisp apples.
+Beverage,6,Fresh Carrot Juice,J-Carrot,65000,Juice,"Healthy, sweet cold-pressed carrots."
+Beverage,7,Fresh Guava Juice,J-Guava,65000,Juice,Light and refreshing pink guava juice.
+Beverage,8,Fresh Lime Juice,J-Lime,55000,Juice,"Classic limeade, served sweet or salty."
+Beverage,9,"Apple, Beet, Carrot (ABC)",J-ABC Mix,85000,Juice,Detoxifying mixed root and fruit juice.
+Beverage,10,Pineapple & Mint Juice,J-Pin Mint,75000,Juice,Sweet pineapple blended with fresh mint leaves.
+Beverage,11,Orange & Carrot Mix,J-Org Car,75000,Juice,Vitamin C packed orange and carrot blend.
+Beverage,12,Green Detox Juice,J-Grn Dtx,85000,Juice,"Celery, cucumber, green apple, spinach."
+Beverage,13,"Ginger, Apple, Lemon",J-Gin App,80000,Juice,"Zesty, immune-boosting cold-pressed mix."
+Beverage,14,Mango Smoothie,SM-Mango,85000,Smoothie,Blended fresh mango with a touch of milk.
+Beverage,15,Strawberry Smoothie,SM-Strawb,85000,Smoothie,Blended fresh strawberries and yogurt.
+Beverage,16,Avocado Smoothie,SM-Avocado,90000,Smoothie,"Rich, creamy, Vietnamese-style avocado blend."
+Beverage,17,Banana & Peanut Butter,SM-Ban PB,85000,Smoothie,"Energizing banana, peanut butter, and milk."
+Beverage,18,Mixed Berry Smoothie,SM-Mix Ber,95000,Smoothie,"Antioxidant-rich blueberry, raspberry, strawberry."
+Beverage,19,Tropical Fruit Shake,SM-Trop,85000,Smoothie,"Mango, pineapple, and passion fruit blend."
+Beverage,20,Coconut Water (Fresh),J-Coconut,60000,Juice,Whole fresh young coconut.
+Beverage,21,Coca-Cola,SD-Coke,40000,Soft Drink,Classic Coca-Cola can.
+Beverage,22,Coke Zero / Diet Coke,SD-Coke Z,40000,Soft Drink,Sugar-free Coca-Cola can.
+Beverage,23,Sprite,SD-Sprite,40000,Soft Drink,Lemon-lime soda.
+Beverage,24,Fanta Orange,SD-Fanta,40000,Soft Drink,Orange flavored soda.
+Beverage,25,Ginger Ale,SD-Gin Ale,45000,Soft Drink,Schweppes Ginger Ale.
+Beverage,26,Tonic Water,SD-Tonic,45000,Soft Drink,Schweppes Tonic Water.
+Beverage,27,Soda Water,SD-Soda,40000,Soft Drink,Plain carbonated club soda.
+Beverage,28,Red Bull,SD-Redbull,50000,Soft Drink,Energy drink.
+Beverage,29,Lipton Iced Tea (Lemon),SD-Lipton,40000,Soft Drink,Canned sweet lemon iced tea.
+Beverage,30,San Pellegrino Sparkling (500ml),SD-SP 500,90000,Soft Drink,Premium Italian sparkling mineral water.
+Beverage,31,San Pellegrino Sparkling (1L),SD-SP 1L,150000,Soft Drink,Premium Italian sparkling mineral water (Large).
+Beverage,32,Acqua Panna Still (500ml),SD-AP 500,90000,Soft Drink,Premium Italian still mineral water.
+Beverage,33,Acqua Panna Still (1L),SD-AP 1L,150000,Soft Drink,Premium Italian still mineral water (Large).
+Beverage,34,Dasani / Aquafina Water,SD-Water,30000,Soft Drink,Local bottled drinking water.
+Beverage,35,Kombucha (Original),SD-Kom Org,75000,Soft Drink,"Fermented sparkling tea, plain."
+Beverage,36,Kombucha (Ginger/Lemon),SD-Kom Gin,75000,Soft Drink,"Fermented sparkling tea, ginger flavored."
+Beverage,37,Kombucha (Berry),SD-Kom Ber,75000,Soft Drink,"Fermented sparkling tea, mixed berry."
+Beverage,38,House Iced Tea (Unsweetened),T-Ice Unsw,35000,Soft Drink,Brewed local green/black tea over ice.
+Beverage,39,Peach Iced Tea,T-Ice Pch,65000,Soft Drink,Sweetened black tea with fresh peach slices.
+Beverage,40,Lychee Iced Tea,T-Ice Lyc,65000,Soft Drink,Sweetened black tea with lychee fruit.
+Beverage,41,Vietnamese Iced Coffee (Sữa Đá),C-VN Milk,60000,Soft Drink,Traditional dark drip coffee with condensed milk.
+Beverage,42,Vietnamese Black Coffee (Đen Đá),C-VN Blk,55000,Soft Drink,"Traditional dark drip coffee, iced."
+Beverage,43,Espresso,C-Espresso,50000,Soft Drink,Single shot of Italian espresso.
+Beverage,44,Double Espresso,C-Dbl Esp,70000,Soft Drink,Double shot of Italian espresso.
+Beverage,45,Americano,C-American,60000,Soft Drink,Espresso poured over hot water.
+Beverage,46,Cappuccino,C-Cappucc,75000,Soft Drink,Espresso with steamed milk and thick foam.
+Beverage,47,Latte,C-Latte,75000,Soft Drink,Espresso with steamed milk and light foam.
+Beverage,48,Mocha,C-Mocha,85000,Soft Drink,"Espresso, chocolate syrup, and steamed milk."
+Beverage,49,Matcha Latte,C-Mat Lat,85000,Soft Drink,Japanese green tea powder with steamed milk.
+Beverage,50,Hot Chocolate,C-Hot Cho,80000,Soft Drink,Rich melted chocolate and steamed milk.
+Beverage,51,4P's Yuzu Wheat Beer (Draft),B-Yuzu Dft,95000,Beer,Signature craft beer brewed with Japanese Yuzu.
+Beverage,52,4P's IPA (Draft),B-IPA Dft,105000,Beer,"Signature hoppy, citrusy India Pale Ale."
+Beverage,53,Sapporo Draft Beer (Glass),B-Sap Gls,70000,Beer,"Japanese crisp draft lager, 330ml."
+Beverage,54,Sapporo Draft Beer (Jug),B-Sap Jug,250000,Beer,"Japanese crisp draft lager, 1.2L pitcher."
+Beverage,55,Tiger Beer (Bottle),B-Tiger,50000,Beer,Local favorite pale lager.
+Beverage,56,Tiger Crystal (Bottle),B-Tig Cry,55000,Beer,"Cold-filtered, smooth local lager."
+Beverage,57,Heineken (Bottle),B-Heinek,60000,Beer,Classic European pale lager.
+Beverage,58,Heineken Silver (Bottle),B-Hei Sil,60000,Beer,"Lighter, less bitter European lager."
+Beverage,59,Corona Extra (Bottle),B-Corona,85000,Beer,"Mexican pale lager, served with a lime wedge."
+Beverage,60,Hoegaarden White (Bottle),B-Hoeg,90000,Beer,Belgian wheat beer with coriander and orange.
+Beverage,61,Pasteur Street Jasmine IPA,B-Pas Jas,110000,Beer,Local craft IPA infused with jasmine.
+Beverage,62,Heart of Darkness Pale Ale,B-HoD PA,110000,Beer,"Local craft pale ale, fruity and balanced."
+Beverage,63,Belgo Blonde,B-Bel Blo,120000,Beer,Locally brewed traditional Belgian blonde ale.
+Beverage,64,Bia Saigon Special (Bottle),B-Sai Spe,45000,Beer,"Crisp, refreshing local Vietnamese beer."
+Beverage,65,Asahi Super Dry (Bottle),B-Asahi,80000,Beer,"Japanese highly attenuated, crisp lager."
+Beverage,66,Classic Mojito,CK-Mojito,140000,Cocktail,"Rum, fresh lime, mint leaves, soda water."
+Beverage,67,Passion Fruit Mojito,CK-Moj Pas,150000,Cocktail,Classic Mojito twisted with passion fruit puree.
+Beverage,68,Aperol Spritz,CK-Aperol,180000,Cocktail,"Aperol, Prosecco, soda water, orange slice."
+Beverage,69,Classic Margarita,CK-Margar,160000,Cocktail,"Tequila, Triple Sec, lime juice, salt rim."
+Beverage,70,Gin & Tonic (Bombay Sapphire),CK-GT Bom,150000,Cocktail,"Bombay Sapphire gin, premium tonic, lime."
+Beverage,71,Gin & Tonic (Hendrick's),CK-GT Hen,190000,Cocktail,"Hendrick's gin, premium tonic, cucumber slice."
+Beverage,72,Yuzu Sour,CK-Yuzu Sr,160000,Cocktail,"Vodka, Japanese yuzu juice, simple syrup."
+Beverage,73,Negroni,CK-Negroni,170000,Cocktail,"Gin, Campari, Sweet Vermouth."
+Beverage,74,Old Fashioned,CK-Old Fas,180000,Cocktail,"Bourbon, Angostura bitters, sugar, orange peel."
+Beverage,75,Espresso Martini,CK-Esp Mar,160000,Cocktail,"Vodka, coffee liqueur, fresh pulled espresso."
+Beverage,76,Sangria (Red Wine),CK-San Red,150000,Cocktail,Red wine mixed with brandy and fresh fruits.
+Beverage,77,Sangria (White Wine),CK-San Wht,150000,Cocktail,White wine mixed with peach liqueur and fruit.
+Beverage,78,Whiskey Sour,CK-Whis Sr,160000,Cocktail,"Bourbon, lemon juice, simple syrup, egg white."
+Beverage,79,Cosmopolitan,CK-Cosmo,150000,Cocktail,"Vodka, Triple Sec, cranberry juice, lime."
+Beverage,80,Pina Colada,CK-Pina Col,160000,Cocktail,"Rum, coconut cream, fresh pineapple juice."
+Beverage,81,Virgin Mojito (No Alcohol),MK-Mojito,95000,Mocktail,"Mint, lime, sugar, and soda water."
+Beverage,82,Virgin Passion Mojito,MK-Moj Pas,105000,Mocktail,"Passion fruit, mint, lime, soda water."
+Beverage,83,Yuzu Sparkler,MK-Yuzu Sp,110000,Mocktail,Japanese yuzu puree mixed with sparkling water.
+Beverage,84,Shirley Temple,MK-Shirley,85000,Mocktail,"Ginger ale, grenadine, maraschino cherry."
+Beverage,85,Virgin Pina Colada,MK-Pina,110000,Mocktail,Pineapple juice blended with coconut cream.
+Beverage,86,Cucumber Basil Smash,MK-Cuc Bas,100000,Mocktail,"Muddled cucumber, fresh basil, lime, soda."
+Beverage,87,Berry Lemonade,MK-Ber Lem,95000,Mocktail,Homemade lemonade mixed with crushed berries.
+Beverage,88,Tropical Sunrise,MK-Sunrise,95000,Mocktail,"Orange juice, pineapple juice, splash of grenadine."
+Beverage,89,Peach & Thyme Iced Tea,MK-Pch Thy,90000,Mocktail,Cold brewed tea with peach puree and thyme.
+Beverage,90,Mango Mule,MK-Man Mul,105000,Mocktail,"Mango puree, fresh lime, topped with ginger beer."
+Beverage,91,Watermelon Mint Cooler,MK-Wat Mnt,95000,Mocktail,"Blended watermelon, mint, lime, and ice."
+Beverage,92,Grapefruit Rosemary Sparkler,MK-Gra Ros,100000,Mocktail,"Fresh grapefruit juice, rosemary syrup, soda."
+Beverage,93,Apple Cider Spritz,MK-App Cid,105000,Mocktail,"Apple juice, cinnamon syrup, sparkling water."
+Beverage,94,Lemongrass Ginger Fizz,MK-Lem Gin,95000,Mocktail,"Lemongrass extract, fresh ginger, lime, soda."
+Beverage,95,Guava Mint Breeze,MK-Gua Mnt,95000,Mocktail,"Guava juice, muddled mint, splash of sprite."
+Beverage,96,Coconut Limeade,MK-Coc Lme,100000,Mocktail,Coconut water mixed with fresh lime and syrup.
+Beverage,97,Blueberry Vanilla Soda,MK-Blu Van,105000,Mocktail,"Blueberry compote, vanilla syrup, club soda."
+Beverage,98,Kiwi & Apple Crush,MK-Kiw App,110000,Mocktail,Fresh crushed kiwi mixed with apple juice.
+Beverage,99,Pomegranate Tonic,MK-Pom Ton,105000,Mocktail,Pomegranate juice topped with tonic water.
+Beverage,100,4P's Signature Fruit Punch,MK-4P Pun,120000,Mocktail,Secret house blend of tropical seasonal fruits.
