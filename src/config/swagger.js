@@ -5,9 +5,9 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Restaurant Management System API',
+            title: 'Maison Lucas API',
             version: '1.0.0',
-            description: 'API documentation for Restaurant Management System',
+            description: 'API documentation for the Maison Lucas restaurant system',
             contact: {
                 name: 'API Support',
                 email: 'support@rms.local'

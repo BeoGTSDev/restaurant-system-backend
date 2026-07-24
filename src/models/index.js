@@ -14,6 +14,7 @@ const OrderTransfer = require('./OrderTransfer')(sequelize);
 const Role = require('./Role');
 const Permission = require('./Permission');
 const RolePermission = require('./RolePermission');
+const BusinessDay = require('./BusinessDay')(sequelize);
 
 
 
@@ -67,5 +68,7 @@ module.exports = {
     Role,
     Permission,
     RolePermission
+    ,
+    BusinessDay
 };
 

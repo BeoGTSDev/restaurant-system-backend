@@ -150,6 +150,43 @@ const getAllOrders = async (req, res, next) => {
     });
 };
 
+const getCustomerOrder = async (req, res, next) => {
+    const { tableId } = req.params;
+    const table = await Table.findByPk(tableId, {
+        attributes: ['id', 'name', 'status']
+    });
+
+    if (!table) {
+        const err = new Error('Table not found');
+        err.status = 404;
+        return next(err);
+    }
+
+    const orders = await Order.findAll({
+        where: {
+            tableId,
+            status: ['Pending', 'Order']
+        },
+        attributes: ['id', 'totalPrice', 'status', 'createdAt', 'updatedAt'],
+        include: [{
+            model: OrderItem,
+            as: 'items',
+            attributes: ['id', 'quantity', 'price', 'note', 'status'],
+            include: [{
+                model: Product,
+                as: 'product',
+                attributes: ['id', 'name', 'displayName', 'imageUrl']
+            }]
+        }],
+        order: [['createdAt', 'ASC']]
+    });
+
+    res.status(200).json({
+        success: true,
+        data: { table, orders }
+    });
+};
+
 const payBillByTable = async (req, res, next) => {
     const { tableId } = req.params;
     const paymentMethod = req.body?.paymentMethod || 'Cash';
@@ -317,4 +354,11 @@ const updateOrderItemStatus = async (req, res, next) => {
     });
 };
 
-module.exports = { createOrder, getAllOrders, payBillByTable, checkBillByTable, updateOrderItemStatus };
+module.exports = {
+    createOrder,
+    getAllOrders,
+    getCustomerOrder,
+    payBillByTable,
+    checkBillByTable,
+    updateOrderItemStatus
+};

@@ -65,11 +65,9 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // routes will be registered after models/routes are required below
 
 app.get('/', (req, res) => {
-  res.send('<h1>Welcome! RMS Server is running!</h1>');
+  res.send('<h1>Maison Lucas Server is running!</h1>');
 });
 
-
-app.use(errorHandler);
 
 io.on('connection', (socket) => {
     console.log(`New client connected: ${socket.id}`);
@@ -186,6 +184,7 @@ const zoneRoutes = require('./routes/zoneRoutes');
 const shiftRoutes = require('./routes/shiftRoutes');
 const orderTransferRoutes = require('./routes/orderTransferRoutes');
 const roleRoutes = require('./routes/roleRoutes');
+const systemRoutes = require('./routes/systemRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -200,3 +199,7 @@ app.use('/api/order-transfers', orderTransferRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/revenue', revenueRoutes);
 app.use('/api/shifts', shiftRoutes);
+app.use('/api/system', systemRoutes);
+
+// Error middleware must be registered after every route.
+app.use(errorHandler);

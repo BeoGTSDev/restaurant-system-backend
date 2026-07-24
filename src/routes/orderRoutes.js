@@ -1,10 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { createOrder, getAllOrders, payBillByTable, checkBillByTable, updateOrderItemStatus } = require('../controllers/orderController');
+const {
+    createOrder,
+    getAllOrders,
+    getCustomerOrder,
+    payBillByTable,
+    checkBillByTable,
+    updateOrderItemStatus
+} = require('../controllers/orderController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const authorize = require('../middleware/authorize');
 
 router.post('/create', verifyToken, authorize('create_order'), createOrder);
+
+// QR/customer menu: the controller still validates that the table exists and
+// has been opened by staff before accepting an order.
+router.post('/customer', createOrder);
+router.get('/customer/table/:tableId', getCustomerOrder);
 
 router.get('/', verifyToken, authorize('view_orders'), getAllOrders);
 
