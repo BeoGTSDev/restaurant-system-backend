@@ -1,4 +1,4 @@
-const { Order, OrderItem, Table, OrderTransfer, sequelize } = require('../models');
+const { Order, OrderItem, Table, OrderTransfer, BusinessDay, ShiftRecord, User, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 const transferItems = async (req, res, next) => {
@@ -7,6 +7,10 @@ const transferItems = async (req, res, next) => {
         const { orderId } = req.params;
         const { orderItemIds, targetTableId, reason } = req.body;
         const transferredBy = req.user?.id;
+        const businessDay = await BusinessDay.findOne({ where: { status: 'open' }, transaction });
+        const shift = transferredBy
+            ? await ShiftRecord.findOne({ where: { cashierId: transferredBy, status: { [Op.in]: ['open', 'break'] } }, transaction })
+            : null;
 
         // Validate inputs
         if (!Array.isArray(orderItemIds) || orderItemIds.length === 0) {
@@ -40,6 +44,12 @@ const transferItems = async (req, res, next) => {
             err.status = 404;
             return next(err);
         }
+        if (!['Escort', 'Order', 'OrderCheck'].includes(targetTable.status)) {
+            await transaction.rollback();
+            const err = new Error('Items can only be transferred to an open table that has not reached Bill Check');
+            err.status = 400;
+            return next(err);
+        }
 
         // Fetch all order items to transfer
         const itemsToTransfer = await OrderItem.findAll({
@@ -66,8 +76,15 @@ const transferItems = async (req, res, next) => {
         const newOrder = await Order.create({
             tableId: targetTableId,
             totalPrice: transferredAmount,
-            status: 'Pending'
+            status: 'Pending',
+            businessDayId: businessDay?.id || originalOrder.businessDayId || null,
+            shiftId: shift?.id || originalOrder.shiftId || null,
+            createdBy: transferredBy || null
         }, { transaction });
+        if (targetTable.status === 'Ready') {
+            targetTable.status = 'Order';
+            await targetTable.save({ transaction });
+        }
 
         // Move items to new order
         await OrderItem.update(
@@ -110,6 +127,9 @@ const transferItems = async (req, res, next) => {
             transferredBy: transferredBy,
             itemIds: orderItemIds,
             reason: reason || 'Customer split payment preference'
+            ,
+            businessDayId: businessDay?.id || null,
+            shiftId: shift?.id || null
         }, { transaction });
 
         await transaction.commit();
@@ -188,7 +208,10 @@ const getTransferHistory = async (req, res, next) => {
                 model: Order,
                 as: 'newOrder',
                 attributes: ['id', 'tableId', 'totalPrice', 'status']
-            }
+            },
+            { model: User, as: 'staff', attributes: ['id', 'fullName', 'staffCode'] },
+            { model: ShiftRecord, as: 'shift', attributes: ['id', 'shiftName', 'position', 'area'] },
+            { model: BusinessDay, as: 'businessDay', attributes: ['id', 'businessDate'] }
         ],
         order: [['createdAt', 'DESC']]
     });
@@ -317,7 +340,10 @@ const getAllTransfers = async (req, res, next) => {
                 model: Order,
                 as: 'newOrder',
                 attributes: ['id', 'tableId', 'totalPrice', 'status']
-            }
+            },
+            { model: User, as: 'staff', attributes: ['id', 'fullName', 'staffCode'] },
+            { model: ShiftRecord, as: 'shift', attributes: ['id', 'shiftName', 'position', 'area'] },
+            { model: BusinessDay, as: 'businessDay', attributes: ['id', 'businessDate'] }
         ],
         order: [['createdAt', 'DESC']]
     });

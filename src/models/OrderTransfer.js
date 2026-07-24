@@ -40,6 +40,14 @@ module.exports = (sequelize) => {
             },
             comment: 'Waiter/Staff who performed the transfer'
         },
+        businessDayId: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
+        shiftId: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
         itemIds: {
             type: DataTypes.JSON,
             allowNull: false,

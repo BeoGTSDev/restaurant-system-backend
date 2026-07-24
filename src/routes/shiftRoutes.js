@@ -3,13 +3,12 @@ const router = express.Router();
 const { openShift, closeShift, getShiftReport, getAllShifts } = require('../controllers/shiftController');
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 const authorize = require('../middleware/authorize');
-const { validateOpenShift, validateCloseShift } = require('../middleware/validation');
 
 // Open shift
-router.post('/open', verifyToken, authorize('manage_shifts'), validateOpenShift, openShift);
+router.post('/open', verifyToken, authorize('manage_shifts'), openShift);
 
 // Close shift
-router.post('/close', verifyToken, authorize('manage_shifts'), validateCloseShift, closeShift);
+router.post('/close', verifyToken, authorize('manage_shifts'), closeShift);
 
 // Get shift report by ID
 router.get('/:shiftId', verifyToken, authorize('manage_shifts'), getShiftReport);

@@ -1,4 +1,4 @@
-const { Table, Bill, Zone, Order, sequelize } = require('../models');
+const { Table, Bill, Zone, Order, OperationalTransfer, BusinessDay, ShiftRecord, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 const openTable = async (req, res, next) => {
@@ -186,6 +186,7 @@ const updateTable = async (req, res, next) => {
     if (req.body.guestCount !== undefined) table.guestCount = String(req.body.guestCount);
     if (req.body.nationality !== undefined) table.nationality = req.body.nationality;
     if (req.body.specialNote !== undefined) table.specialNote = req.body.specialNote;
+    if (req.body.allergyNote !== undefined) table.allergyNote = req.body.allergyNote;
     
     await table.save();
 
@@ -262,6 +263,21 @@ const transferTable = async (req, res, next) => {
         sourceTable.nationality = null;
         sourceTable.specialNote = null;
         await sourceTable.save({ transaction });
+
+        const businessDay = await BusinessDay.findOne({ where: { status: 'open' }, transaction });
+        const shift = req.user?.id
+            ? await ShiftRecord.findOne({ where: { userId: req.user.id, status: { [Op.in]: ['active', 'break'] } }, transaction })
+            : null;
+        await OperationalTransfer.create({
+            type: 'table',
+            sourceTableId: Number(id),
+            targetTableId: Number(targetTableId),
+            performedBy: req.user?.id || null,
+            businessDayId: businessDay?.id || null,
+            shiftId: shift?.id || null,
+            reason: req.body.reason || 'Table transfer',
+            status: 'completed'
+        }, { transaction });
 
         await transaction.commit();
 

@@ -130,9 +130,101 @@ const startServer = async () => {
             console.log('Added availabilityDate column to Products table');
         }
 
+        // Upgrade existing BusinessDay tables created by earlier POS versions.
+        // sequelize.sync() creates new tables but does not alter existing ones.
+        const businessDayTable = await queryInterface.describeTable('business_days').catch(() => null);
+        if (businessDayTable) {
+            const businessDayColumns = {
+                openingCash: {
+                    type: DataTypes.DECIMAL(14, 2),
+                    allowNull: false,
+                    defaultValue: 0
+                },
+                openingDenominations: {
+                    type: DataTypes.JSON,
+                    allowNull: true
+                },
+                closingCash: {
+                    type: DataTypes.DECIMAL(14, 2),
+                    allowNull: true
+                },
+                closingDenominations: {
+                    type: DataTypes.JSON,
+                    allowNull: true
+                },
+                cashSales: {
+                    type: DataTypes.DECIMAL(14, 2),
+                    allowNull: false,
+                    defaultValue: 0
+                },
+                expectedCash: {
+                    type: DataTypes.DECIMAL(14, 2),
+                    allowNull: true
+                },
+                difference: {
+                    type: DataTypes.DECIMAL(14, 2),
+                    allowNull: true
+                }
+            };
+
+            for (const [columnName, definition] of Object.entries(businessDayColumns)) {
+                if (!businessDayTable[columnName]) {
+                    await queryInterface.addColumn('business_days', columnName, definition);
+                    console.log(`Added ${columnName} column to business_days table`);
+                }
+            }
+        }
+
+        const linkedTables = [
+            ['shift_records', {
+                businessDayId: { type: DataTypes.INTEGER, allowNull: true },
+                shiftName: { type: DataTypes.STRING, allowNull: true },
+                position: { type: DataTypes.STRING, allowNull: true },
+                area: { type: DataTypes.STRING, allowNull: true }
+            }],
+            ['Orders', {
+                businessDayId: { type: DataTypes.INTEGER, allowNull: true },
+                shiftId: { type: DataTypes.INTEGER, allowNull: true },
+                createdBy: { type: DataTypes.INTEGER, allowNull: true },
+                paidBy: { type: DataTypes.INTEGER, allowNull: true }
+            }],
+            ['order_transfers', {
+                businessDayId: { type: DataTypes.INTEGER, allowNull: true },
+                shiftId: { type: DataTypes.INTEGER, allowNull: true }
+            }],
+            ['OrderItems', {
+                cancelledBy: { type: DataTypes.INTEGER, allowNull: true },
+                cancellationApprovedBy: { type: DataTypes.INTEGER, allowNull: true },
+                cancellationReason: { type: DataTypes.STRING, allowNull: true },
+                cancelledAt: { type: DataTypes.DATE, allowNull: true }
+            }],
+            ['Tables', {
+                assignedStaffId: { type: DataTypes.INTEGER, allowNull: true },
+                allergyNote: { type: DataTypes.STRING, allowNull: true }
+            }]
+        ];
+        for (const [tableName, columns] of linkedTables) {
+            const existingColumns = await queryInterface.describeTable(tableName).catch(() => null);
+            if (!existingColumns) continue;
+            for (const [columnName, definition] of Object.entries(columns)) {
+                if (!existingColumns[columnName]) {
+                    await queryInterface.addColumn(tableName, columnName, definition);
+                    console.log(`Added ${columnName} column to ${tableName} table`);
+                }
+            }
+        }
+        // Earlier versions stored allergy alerts in specialNote. Split them so
+        // customer requests and safety alerts can be displayed at the same time.
+        await sequelize.query(`
+            UPDATE "Tables"
+            SET "allergyNote" = "specialNote", "specialNote" = NULL
+            WHERE "allergyNote" IS NULL AND "specialNote" LIKE 'ALLERGY:%'
+        `).catch(() => {});
+
         // Ensure PostgreSQL ENUM includes 'Disabled' before sync
         try {
             await sequelize.query(`ALTER TYPE "enum_Products_status" ADD VALUE IF NOT EXISTS 'Disabled'`);
+            await sequelize.query(`ALTER TYPE "enum_shift_records_status" ADD VALUE IF NOT EXISTS 'break'`);
         } catch (_) { /* ENUM value may already exist or type may not exist yet */ }
 
         await sequelize.sync();
@@ -185,6 +277,8 @@ const shiftRoutes = require('./routes/shiftRoutes');
 const orderTransferRoutes = require('./routes/orderTransferRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const systemRoutes = require('./routes/systemRoutes');
+const operationalTransferRoutes = require('./routes/operationalTransferRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -200,6 +294,8 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/revenue', revenueRoutes);
 app.use('/api/shifts', shiftRoutes);
 app.use('/api/system', systemRoutes);
+app.use('/api/operational-transfers', operationalTransferRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 // Error middleware must be registered after every route.
 app.use(errorHandler);

@@ -1,37 +1,53 @@
-const { Order, OrderItem, Product, Category } = require('../models');
+const {
+    Order, OrderItem, Product, Category, BusinessDay,
+    ShiftRecord, OrderTransfer, CashMovement, User
+} = require('../models');
 const { Op, fn, col, literal } = require('sequelize');
 
 
 const getDailyRevenue = async (req, res, next) => {
-    const TODAY_START = new Date();
-    TODAY_START.setHours(0, 0, 0, 0);
-
+    const businessDay = await BusinessDay.findOne({
+        where: { status: 'open' },
+        order: [['startedAt', 'DESC']]
+    });
     const NOW = new Date();
+    if (!businessDay) {
+        return res.status(200).json({
+            success: true,
+            message: 'No open business day',
+            date: null,
+            data: { totalRevenue: 0, totalOrders: 0 }
+        });
+    }
+
+    // Revenue belongs to the active POS business session, not to the calendar
+    // date. This makes a newly opened day start at zero even when it is opened
+    // again on the same calendar day.
+    const revenueWindow = {
+        [Op.gte]: businessDay.startedAt,
+        [Op.lte]: NOW
+    };
 
     const totalRevenue = await Order.sum('totalPrice', {
         where: {
             status: 'Paid',
-            createdAt: {
-                [Op.gte]: TODAY_START, 
-                [Op.lte]: NOW 
-            }
+            updatedAt: revenueWindow
         }
     });
 
     const totalOrders = await Order.count({
         where: {
             status: 'Paid',
-            createdAt: {
-                [Op.gte]: TODAY_START,
-                [Op.lte]: NOW
-            }
+            updatedAt: revenueWindow
         }
     });
 
     res.status(200).json({
         success: true,
         message: 'Daily revenue statistics',
-        date: TODAY_START.toLocaleDateString(),
+        date: businessDay.businessDate,
+        businessDayId: businessDay.id,
+        startedAt: businessDay.startedAt,
         data: {
             totalRevenue: totalRevenue || 0,
             totalOrders: totalOrders
@@ -181,4 +197,64 @@ const getMonthlyRevenue = async (req, res, next) => {
     });
 };
 
-module.exports = { getDailyRevenue, getBestSellingProducts, getMonthlyRevenue };
+const getOperationsReport = async (req, res) => {
+    const businessDay = req.query.businessDayId
+        ? await BusinessDay.findByPk(req.query.businessDayId)
+        : await BusinessDay.findOne({ order: [['startedAt', 'DESC']] });
+    if (!businessDay) {
+        return res.status(200).json({ success: true, data: null });
+    }
+
+    const [orders, shifts, transfers, cashMovements] = await Promise.all([
+        Order.findAll({
+            where: { businessDayId: businessDay.id },
+            include: [
+                { model: User, as: 'creator', attributes: ['id', 'fullName', 'staffCode'] },
+                { model: User, as: 'paymentStaff', attributes: ['id', 'fullName', 'staffCode'] }
+            ],
+            order: [['createdAt', 'DESC']]
+        }),
+        ShiftRecord.findAll({
+            where: { businessDayId: businessDay.id },
+            include: [{ model: User, as: 'cashier', attributes: ['id', 'fullName', 'staffCode'] }],
+            order: [['openedAt', 'DESC']]
+        }),
+        OrderTransfer.findAll({
+            where: { businessDayId: businessDay.id },
+            include: [{ model: User, as: 'staff', attributes: ['id', 'fullName', 'staffCode'] }],
+            order: [['createdAt', 'DESC']]
+        }),
+        CashMovement.findAll({
+            where: { businessDayId: businessDay.id },
+            order: [['createdAt', 'DESC']]
+        })
+    ]);
+
+    const paidOrders = orders.filter(order => order.status === 'Paid');
+    const cashIn = cashMovements.filter(item => item.type === 'in').reduce((s, item) => s + Number(item.amount), 0);
+    const cashOut = cashMovements.filter(item => item.type === 'out').reduce((s, item) => s + Number(item.amount), 0);
+    res.status(200).json({
+        success: true,
+        data: {
+            businessDay,
+            summary: {
+                revenue: paidOrders.reduce((s, order) => s + Number(order.totalPrice), 0),
+                paidOrders: paidOrders.length,
+                activeOrders: orders.filter(order => ['Pending', 'Order'].includes(order.status)).length,
+                shifts: shifts.length,
+                activeShifts: shifts.filter(shift => shift.status === 'open').length,
+                transfers: transfers.length,
+                openingCash: Number(businessDay.openingCash || 0),
+                cashIn,
+                cashOut,
+                expectedCash: Number(businessDay.openingCash || 0) + Number(businessDay.cashSales || 0) + cashIn - cashOut
+            },
+            shifts,
+            transfers,
+            cashMovements,
+            orders
+        }
+    });
+};
+
+module.exports = { getDailyRevenue, getBestSellingProducts, getMonthlyRevenue, getOperationsReport };

@@ -158,4 +158,20 @@ const register = async (req, res, next) => {
   });
 };
 
-module.exports = { login, staffLogin, register };
+const authorizeSupervisorAction = async (req, res, next) => {
+  const { staffCode } = req.body;
+  const user = await User.findOne({ where: { staffCode }, include: [{ association: 'role' }] });
+  const allowedRoles = ['admin', 'leader', 'assistantmanager', 'rm'];
+  const roleName = String(user?.role?.name || '').toLowerCase();
+  if (!user || !user.isActive || !allowedRoles.includes(roleName)) {
+    const err = new Error('Supervisor approval denied. Use an active Leader, Assistant Manager, RM or Admin staff code.');
+    err.status = 403;
+    return next(err);
+  }
+  res.status(200).json({
+    success: true,
+    data: { id: user.id, fullName: user.fullName, role: user.role.name }
+  });
+};
+
+module.exports = { login, staffLogin, register, authorizeSupervisorAction };

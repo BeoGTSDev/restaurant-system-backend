@@ -1,5 +1,5 @@
 // backend/src/controllers/userController.js
-const { User, Role } = require('../models');
+const { User, Role, ShiftRecord } = require('../models');
 const bcrypt = require('bcryptjs');
 
 
@@ -68,7 +68,16 @@ const createUser = async (req, res, next) => {
 const getAllUser = async (req, res, next) => {
   const users = await User.findAll({
     attributes: { exclude: ['password'] },
-    include: [{ model: Role, as: 'role', attributes: ['id', 'name', 'label'] }]
+    include: [
+      { model: Role, as: 'role', attributes: ['id', 'name', 'label'] },
+      {
+        model: ShiftRecord,
+        as: 'shifts',
+        where: { status: 'open' },
+        required: false,
+        attributes: ['id', 'shiftName', 'position', 'area', 'openedAt', 'status']
+      }
+    ]
   });
 
   res.status(200).json({

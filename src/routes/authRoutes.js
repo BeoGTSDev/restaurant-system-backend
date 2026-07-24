@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { login, staffLogin, register } = require('../controllers/authControllers');
+const { login, staffLogin, register, authorizeSupervisorAction } = require('../controllers/authControllers');
 const { authLimiter } = require('../middleware/rateLimitMiddleware');
 const { validateLogin, validateRegister, validateStaffLogin } = require('../middleware/validation');
 
@@ -65,6 +65,7 @@ router.post('/login', authLimiter, ...validateLogin, login);
  *         description: Invalid staff code or PIN
  */
 router.post('/staff-login', authLimiter, ...validateStaffLogin, staffLogin);
+router.post('/authorize-supervisor', authLimiter, authorizeSupervisorAction);
 
 /**
  * @swagger

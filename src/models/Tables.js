@@ -33,11 +33,16 @@ const Table = sequelize.define('Tables', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    allergyNote: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     
     zoneId: {
         type: DataTypes.INTEGER,
         allowNull: true
-    }
+    },
+    assignedStaffId: { type: DataTypes.INTEGER, allowNull: true }
 },{
     timestamps: true
 });

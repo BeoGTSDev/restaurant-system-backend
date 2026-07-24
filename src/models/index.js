@@ -15,6 +15,10 @@ const Role = require('./Role');
 const Permission = require('./Permission');
 const RolePermission = require('./RolePermission');
 const BusinessDay = require('./BusinessDay')(sequelize);
+const CashMovement = require('./CashMovement')(sequelize);
+const OperationalTransfer = require('./OperationalTransfer')(sequelize);
+const Ingredient = require('./Ingredient')(sequelize);
+const InventoryMovement = require('./InventoryMovement')(sequelize);
 
 
 
@@ -47,6 +51,29 @@ Permission.belongsToMany(Role, { through: RolePermission, foreignKey: 'permissio
 Role.hasMany(User, { foreignKey: 'roleId', as: 'users' });
 User.belongsTo(Role, { foreignKey: 'roleId', as: 'role' });
 
+BusinessDay.hasMany(CashMovement, { foreignKey: 'businessDayId', as: 'cashMovements' });
+CashMovement.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+BusinessDay.hasMany(ShiftRecord, { foreignKey: 'businessDayId', as: 'shifts' });
+ShiftRecord.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+BusinessDay.hasMany(Order, { foreignKey: 'businessDayId', as: 'orders' });
+Order.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+ShiftRecord.hasMany(Order, { foreignKey: 'shiftId', as: 'orders' });
+Order.belongsTo(ShiftRecord, { foreignKey: 'shiftId', as: 'shift' });
+Order.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+Order.belongsTo(User, { foreignKey: 'paidBy', as: 'paymentStaff' });
+OrderTransfer.belongsTo(User, { foreignKey: 'transferredBy', as: 'staff' });
+OrderTransfer.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+OrderTransfer.belongsTo(ShiftRecord, { foreignKey: 'shiftId', as: 'shift' });
+OperationalTransfer.belongsTo(User, { foreignKey: 'performedBy', as: 'performer' });
+OperationalTransfer.belongsTo(User, { foreignKey: 'fromStaffId', as: 'fromStaff' });
+OperationalTransfer.belongsTo(User, { foreignKey: 'toStaffId', as: 'toStaff' });
+OperationalTransfer.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+OperationalTransfer.belongsTo(ShiftRecord, { foreignKey: 'shiftId', as: 'shift' });
+InventoryMovement.belongsTo(Ingredient, { foreignKey: 'ingredientId', as: 'ingredient' });
+Ingredient.hasMany(InventoryMovement, { foreignKey: 'ingredientId', as: 'movements' });
+InventoryMovement.belongsTo(User, { foreignKey: 'performedBy', as: 'performer' });
+InventoryMovement.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+
 OrderTransfer.belongsTo(Order, { foreignKey: 'originalOrderId', as: 'originalOrder' });
 OrderTransfer.belongsTo(Order, { foreignKey: 'newOrderId', as: 'newOrder' });
 Order.hasMany(OrderTransfer, { foreignKey: 'originalOrderId', as: 'transfersOut' });
@@ -69,6 +96,10 @@ module.exports = {
     Permission,
     RolePermission
     ,
-    BusinessDay
+    BusinessDay,
+    CashMovement,
+    OperationalTransfer,
+    Ingredient,
+    InventoryMovement
 };
 

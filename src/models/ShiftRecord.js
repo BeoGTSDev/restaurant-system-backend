@@ -15,6 +15,22 @@ module.exports = (sequelize) => {
                 key: 'id'
             }
         },
+        businessDayId: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
+        shiftName: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        position: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        area: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         shiftDate: {
             type: DataTypes.DATEONLY,
             allowNull: false,
@@ -46,7 +62,7 @@ module.exports = (sequelize) => {
             comment: 'cashOut - expectedAmount (negative = thiếu, positive = thừa)'
         },
         status: {
-            type: DataTypes.ENUM('open', 'closed'),
+            type: DataTypes.ENUM('open', 'closed', 'break'),
             defaultValue: 'open'
         },
         notes: {

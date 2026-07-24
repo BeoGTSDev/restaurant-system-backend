@@ -23,6 +23,36 @@ module.exports = (sequelize) => sequelize.define('BusinessDay', {
         type: DataTypes.DATE,
         allowNull: false
     },
+    openingCash: {
+        type: DataTypes.DECIMAL(14, 2),
+        allowNull: false,
+        defaultValue: 0
+    },
+    openingDenominations: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
+    closingCash: {
+        type: DataTypes.DECIMAL(14, 2),
+        allowNull: true
+    },
+    closingDenominations: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
+    cashSales: {
+        type: DataTypes.DECIMAL(14, 2),
+        allowNull: false,
+        defaultValue: 0
+    },
+    expectedCash: {
+        type: DataTypes.DECIMAL(14, 2),
+        allowNull: true
+    },
+    difference: {
+        type: DataTypes.DECIMAL(14, 2),
+        allowNull: true
+    },
     closedAt: {
         type: DataTypes.DATE,
         allowNull: true

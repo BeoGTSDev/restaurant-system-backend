@@ -1,16 +1,27 @@
-const { ShiftRecord, Order, User } = require('../models');
+const { ShiftRecord, Order, User, BusinessDay } = require('../models');
 const { sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 const openShift = async (req, res, next) => {
-    const { cashIn } = req.body;
-    const cashierId = req.user.id;
+    const { staffId, shiftName, position, area, notes } = req.body;
+    const cashierId = Number(staffId || req.user.id);
+    const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
+    if (!businessDay) {
+        const err = new Error('Open the business day before starting staff shifts');
+        err.status = 423;
+        return next(err);
+    }
+    const staff = await User.findByPk(cashierId);
+    if (!staff || !staff.isActive) {
+        const err = new Error('Active staff member not found');
+        err.status = 404;
+        return next(err);
+    }
 
     // Check if shift already open today
     const existingShift = await ShiftRecord.findOne({
         where: {
             cashierId,
-            shiftDate: new Date().toISOString().split('T')[0],
             status: 'open'
         }
     });
@@ -23,8 +34,13 @@ const openShift = async (req, res, next) => {
 
     const newShift = await ShiftRecord.create({
         cashierId,
-        shiftDate: new Date().toISOString().split('T')[0],
-        cashIn: parseFloat(cashIn),
+        businessDayId: businessDay.id,
+        shiftDate: businessDay.businessDate,
+        shiftName: shiftName || 'General',
+        position: position || null,
+        area: area || null,
+        notes: notes || null,
+        cashIn: 0,
         status: 'open',
         openedAt: new Date()
     });
@@ -36,15 +52,17 @@ const openShift = async (req, res, next) => {
             id: newShift.id,
             cashierId: newShift.cashierId,
             shiftDate: newShift.shiftDate,
-            cashIn: newShift.cashIn,
+            staff: { id: staff.id, fullName: staff.fullName },
+            shiftName: newShift.shiftName,
+            position: newShift.position,
+            area: newShift.area,
             openedAt: newShift.openedAt
         }
     });
 };
 
 const closeShift = async (req, res, next) => {
-    const { shiftId, cashOut, notes } = req.body;
-    const cashierId = req.user.id;
+    const { shiftId, notes } = req.body;
 
     const shift = await ShiftRecord.findByPk(shiftId);
     if (!shift) {
@@ -61,14 +79,11 @@ const closeShift = async (req, res, next) => {
         return next(err);
     }
 
-    // Calculate revenue for this shift
+    // Calculate revenue attributed to this staff shift.
     const ordersForShift = await Order.findAll({
         where: {
             status: 'Paid',
-            createdAt: {
-                [Op.gte]: new Date(`${shift.shiftDate} 00:00:00`),
-                [Op.lte]: new Date(`${shift.shiftDate} 23:59:59`)
-            }
+            shiftId: shift.id
         },
         attributes: [
             [sequelize.fn('SUM', sequelize.col('totalPrice')), 'total']
@@ -77,20 +92,12 @@ const closeShift = async (req, res, next) => {
     });
 
     const totalRevenue = parseFloat(ordersForShift[0]?.total || 0);
-    const expectedAmount = parseFloat(shift.cashIn) + totalRevenue;
-    const discrepancy = parseFloat(cashOut) - expectedAmount;
-
-    shift.cashOut = parseFloat(cashOut);
     shift.totalRevenue = totalRevenue;
-    shift.expectedAmount = expectedAmount;
-    shift.discrepancy = discrepancy;
     shift.notes = notes || '';
     shift.status = 'closed';
     shift.closedAt = new Date();
 
     await shift.save();
-
-    const discrepancyStatus = discrepancy === 0 ? 'EXACT' : discrepancy > 0 ? 'SURPLUS' : 'SHORTAGE';
 
     res.status(200).json({
         success: true,
@@ -98,14 +105,9 @@ const closeShift = async (req, res, next) => {
         shift: {
             id: shift.id,
             shiftDate: shift.shiftDate,
-            cashIn: shift.cashIn,
             totalRevenue: shift.totalRevenue,
-            expectedAmount: shift.expectedAmount,
-            cashOut: shift.cashOut,
-            discrepancy: shift.discrepancy,
-            discrepancyStatus,
-            discrepancyPercentage: expectedAmount > 0 ? 
-                ((discrepancy / expectedAmount) * 100).toFixed(2) + '%' : '0%'
+            workedMinutes: Math.max(0, Math.round((shift.closedAt - shift.openedAt) / 60000)),
+            status: shift.status
         }
     });
 };
@@ -118,6 +120,10 @@ const getShiftReport = async (req, res, next) => {
             model: User,
             as: 'cashier',
             attributes: ['id', 'fullName', 'email']
+        }, {
+            model: BusinessDay,
+            as: 'businessDay',
+            attributes: ['id', 'businessDate', 'status']
         }]
     });
 

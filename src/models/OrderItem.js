@@ -32,7 +32,11 @@ const OrderItem = sequelize.define('OrderItem', {
     note: {
         type: DataTypes.STRING,
         allowNull: true
-    }
+    },
+    cancelledBy: { type: DataTypes.INTEGER, allowNull: true },
+    cancellationApprovedBy: { type: DataTypes.INTEGER, allowNull: true },
+    cancellationReason: { type: DataTypes.STRING, allowNull: true },
+    cancelledAt: { type: DataTypes.DATE, allowNull: true }
 },
     {
         timestamps: true

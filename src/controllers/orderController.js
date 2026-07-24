@@ -1,4 +1,4 @@
-const { Order, OrderItem, Product, Table, sequelize } = require('../models');
+const { Order, OrderItem, Product, Table, BusinessDay, CashMovement, ShiftRecord, sequelize } = require('../models');
 const { resetExpiredDailyAvailability } = require('../utils/productAvailability');
 
 const createOrder = async (req, res, next) => {
@@ -15,6 +15,9 @@ const createOrder = async (req, res, next) => {
     let additionalPrice = 0;
     let orderItemsData = [];
     let itemDetailsForSocket = [];
+    const staffShift = req.user?.id
+        ? await ShiftRecord.findOne({ where: { cashierId: req.user.id, status: 'open' }, order: [['openedAt', 'DESC']] })
+        : null;
 
     await sequelize.transaction(async (transaction) => {
         await resetExpiredDailyAvailability(Product, transaction);
@@ -101,7 +104,10 @@ const createOrder = async (req, res, next) => {
             order = await Order.create({
                 tableId,
                 totalPrice: additionalPrice,
-                status: 'Pending'
+                status: 'Pending',
+                businessDayId: req.businessDay?.id || null,
+                shiftId: staffShift?.id || null,
+                createdBy: req.user?.id || null
             }, { transaction });
         }
         await OrderItem.bulkCreate(
@@ -190,6 +196,7 @@ const getCustomerOrder = async (req, res, next) => {
 const payBillByTable = async (req, res, next) => {
     const { tableId } = req.params;
     const paymentMethod = req.body?.paymentMethod || 'Cash';
+    const cashReceived = Number(req.body?.cashReceived || 0);
 
     const table = await Table.findByPk(tableId);
     if (!table) {
@@ -217,12 +224,57 @@ const payBillByTable = async (req, res, next) => {
         totalBill += order.totalPrice;
     });
 
+    const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
+    if (!businessDay) {
+        const err = new Error('POS is closed. Open the business day before taking payment.');
+        err.status = 423;
+        return next(err);
+    }
+
+    if (String(paymentMethod).toLowerCase() === 'cash') {
+        if (!Number.isFinite(cashReceived) || cashReceived < totalBill) {
+            const err = new Error('Cash received is less than the amount due');
+            err.status = 400;
+            return next(err);
+        }
+
+        const movements = await CashMovement.findAll({
+            where: { businessDayId: businessDay.id },
+            attributes: ['type', 'amount'],
+            raw: true
+        });
+        const cashIn = movements
+            .filter(item => item.type === 'in')
+            .reduce((sum, item) => sum + Number(item.amount), 0);
+        const cashOut = movements
+            .filter(item => item.type === 'out')
+            .reduce((sum, item) => sum + Number(item.amount), 0);
+        const availableDrawerCash =
+            Number(businessDay.openingCash || 0) +
+            Number(businessDay.cashSales || 0) +
+            cashIn -
+            cashOut;
+        const changeDue = cashReceived - totalBill;
+
+        if (changeDue > availableDrawerCash) {
+            const err = new Error(
+                `Not enough cash in drawer for change. Available: ${availableDrawerCash}, change required: ${changeDue}`
+            );
+            err.status = 409;
+            return next(err);
+        }
+    }
+
     await Order.update(
-        { status: 'Paid' },
+        { status: 'Paid', paidBy: req.user?.id || null },
         { where: { tableId: tableId, status: ['Pending', 'Order'] } }
     );
 
     await Table.update({ status: 'CustomerPaid' }, { where: { id: tableId } });
+    if (businessDay && String(paymentMethod).toLowerCase() === 'cash') {
+        businessDay.cashSales = Number(businessDay.cashSales || 0) + totalBill;
+        await businessDay.save();
+    }
 
     req.io.emit('payment_completed', {
         tableId: tableId,
@@ -354,11 +406,51 @@ const updateOrderItemStatus = async (req, res, next) => {
     });
 };
 
+const cancelOrderItem = async (req, res, next) => {
+    const { itemId } = req.params;
+    const { approvedBy, reason } = req.body;
+    if (!approvedBy || !String(reason || '').trim()) {
+        const err = new Error('Supervisor approval and cancellation reason are required');
+        err.status = 400;
+        return next(err);
+    }
+    let cancelledItem;
+    await sequelize.transaction(async transaction => {
+        cancelledItem = await OrderItem.findByPk(itemId, {
+            include: [{ model: Product, as: 'product' }],
+            transaction,
+            lock: transaction.LOCK.UPDATE
+        });
+        if (!cancelledItem || cancelledItem.status === 'Cancelled') {
+            const err = new Error('Order item is missing or already cancelled');
+            err.status = 409;
+            throw err;
+        }
+        cancelledItem.status = 'Cancelled';
+        cancelledItem.cancelledBy = req.user.id;
+        cancelledItem.cancellationApprovedBy = approvedBy;
+        cancelledItem.cancellationReason = String(reason).trim();
+        cancelledItem.cancelledAt = new Date();
+        await cancelledItem.save({ transaction });
+        const order = await Order.findByPk(cancelledItem.orderId, { transaction, lock: transaction.LOCK.UPDATE });
+        order.totalPrice = Math.max(0, Number(order.totalPrice) - Number(cancelledItem.price) * cancelledItem.quantity);
+        await order.save({ transaction });
+        if (cancelledItem.product?.remainingQty != null) {
+            cancelledItem.product.remainingQty += cancelledItem.quantity;
+            cancelledItem.product.status = 'In Stock';
+            await cancelledItem.product.save({ transaction });
+        }
+    });
+    req.io.emit('order_item_updated', { itemId: cancelledItem.id, status: 'Cancelled', tableRefresh: true });
+    res.status(200).json({ success: true, message: 'Order item cancelled', data: cancelledItem });
+};
+
 module.exports = {
     createOrder,
     getAllOrders,
     getCustomerOrder,
     payBillByTable,
     checkBillByTable,
-    updateOrderItemStatus
+    updateOrderItemStatus,
+    cancelOrderItem
 };
