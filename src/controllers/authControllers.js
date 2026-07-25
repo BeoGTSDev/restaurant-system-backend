@@ -77,7 +77,7 @@ const login = async (req, res, next) => {
   const permissions = (user.role && user.role.Permissions) ? user.role.Permissions.map(p => p.name) : [];
   const payload = { id: user.id, roleId: user.roleId, role: user.role ? user.role.name : null, permissions };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' });
 
   res.status(200).json({
     success: true,
@@ -120,7 +120,7 @@ const staffLogin = async (req, res, next) => {
   const permissions = (user.role && user.role.Permissions) ? user.role.Permissions.map(p => p.name) : [];
   const payload = { id: user.id, roleId: user.roleId, role: user.role ? user.role.name : null, permissions };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' });
 
   res.status(200).json({
     success: true,

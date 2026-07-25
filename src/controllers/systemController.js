@@ -46,6 +46,29 @@ const getBusinessDay = async (req, res) => {
     });
 };
 
+const updateChargeSettings = async (req, res, next) => {
+    const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
+    if (!businessDay) return next(Object.assign(new Error('Open the business day before configuring charges'), { status: 423 }));
+    const rate = (value, label, max = 30) => {
+        const number = Number(value);
+        if (!Number.isFinite(number) || number < 0 || number > max) {
+            throw Object.assign(new Error(`${label} must be between 0 and ${max}`), { status: 400 });
+        }
+        return number;
+    };
+    businessDay.foodVatActive = Boolean(req.body.foodVatActive);
+    businessDay.foodVatRate = rate(req.body.foodVatRate, 'Food VAT');
+    businessDay.alcoholVatActive = Boolean(req.body.alcoholVatActive);
+    businessDay.alcoholVatRate = rate(req.body.alcoholVatRate, 'Alcohol VAT');
+    businessDay.serviceChargeActive = Boolean(req.body.serviceChargeActive);
+    businessDay.serviceChargeRate = rate(req.body.serviceChargeRate, 'Service charge');
+    businessDay.serviceChargeName = businessDay.serviceChargeActive
+        ? String(req.body.serviceChargeName || 'Holiday service charge').trim().slice(0, 80)
+        : null;
+    await businessDay.save();
+    res.json({ success: true, message: 'VAT and service charge settings updated', data: businessDay });
+};
+
 const startNewBusinessDay = async (req, res, next) => {
     const existing = await BusinessDay.findOne({ where: { status: 'open' } });
     if (existing) {
@@ -72,7 +95,11 @@ const startNewBusinessDay = async (req, res, next) => {
             { where: { availabilityDate: { [Op.not]: null }, status: { [Op.ne]: 'Disabled' } }, transaction }
         );
         await Table.update(
-            { status: 'Ready', guestCount: null, nationality: null, specialNote: null },
+            {
+                status: 'Ready', guestCount: null, nationality: null, specialNote: null,
+                qrSessionActive: false, qrSessionOpenedAt: null,
+                qrSessionVersion: sequelize.literal('"qrSessionVersion" + 1')
+            },
             { where: {}, transaction }
         );
         businessDay = await BusinessDay.create({
@@ -200,7 +227,10 @@ const resetTestEnvironment = async (req, res) => {
                 status: 'Ready',
                 guestCount: null,
                 nationality: null,
-                specialNote: null
+                specialNote: null,
+                qrSessionActive: false,
+                qrSessionOpenedAt: null,
+                qrSessionVersion: sequelize.literal('"qrSessionVersion" + 1')
             },
             { where: {}, transaction }
         );
@@ -237,6 +267,7 @@ const resetTestEnvironment = async (req, res) => {
 
 module.exports = {
     getBusinessDay,
+    updateChargeSettings,
     startNewBusinessDay,
     createCashMovement,
     closeBusinessDay,

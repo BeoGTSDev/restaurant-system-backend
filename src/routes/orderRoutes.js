@@ -12,13 +12,14 @@ const {
 const { verifyToken } = require('../middleware/authMiddleware');
 const authorize = require('../middleware/authorize');
 const { requireOpenBusinessDay } = require('../middleware/businessDayMiddleware');
+const verifyCustomerTableSession = require('../middleware/customerTableSession');
 
 router.post('/create', verifyToken, authorize('create_order'), requireOpenBusinessDay, createOrder);
 
 // QR/customer menu: the controller still validates that the table exists and
 // has been opened by staff before accepting an order.
-router.post('/customer', requireOpenBusinessDay, createOrder);
-router.get('/customer/table/:tableId', getCustomerOrder);
+router.post('/customer', requireOpenBusinessDay, verifyCustomerTableSession, createOrder);
+router.get('/customer/table/:tableId', verifyCustomerTableSession, getCustomerOrder);
 
 router.get('/', verifyToken, authorize('view_orders'), getAllOrders);
 

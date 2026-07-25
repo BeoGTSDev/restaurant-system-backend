@@ -21,6 +21,9 @@ const Ingredient = require('./Ingredient')(sequelize);
 const InventoryMovement = require('./InventoryMovement')(sequelize);
 const ShiftAreaConfig = require('./ShiftAreaConfig')(sequelize);
 const ProductIngredient = require('./ProductIngredient')(sequelize);
+const Voucher = require('./Voucher');
+const Receipt = require('./Receipt');
+const ReceiptItem = require('./ReceiptItem');
 
 
 
@@ -82,6 +85,15 @@ ProductIngredient.belongsTo(Product, { foreignKey: 'productId', as: 'product' })
 Ingredient.hasMany(ProductIngredient, { foreignKey: 'ingredientId', as: 'productLinks' });
 ProductIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId', as: 'ingredient' });
 
+BusinessDay.hasMany(Receipt, { foreignKey: 'businessDayId', as: 'receipts' });
+Receipt.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+Table.hasMany(Receipt, { foreignKey: 'tableId', as: 'receipts' });
+Receipt.belongsTo(Table, { foreignKey: 'tableId', as: 'table' });
+User.hasMany(Receipt, { foreignKey: 'paidBy', as: 'receiptsProcessed' });
+Receipt.belongsTo(User, { foreignKey: 'paidBy', as: 'paymentStaff' });
+Receipt.hasMany(ReceiptItem, { foreignKey: 'receiptId', as: 'items' });
+ReceiptItem.belongsTo(Receipt, { foreignKey: 'receiptId', as: 'receipt' });
+
 OrderTransfer.belongsTo(Order, { foreignKey: 'originalOrderId', as: 'originalOrder' });
 OrderTransfer.belongsTo(Order, { foreignKey: 'newOrderId', as: 'newOrder' });
 Order.hasMany(OrderTransfer, { foreignKey: 'originalOrderId', as: 'transfersOut' });
@@ -112,6 +124,9 @@ module.exports = {
     ,
     ShiftAreaConfig
     ,
-    ProductIngredient
+    ProductIngredient,
+    Voucher,
+    Receipt,
+    ReceiptItem
 };
 

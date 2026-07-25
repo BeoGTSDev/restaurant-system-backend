@@ -1,10 +1,25 @@
 // backend/src/controllers/userController.js
+const { Op } = require('sequelize');
 const { User, Role, ShiftRecord } = require('../models');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
+const generateNextStaffCode = async () => {
+  const users = await User.findAll({
+    attributes: ['staffCode'],
+    where: { staffCode: { [Op.not]: null } },
+    raw: true
+  });
+  const highest = users.reduce((max, item) => {
+    const numeric = Number.parseInt(String(item.staffCode || '').replace(/\D/g, ''), 10);
+    return Number.isFinite(numeric) ? Math.max(max, numeric) : max;
+  }, 0);
+  return String(highest + 1).padStart(4, '0');
+};
 
 const createUser = async (req, res, next) => {
-  const { fullName, email, password, pin, staffCode, roleId } = req.body;
+  const { fullName, email, password, pin, roleId } = req.body;
+  const staffCode = String(req.body.staffCode || await generateNextStaffCode()).trim();
   const secret = password || pin;
 
   const existingUser = await User.findOne({ where: { email } });
@@ -14,12 +29,6 @@ const createUser = async (req, res, next) => {
     return next(err);
   }
 
-
-  if (!staffCode) {
-    const err = new Error('Staff code is required');
-    err.status = 400;
-    return next(err);
-  }
 
   if (!roleId) {
     const err = new Error('Role is required');
@@ -62,6 +71,61 @@ const createUser = async (req, res, next) => {
     success: true,
     message: 'Create Staff successfully!',
     user: { id: newUser.id, email: newUser.email, staffCode: newUser.staffCode, roleId: newUser.roleId }
+  });
+};
+
+const getNextStaffCode = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: { staffCode: await generateNextStaffCode() }
+  });
+};
+
+const getMe = async (req, res, next) => {
+  const user = await User.findByPk(req.user.id, {
+    attributes: { exclude: ['password', 'totpSecret'] },
+    include: [{ model: Role, as: 'role', attributes: ['id', 'name', 'label'] }]
+  });
+  if (!user) return next(Object.assign(new Error('User not found'), { status: 404 }));
+  res.json({ success: true, data: user });
+};
+
+const changeMyPin = async (req, res, next) => {
+  const currentPin = String(req.body?.currentPin || '');
+  const newPin = String(req.body?.newPin || '');
+  if (!/^\d{4}$/.test(currentPin) || !/^\d{4}$/.test(newPin)) {
+    return next(Object.assign(new Error('Current and new PIN must be exactly 4 digits'), { status: 400 }));
+  }
+  const user = await User.findByPk(req.user.id);
+  if (!user || !(await bcrypt.compare(currentPin, user.password))) {
+    return next(Object.assign(new Error('Current PIN is incorrect'), { status: 403 }));
+  }
+  user.password = await bcrypt.hash(newPin, 10);
+  await user.save({ fields: ['password'] });
+  res.json({ success: true, message: 'PIN changed successfully' });
+};
+
+const impersonateUser = async (req, res, next) => {
+  const user = await User.findByPk(req.params.id, {
+    include: [{ model: Role, as: 'role', include: [{ association: 'Permissions' }] }]
+  });
+  if (!user || !user.isActive) return next(Object.assign(new Error('Target account is missing or inactive'), { status: 404 }));
+  if (user.role?.name === 'Admin') return next(Object.assign(new Error('Admin accounts cannot be impersonated'), { status: 400 }));
+  const permissions = (user.role?.Permissions || []).map(permission => permission.name);
+  const token = jwt.sign({
+    id: user.id,
+    roleId: user.roleId,
+    role: user.role?.name || null,
+    permissions,
+    impersonatedBy: req.user.id
+  }, process.env.JWT_SECRET, { expiresIn: '2h' });
+  console.info(`Admin ${req.user.id} impersonated user ${user.id}`);
+  res.json({
+    success: true,
+    message: `Logged in as ${user.fullName}`,
+    token,
+    user: { id: user.id, fullName: user.fullName, email: user.email, staffCode: user.staffCode, role: user.role?.name || null, permissions },
+    impersonatedBy: req.user.id
   });
 };
 
@@ -151,6 +215,31 @@ const updateUser = async (req, res, next) => {
   });
 };
 
+const updateUserStatus = async (req, res, next) => {
+  const { id } = req.params;
+  if (typeof req.body?.isActive !== 'boolean') {
+    const err = new Error('Active status must be true or false');
+    err.status = 400;
+    return next(err);
+  }
+
+  const user = await User.findByPk(id);
+  if (!user) {
+    const err = new Error('User not found');
+    err.status = 404;
+    return next(err);
+  }
+
+  user.isActive = req.body.isActive;
+  await user.save({ fields: ['isActive'] });
+
+  res.status(200).json({
+    success: true,
+    message: user.isActive ? 'Staff account activated' : 'Staff account deactivated',
+    data: { id: user.id, isActive: Boolean(user.isActive) }
+  });
+};
+
 const deleteUser = async (req, res, next) => {
   const { id } = req.params;
   const user = await User.findByPk(id);
@@ -164,4 +253,4 @@ const deleteUser = async (req, res, next) => {
   res.status(200).json({ success: true, message: 'User deleted' });
 };
 
-module.exports = { createUser, getAllUser, updateUser, deleteUser };
+module.exports = { createUser, getNextStaffCode, getMe, changeMyPin, impersonateUser, getAllUser, updateUser, updateUserStatus, deleteUser };

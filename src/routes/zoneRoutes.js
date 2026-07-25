@@ -4,8 +4,8 @@ const { createZone, getAllZones, getZoneById, updateZone, deleteZone } = require
 const { verifyToken } = require('../middleware/authMiddleware');
 const authorize = require('../middleware/authorize');
 
-router.get('/', getAllZones);
-router.get('/:id', getZoneById);
+router.get('/', verifyToken, authorize(['manage_tables', 'create_order', 'view_orders']), getAllZones);
+router.get('/:id', verifyToken, authorize(['manage_tables', 'create_order', 'view_orders']), getZoneById);
 router.post('/', verifyToken, authorize('manage_tables'), createZone);
 router.put('/:id', verifyToken, authorize('manage_tables'), updateZone);
 router.delete('/:id', verifyToken, authorize('manage_tables'), deleteZone);

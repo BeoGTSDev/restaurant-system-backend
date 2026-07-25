@@ -1,6 +1,6 @@
 const {
     Order, OrderItem, Product, Category, BusinessDay,
-    ShiftRecord, OrderTransfer, CashMovement, User
+    ShiftRecord, OrderTransfer, CashMovement, User, Receipt
 } = require('../models');
 const { Op, fn, col, literal } = require('sequelize');
 
@@ -205,7 +205,7 @@ const getOperationsReport = async (req, res) => {
         return res.status(200).json({ success: true, data: null });
     }
 
-    const [orders, shifts, transfers, cashMovements] = await Promise.all([
+    const [orders, shifts, transfers, cashMovements, receipts] = await Promise.all([
         Order.findAll({
             where: { businessDayId: businessDay.id },
             include: [
@@ -227,7 +227,8 @@ const getOperationsReport = async (req, res) => {
         CashMovement.findAll({
             where: { businessDayId: businessDay.id },
             order: [['createdAt', 'DESC']]
-        })
+        }),
+        Receipt.findAll({ where: { businessDayId: businessDay.id }, attributes: ['totalAmount'] })
     ]);
 
     const paidOrders = orders.filter(order => order.status === 'Paid');
@@ -238,7 +239,7 @@ const getOperationsReport = async (req, res) => {
         data: {
             businessDay,
             summary: {
-                revenue: paidOrders.reduce((s, order) => s + Number(order.totalPrice), 0),
+                revenue: receipts.reduce((s, receipt) => s + Number(receipt.totalAmount), 0),
                 paidOrders: paidOrders.length,
                 activeOrders: orders.filter(order => ['Pending', 'Order'].includes(order.status)).length,
                 shifts: shifts.length,

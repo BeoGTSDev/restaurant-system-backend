@@ -36,7 +36,10 @@ const verifyToken = async (req, res, next) => {
 
         next();
     } catch (error) {
-        res.status(400).json({ message: 'Invalid Token' });
+        const expired = error?.name === 'TokenExpiredError';
+        res.status(401).json({
+            message: expired ? 'Session expired. Please log in again.' : 'Invalid authentication token.'
+        });
     }
 };
 

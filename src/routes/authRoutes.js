@@ -101,6 +101,4 @@ router.post('/authorize-supervisor', authLimiter, authorizeSupervisorAction);
  *       429:
  *         description: Too many registration attempts
  */
-router.post('/register', authLimiter, ...validateRegister, register);
-
 module.exports = router;

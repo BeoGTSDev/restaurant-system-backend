@@ -17,6 +17,10 @@ const validateEnv = () => {
         missing.forEach(env => console.error(`   - ${env}`));
         process.exit(1);
     }
+    if (String(process.env.JWT_SECRET).length < 48 || process.env.JWT_SECRET === 'RMS_JWT_SECRET_KEY_123') {
+        console.error('JWT_SECRET must be a unique random value of at least 48 characters');
+        process.exit(1);
+    }
 
     console.log('All required environment variables are present');
 };

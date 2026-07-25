@@ -1,5 +1,7 @@
 const { Table, Bill, Zone, Order, OperationalTransfer, BusinessDay, ShiftRecord, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const jwt = require('jsonwebtoken');
+const { generateTableQrCode } = require('../utils/tableQr');
 
 const openTable = async (req, res, next) => {
     const { id } = req.params;
@@ -20,6 +22,12 @@ const openTable = async (req, res, next) => {
     const { guestCount, nationality, specialNote } = req.body || {};
 
     table.status = 'Escort';
+    if (!table.qrCode) {
+        return next(Object.assign(new Error('This legacy table has no QR code. Generate it once from table settings before opening.'), { status: 409 }));
+    }
+    table.qrSessionActive = true;
+    table.qrSessionVersion = Number(table.qrSessionVersion || 0) + 1;
+    table.qrSessionOpenedAt = new Date();
     if (guestCount !== undefined) table.guestCount = String(guestCount);
     if (nationality) table.nationality = nationality;
     if (specialNote) table.specialNote = specialNote;
@@ -32,9 +40,31 @@ const openTable = async (req, res, next) => {
     });
 };
 
+const createCustomerTableSession = async (req, res, next) => {
+    const qrCode = String(req.body?.qrCode || '').trim();
+    if (!qrCode) return next(Object.assign(new Error('Table QR code is required'), { status: 400 }));
+    const table = await Table.findOne({ where: { qrCode } });
+    if (!table || !table.qrSessionActive || ['Ready', 'CustomerPaid'].includes(table.status)) {
+        return next(Object.assign(new Error('This table is not open for customer ordering.'), { status: 403 }));
+    }
+    const token = jwt.sign({
+        type: 'customer-table',
+        tableId: table.id,
+        version: Number(table.qrSessionVersion)
+    }, process.env.JWT_SECRET, { expiresIn: '12h' });
+    res.status(200).json({
+        success: true,
+        data: {
+            token,
+            table: { id: table.id, name: table.name, status: table.status, zoneId: table.zoneId }
+        }
+    });
+};
+
 const createTable = async (req, res, next) => {
     if (Array.isArray(req.body)) {
-        const newTables = await Table.bulkCreate(req.body);
+        const sanitized = req.body.map(item => ({ name: item.name, zoneId: item.zoneId || null, qrCode: generateTableQrCode() }));
+        const newTables = await Table.bulkCreate(sanitized);
         return res.status(201).json({
             success: true,
             message: `Created ${newTables.length} tables successfully`,
@@ -67,7 +97,7 @@ const createTable = async (req, res, next) => {
         }
     }
 
-    const newTable = await Table.create({ name, zoneId });
+    const newTable = await Table.create({ name, zoneId, qrCode: generateTableQrCode() });
 
     res.status(201).json({
         success: true,
@@ -143,7 +173,15 @@ const customerSelfPay = async (req, res, next) => {
 
 const cleanTable = async (req, res, next) => {
     const { id } = req.params;
-    await Table.update({ status: 'Ready', guestCount: null, nationality: null, specialNote: null }, { where: { id } });
+    await Table.update({
+        status: 'Ready',
+        guestCount: null,
+        nationality: null,
+        specialNote: null,
+        qrSessionActive: false,
+        qrSessionOpenedAt: null,
+        qrSessionVersion: sequelize.literal('"qrSessionVersion" + 1')
+    }, { where: { id } });
     res.status(200).json({ 
         success: true,
         message: 'Table cleaned.' 
@@ -255,6 +293,9 @@ const transferTable = async (req, res, next) => {
         targetTable.guestCount = sourceTable.guestCount;
         targetTable.nationality = sourceTable.nationality;
         targetTable.specialNote = sourceTable.specialNote;
+        targetTable.qrSessionActive = true;
+        targetTable.qrSessionVersion = Number(targetTable.qrSessionVersion || 0) + 1;
+        targetTable.qrSessionOpenedAt = new Date();
         await targetTable.save({ transaction });
 
         // Reset source table
@@ -262,6 +303,9 @@ const transferTable = async (req, res, next) => {
         sourceTable.guestCount = null;
         sourceTable.nationality = null;
         sourceTable.specialNote = null;
+        sourceTable.qrSessionActive = false;
+        sourceTable.qrSessionVersion = Number(sourceTable.qrSessionVersion || 0) + 1;
+        sourceTable.qrSessionOpenedAt = null;
         await sourceTable.save({ transaction });
 
         const businessDay = await BusinessDay.findOne({ where: { status: 'open' }, transaction });
@@ -293,5 +337,6 @@ const transferTable = async (req, res, next) => {
 };
 
 module.exports = { createTable, getAllTables, openTable,
+    createCustomerTableSession,
     requestBillCheck, requestOrderCheck, customerSelfPay,
     cleanTable, updateTable, deleteTable, transferTable };

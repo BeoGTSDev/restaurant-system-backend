@@ -1,23 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { User, Role, Permission } = require('../models');
-
-const PERMISSIONS = [
-    'manage_users',
-    'view_reports',
-    'cashout',
-    'create_order',
-    'update_order',
-    'delete_order',
-    'manage_products',
-    'manage_categories',
-    'manage_tables',
-    'manage_shifts',
-    'approve_booking',
-    'manage_inventory',
-    'view_orders',
-    'update_order_status',
-    'manage_roles'
-];
+const { PERMISSIONS: PERMISSION_DEFINITIONS, DEFAULT_ROLE_PERMISSIONS } = require('../config/roleAccess');
+const PERMISSIONS = PERMISSION_DEFINITIONS.map(([name]) => name);
 
 const ROLES = [
     'Admin',
@@ -33,25 +17,13 @@ const ROLES = [
     'Customer'
 ];
 
-const ROLE_PERMISSIONS = {
-    Admin: PERMISSIONS,
-    RM: ['manage_products', 'manage_categories', 'manage_tables', 'view_reports', 'manage_shifts', 'manage_inventory'],
-    AssistantManager: ['manage_products', 'manage_tables', 'view_reports'],
-    Leader: ['manage_tables', 'view_orders'],
-    Waiter: ['create_order', 'update_order'],
-    Reception: ['approve_booking', 'create_order'],
-    Cashier: ['cashout', 'view_reports'],
-    Chef: ['view_orders', 'update_order_status'],
-    HR: ['manage_users'],
-    SupplyManager: ['manage_inventory'],
-    Customer: ['create_order']
-};
+const ROLE_PERMISSIONS = DEFAULT_ROLE_PERMISSIONS;
 
 const initData = async () => {
     try {
         // create permissions
-        for (const permName of PERMISSIONS) {
-            await Permission.findOrCreate({ where: { name: permName }, defaults: { description: permName } });
+        for (const [permName, description] of PERMISSION_DEFINITIONS) {
+            await Permission.findOrCreate({ where: { name: permName }, defaults: { description } });
         }
 
         // create roles

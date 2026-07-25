@@ -1,4 +1,4 @@
-const { Product, Category } = require('../models/index');
+const { Product, Category, ProductIngredient, Ingredient } = require('../models/index');
 const { getBusinessDate, resetExpiredDailyAvailability } = require('../utils/productAvailability');
 
 const parseRemainingQty = (value) => {
@@ -125,9 +125,46 @@ const getAllProducts = async (req, res, next) => {
     });
 };
 
+const getPublicProducts = async (req, res) => {
+    await resetExpiredDailyAvailability(Product);
+    const products = await Product.findAll({
+        attributes: ['id', 'displayName', 'name', 'description', 'price', 'imageUrl', 'categoryId', 'status', 'remainingQty'],
+        include: [
+            { model: Category, as: 'category', attributes: ['name'] },
+            {
+                model: ProductIngredient,
+                as: 'recipe',
+                attributes: ['id'],
+                include: [{ model: Ingredient, as: 'ingredient', attributes: ['name'] }]
+            }
+        ]
+    });
+    res.status(200).json({
+        success: true,
+        data: products.map(product => {
+            const item = product.toJSON();
+            item.name = item.displayName || item.name;
+            item.allergenIngredients = (product.recipe || [])
+                .map(link => link.ingredient?.name)
+                .filter(Boolean);
+            delete item.recipe;
+            delete item.displayName;
+            return item;
+        })
+    });
+};
+
 const updateProduct = async (req, res, next) => {
     const { id } = req.params;
     const { name, internalName, displayName, description, price, categoryId, status, remainingQty } = req.body;
+    const canSetAvailability = req.user?.role === 'Admin'
+        || req.user?.permissions?.includes('set_menu_availability');
+
+    if ((status !== undefined || remainingQty !== undefined) && !canSetAvailability) {
+        const err = new Error('Forbidden: menu availability permission required');
+        err.status = 403;
+        return next(err);
+    }
 
     const product = await Product.findByPk(id);
     if (!product) {
@@ -180,6 +217,17 @@ const updateProduct = async (req, res, next) => {
     });
 };
 
+const updateProductAvailability = async (req, res, next) => {
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return next(Object.assign(new Error('Product not found'), { status: 404 }));
+    if (!['In Stock', 'Out of Stock', 'Disabled'].includes(req.body?.status)) {
+        return next(Object.assign(new Error('Invalid availability status'), { status: 400 }));
+    }
+    const availability = availabilityValues(req.body.status, req.body.remainingQty);
+    await product.update(availability);
+    res.json({ success: true, message: 'Menu availability updated', product });
+};
+
 const deleteProduct = async (req, res, next) => {
     const { id } = req.params;
 
@@ -198,4 +246,4 @@ const deleteProduct = async (req, res, next) => {
     });
 };
 
-module.exports = { createProduct, bulkCreateProducts, getAllProducts, updateProduct, deleteProduct };
+module.exports = { createProduct, bulkCreateProducts, getAllProducts, getPublicProducts, updateProduct, updateProductAvailability, deleteProduct };

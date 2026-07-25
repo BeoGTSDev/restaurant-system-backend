@@ -43,6 +43,11 @@ const Table = sequelize.define('Tables', {
         allowNull: true
     },
     assignedStaffId: { type: DataTypes.INTEGER, allowNull: true }
+    ,
+    qrCode: { type: DataTypes.STRING(64), allowNull: true, unique: true },
+    qrSessionActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    qrSessionVersion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    qrSessionOpenedAt: { type: DataTypes.DATE, allowNull: true }
 },{
     timestamps: true
 });

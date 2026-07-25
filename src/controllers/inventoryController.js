@@ -24,14 +24,23 @@ const list = async (req, res) => {
 };
 
 const create = async (req, res) => {
-    const ingredient = await Ingredient.create(req.body);
+    const { name, category, unit, quantity, reorderLevel, supplier } = req.body;
+    const ingredient = await Ingredient.create({ name, category, unit, quantity, reorderLevel, supplier });
     res.status(201).json(ingredient);
 };
 
 const update = async (req, res, next) => {
     const ingredient = await Ingredient.findByPk(req.params.id);
     if (!ingredient) return next(Object.assign(new Error('Ingredient not found'), { status: 404 }));
-    await ingredient.update(req.body);
+    const { name, category, unit, quantity, reorderLevel, supplier } = req.body;
+    await ingredient.update({
+        ...(name !== undefined ? { name } : {}),
+        ...(category !== undefined ? { category } : {}),
+        ...(unit !== undefined ? { unit } : {}),
+        ...(quantity !== undefined ? { quantity } : {}),
+        ...(reorderLevel !== undefined ? { reorderLevel } : {}),
+        ...(supplier !== undefined ? { supplier } : {})
+    });
     res.json(ingredient);
 };
 

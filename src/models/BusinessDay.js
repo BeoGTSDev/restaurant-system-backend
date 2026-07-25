@@ -53,6 +53,13 @@ module.exports = (sequelize) => sequelize.define('BusinessDay', {
         type: DataTypes.DECIMAL(14, 2),
         allowNull: true
     },
+    foodVatActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    foodVatRate: { type: DataTypes.DECIMAL(5, 2), allowNull: false, defaultValue: 8 },
+    alcoholVatActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    alcoholVatRate: { type: DataTypes.DECIMAL(5, 2), allowNull: false, defaultValue: 10 },
+    serviceChargeActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    serviceChargeRate: { type: DataTypes.DECIMAL(5, 2), allowNull: false, defaultValue: 0 },
+    serviceChargeName: { type: DataTypes.STRING, allowNull: true },
     closedAt: {
         type: DataTypes.DATE,
         allowNull: true

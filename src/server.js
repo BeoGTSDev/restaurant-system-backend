@@ -7,6 +7,7 @@ const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
 const { DataTypes } = require('sequelize');
+const jwt = require('jsonwebtoken');
 
 // Config
 const validateEnv = require('./config/validateEnv');
@@ -21,7 +22,8 @@ const { apiLimiter } = require('./middleware/rateLimitMiddleware');
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const { sequelize } = require('./models/index'); 
 const permCache = require('./utils/permCache');
-const { Role } = require('./models');
+const { Role, Table } = require('./models');
+const { generateTableQrCode } = require('./utils/tableQr');
 
 // Validate environment variables
 validateEnv();
@@ -30,11 +32,12 @@ const app = express();
 const PORT = process.env.API_PORT || process.env.PORT || 5000;
 const server = http.createServer(app);
 
+const configuredOrigins = String(process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:3000,null')
+    .split(',').map(value => value.trim()).filter(Boolean);
+const originAllowed = (origin) => !origin || configuredOrigins.includes(origin);
 const io = new Server(server, {
-    cors: {
-        origin: process.env.CLIENT_URL || "http://localhost:3000",
-    }
-})
+    cors: { origin: configuredOrigins, methods: ['GET', 'POST'] }
+});
 
 // Security middleware
 app.use(helmet());
@@ -46,15 +49,17 @@ app.use(requestLogger);
 app.use(apiLimiter);
 
 // Swagger API Documentation
-swaggerSetup(app);
+if (process.env.NODE_ENV !== 'production') swaggerSetup(app);
 
 app.use((req, res, next) => {
     req.io = io;
     next();
 });
 app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: (origin, callback) => originAllowed(origin)
+        ? callback(null, true)
+        : callback(Object.assign(new Error('Origin not allowed by CORS'), { status: 403 })),
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'auth-token']
 }));
 
@@ -68,6 +73,21 @@ app.get('/', (req, res) => {
   res.send('<h1>Maison Lucas Server is running!</h1>');
 });
 
+
+io.use(async (socket, next) => {
+    try {
+        const token = socket.handshake.auth?.token;
+        if (!token) return next(new Error('Authentication required'));
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
+        const { User } = require('./models');
+        const user = await User.findByPk(payload.id, { attributes: ['id', 'isActive'] });
+        if (!user?.isActive) return next(new Error('Account disabled'));
+        socket.userId = user.id;
+        next();
+    } catch {
+        next(new Error('Invalid socket authentication'));
+    }
+});
 
 io.on('connection', (socket) => {
     console.log(`New client connected: ${socket.id}`);
@@ -122,6 +142,19 @@ const startServer = async () => {
             });
             console.log('Added displayName column to Products table');
         }
+
+        const tablesTable = await queryInterface.describeTable('Tables').catch(() => null);
+        if (tablesTable) {
+            const qrColumns = {
+                qrCode: { type: DataTypes.STRING(64), allowNull: true, unique: true },
+                qrSessionActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+                qrSessionVersion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+                qrSessionOpenedAt: { type: DataTypes.DATE, allowNull: true }
+            };
+            for (const [columnName, definition] of Object.entries(qrColumns)) {
+                if (!tablesTable[columnName]) await queryInterface.addColumn('Tables', columnName, definition);
+            }
+        }
         if (productTable && !productTable.availabilityDate) {
             await queryInterface.addColumn('Products', 'availabilityDate', {
                 type: DataTypes.DATEONLY,
@@ -164,7 +197,14 @@ const startServer = async () => {
                 difference: {
                     type: DataTypes.DECIMAL(14, 2),
                     allowNull: true
-                }
+                },
+                foodVatActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+                foodVatRate: { type: DataTypes.DECIMAL(5, 2), allowNull: false, defaultValue: 8 },
+                alcoholVatActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+                alcoholVatRate: { type: DataTypes.DECIMAL(5, 2), allowNull: false, defaultValue: 10 },
+                serviceChargeActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+                serviceChargeRate: { type: DataTypes.DECIMAL(5, 2), allowNull: false, defaultValue: 0 },
+                serviceChargeName: { type: DataTypes.STRING, allowNull: true }
             };
 
             for (const [columnName, definition] of Object.entries(businessDayColumns)) {
@@ -184,6 +224,7 @@ const startServer = async () => {
             }],
             ['Orders', {
                 businessDayId: { type: DataTypes.INTEGER, allowNull: true },
+                dayOrderNumber: { type: DataTypes.INTEGER, allowNull: true },
                 shiftId: { type: DataTypes.INTEGER, allowNull: true },
                 createdBy: { type: DataTypes.INTEGER, allowNull: true },
                 paidBy: { type: DataTypes.INTEGER, allowNull: true }
@@ -201,6 +242,15 @@ const startServer = async () => {
             ['Tables', {
                 assignedStaffId: { type: DataTypes.INTEGER, allowNull: true },
                 allergyNote: { type: DataTypes.STRING, allowNull: true }
+            }],
+            ['receipts', {
+                billDiscountPercent: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+                billDiscountAmount: { type: DataTypes.DECIMAL(14, 2), allowNull: false, defaultValue: 0 },
+                billDiscountReason: { type: DataTypes.STRING, allowNull: true }
+                ,foodVatAmount: { type: DataTypes.DECIMAL(14, 2), allowNull: false, defaultValue: 0 }
+                ,alcoholVatAmount: { type: DataTypes.DECIMAL(14, 2), allowNull: false, defaultValue: 0 }
+                ,serviceChargeAmount: { type: DataTypes.DECIMAL(14, 2), allowNull: false, defaultValue: 0 }
+                ,serviceChargeName: { type: DataTypes.STRING, allowNull: true }
             }]
         ];
         for (const [tableName, columns] of linkedTables) {
@@ -213,6 +263,24 @@ const startServer = async () => {
                 }
             }
         }
+        await sequelize.query(`
+            WITH ranked AS (
+                SELECT id, ROW_NUMBER() OVER (
+                    PARTITION BY "businessDayId" ORDER BY "createdAt", id
+                ) AS sequence
+                FROM "Orders"
+                WHERE "businessDayId" IS NOT NULL
+            )
+            UPDATE "Orders" AS target
+            SET "dayOrderNumber" = ranked.sequence
+            FROM ranked
+            WHERE target.id = ranked.id AND target."dayOrderNumber" IS NULL
+        `).catch(() => {});
+        await sequelize.query(`
+            CREATE UNIQUE INDEX IF NOT EXISTS "orders_business_day_sequence"
+            ON "Orders" ("businessDayId", "dayOrderNumber")
+            WHERE "businessDayId" IS NOT NULL AND "dayOrderNumber" IS NOT NULL
+        `).catch(() => {});
         const ingredientTable = await queryInterface.describeTable('ingredients').catch(() => null);
         if (ingredientTable && !ingredientTable.category) {
             await queryInterface.addColumn('ingredients', 'category', {
@@ -238,6 +306,11 @@ const startServer = async () => {
 
         await sequelize.sync();
         console.log('Database & Tables synced successfully!');
+        const tablesWithoutQr = await Table.findAll({ where: { qrCode: null } });
+        for (const table of tablesWithoutQr) {
+            table.qrCode = generateTableQrCode();
+            await table.save();
+        }
         
         // Clear old data
         // await sequelize.sync({ force: true }); 
@@ -271,8 +344,6 @@ const startServer = async () => {
     }
 };
 
-startServer();
-
 // Route imports (after env & DB are available)
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -288,6 +359,8 @@ const roleRoutes = require('./routes/roleRoutes');
 const systemRoutes = require('./routes/systemRoutes');
 const operationalTransferRoutes = require('./routes/operationalTransferRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
+const voucherRoutes = require('./routes/voucherRoutes');
+const receiptRoutes = require('./routes/receiptRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -305,6 +378,14 @@ app.use('/api/shifts', shiftRoutes);
 app.use('/api/system', systemRoutes);
 app.use('/api/operational-transfers', operationalTransferRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/vouchers', voucherRoutes);
+app.use('/api/receipts', receiptRoutes);
 
 // Error middleware must be registered after every route.
 app.use(errorHandler);
+
+if (require.main === module) {
+    startServer();
+}
+
+module.exports = app;

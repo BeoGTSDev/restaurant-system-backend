@@ -9,7 +9,7 @@ router.post('/open', verifyToken, authorize('manage_shifts'), openShift);
 
 // Close shift
 router.post('/close', verifyToken, authorize('manage_shifts'), closeShift);
-router.get('/roster/current', verifyToken, authorize('manage_shifts'), getCurrentRoster);
+router.get('/roster/current', verifyToken, getCurrentRoster);
 router.post('/roster/assign', verifyToken, authorize('manage_shifts'), saveRoster);
 router.put('/areas', verifyToken, authorize('manage_shifts'), setAreaStatus);
 router.delete('/assignments/:id', verifyToken, authorize('manage_shifts'), removeAssignment);

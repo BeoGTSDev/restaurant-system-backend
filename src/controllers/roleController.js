@@ -27,7 +27,11 @@ const updateRole = async (req, res, next) => {
     try {
         const role = await Role.findByPk(req.params.id);
         if (!role) return res.status(404).json({ message: 'Role not found' });
-        await role.update(req.body);
+        const { label, description } = req.body;
+        await role.update({
+            ...(label !== undefined ? { label: String(label).trim() } : {}),
+            ...(description !== undefined ? { description: String(description).trim() } : {})
+        });
         res.json({ success: true, data: role });
     } catch (err) { next(err); }
 };
@@ -60,7 +64,10 @@ const updateRolePermissions = async (req, res, next) => {
     try {
         const role = await Role.findByPk(req.params.id);
         if (!role) return res.status(404).json({ message: 'Role not found' });
-        const { permissions } = req.body; // array of permission names
+        const { permissions } = req.body;
+        if (!Array.isArray(permissions) || permissions.some(item => typeof item !== 'string')) {
+            return res.status(400).json({ message: 'Permissions must be an array of permission names' });
+        }
         const perms = await Permission.findAll({ where: { name: permissions } });
         await role.setPermissions(perms);
         const updated = await Role.findByPk(req.params.id, { include: [{ association: 'Permissions' }] });

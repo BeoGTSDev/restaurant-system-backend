@@ -19,6 +19,10 @@ const Order = sequelize.define('Order', {
         type: DataTypes.INTEGER,
         allowNull: true
     },
+    dayOrderNumber: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     shiftId: {
         type: DataTypes.INTEGER,
         allowNull: true
@@ -32,7 +36,8 @@ const Order = sequelize.define('Order', {
         allowNull: true
     },
 },{
-    timestamps: true
+    timestamps: true,
+    indexes: [{ unique: true, fields: ['businessDayId', 'dayOrderNumber'] }]
 });
 
 module.exports = Order;

@@ -1,5 +1,8 @@
-const { Order, OrderItem, Product, ProductIngredient, Ingredient, InventoryMovement, Table, BusinessDay, CashMovement, ShiftRecord, sequelize } = require('../models');
+const { Op } = require('sequelize');
+const crypto = require('crypto');
+const { Order, OrderItem, Product, Category, ProductIngredient, Ingredient, InventoryMovement, Table, BusinessDay, CashMovement, ShiftRecord, Voucher, Receipt, ReceiptItem, sequelize } = require('../models');
 const { resetExpiredDailyAvailability } = require('../utils/productAvailability');
+const { calculateVoucher, normalizeCode } = require('../services/voucherService');
 
 const createOrder = async (req, res, next) => {
     const { tableId, items } = req.body;
@@ -127,11 +130,21 @@ const createOrder = async (req, res, next) => {
             order.totalPrice += additionalPrice;
             await order.save({ transaction });
         } else {
+            const lockedBusinessDay = await BusinessDay.findByPk(req.businessDay?.id, {
+                transaction,
+                lock: transaction.LOCK.UPDATE
+            });
+            if (!lockedBusinessDay) throw Object.assign(new Error('Open business day not found'), { status: 423 });
+            const lastNumber = await Order.max('dayOrderNumber', {
+                where: { businessDayId: lockedBusinessDay.id },
+                transaction
+            });
             order = await Order.create({
                 tableId,
                 totalPrice: additionalPrice,
                 status: 'Pending',
-                businessDayId: req.businessDay?.id || null,
+                businessDayId: lockedBusinessDay.id,
+                dayOrderNumber: Number(lastNumber || 0) + 1,
                 shiftId: staffShift?.id || null,
                 createdBy: req.user?.id || null
             }, { transaction });
@@ -146,6 +159,7 @@ const createOrder = async (req, res, next) => {
         tableId: tableId,
         tableName: table.name || `Table ${tableId}`,
         orderId: order.id,
+        dayOrderNumber: order.dayOrderNumber,
         items: itemDetailsForSocket,
         timestamp: new Date()
     });
@@ -221,90 +235,161 @@ const getCustomerOrder = async (req, res, next) => {
 
 const payBillByTable = async (req, res, next) => {
     const { tableId } = req.params;
-    const paymentMethod = req.body?.paymentMethod || 'Cash';
+    const paymentMethod = String(req.body?.paymentMethod || 'Cash').trim();
     const cashReceived = Number(req.body?.cashReceived || 0);
-
-    const table = await Table.findByPk(tableId);
-    if (!table) {
-        const err = new Error('Table not found');
-        err.status = 404;
-        return next(err);
+    const billDiscountPercent = Number(req.body?.billDiscountPercent || 0);
+    const billDiscountReason = String(req.body?.billDiscountReason || '').trim();
+    const allowedMethods = ['Cash', 'Card', 'Bank Transfer', 'Other'];
+    const allowedBillDiscounts = [0, 5, 10, 15, 20];
+    const allowedDiscountReasons = ['Guest complaint', 'Service recovery', 'Quality issue', 'Manager courtesy'];
+    if (!allowedMethods.includes(paymentMethod)) return next(Object.assign(new Error('Invalid payment method.'), { status: 400 }));
+    if (!allowedBillDiscounts.includes(billDiscountPercent)) return next(Object.assign(new Error('Invalid bill discount percentage.'), { status: 400 }));
+    if (billDiscountPercent > 0 && req.user.role !== 'Admin' && !req.user.permissions.includes('approve_bill_discount')) {
+        return next(Object.assign(new Error('Bill discount requires manager approval permission.'), { status: 403 }));
+    }
+    if (billDiscountPercent > 0 && !allowedDiscountReasons.includes(billDiscountReason)) {
+        return next(Object.assign(new Error('Select an approved bill discount reason.'), { status: 400 }));
     }
 
-    // Get all unpaid orders of the table
-    const orders = await Order.findAll({
-        where: {
-            tableId: tableId,
-            status: ['Pending', 'Order']
-        }
-    });
-
-    if (orders.length === 0) {
-        const err = new Error('No orders to pay for this table');
-        err.status = 400;
-        return next(err);
-    }
-
-    let totalBill = 0;
-    orders.forEach(order => {
-        totalBill += order.totalPrice;
-    });
-
-    const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
-    if (!businessDay) {
-        const err = new Error('POS is closed. Open the business day before taking payment.');
-        err.status = 423;
-        return next(err);
-    }
-
-    if (String(paymentMethod).toLowerCase() === 'cash') {
-        if (!Number.isFinite(cashReceived) || cashReceived < totalBill) {
-            const err = new Error('Cash received is less than the amount due');
-            err.status = 400;
-            return next(err);
-        }
-
-        const movements = await CashMovement.findAll({
-            where: { businessDayId: businessDay.id },
-            attributes: ['type', 'amount'],
-            raw: true
+    let paymentResult;
+    await sequelize.transaction(async transaction => {
+        const table = await Table.findByPk(tableId, { transaction, lock: transaction.LOCK.UPDATE });
+        if (!table) throw Object.assign(new Error('Table not found'), { status: 404 });
+        const businessDay = await BusinessDay.findOne({ where: { status: 'open' }, transaction, lock: transaction.LOCK.UPDATE });
+        if (!businessDay) throw Object.assign(new Error('POS is closed. Open the business day before taking payment.'), { status: 423 });
+        const orders = await Order.findAll({
+            where: { tableId, status: { [Op.in]: ['Pending', 'Order'] } },
+            transaction,
+            lock: transaction.LOCK.UPDATE
         });
-        const cashIn = movements
-            .filter(item => item.type === 'in')
-            .reduce((sum, item) => sum + Number(item.amount), 0);
-        const cashOut = movements
-            .filter(item => item.type === 'out')
-            .reduce((sum, item) => sum + Number(item.amount), 0);
-        const availableDrawerCash =
-            Number(businessDay.openingCash || 0) +
-            Number(businessDay.cashSales || 0) +
-            cashIn -
-            cashOut;
-        const changeDue = cashReceived - totalBill;
+        if (!orders.length) throw Object.assign(new Error('No orders to pay for this table'), { status: 409 });
+        const orderIds = orders.map(order => order.id);
+        const items = await OrderItem.findAll({
+            where: { orderId: { [Op.in]: orderIds }, status: { [Op.ne]: 'Cancelled' } },
+            include: [{ model: Product, as: 'product', include: [{ model: Category, as: 'category' }] }],
+            transaction,
+            lock: { level: transaction.LOCK.UPDATE, of: OrderItem }
+        });
+        if (!items.length) throw Object.assign(new Error('The bill has no payable items.'), { status: 409 });
 
-        if (changeDue > availableDrawerCash) {
-            const err = new Error(
-                `Not enough cash in drawer for change. Available: ${availableDrawerCash}, change required: ${changeDue}`
-            );
-            err.status = 409;
-            return next(err);
+        const voucherResult = await calculateVoucher({
+            code: req.body?.voucherCode,
+            items,
+            transaction,
+            lock: true
+        });
+        const billDiscountAmount = Math.round(voucherResult.totalAmount * billDiscountPercent / 100);
+        const discountedSubtotal = Math.max(0, voucherResult.totalAmount - billDiscountAmount);
+        const alcoholGross = items
+            .filter(item => /beer|wine|cocktail|alcohol|spirit/i.test(item.product?.category?.name || ''))
+            .reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
+        const alcoholShare = voucherResult.subtotal > 0 ? alcoholGross / voucherResult.subtotal : 0;
+        const alcoholTaxBase = discountedSubtotal * alcoholShare;
+        const foodTaxBase = discountedSubtotal - alcoholTaxBase;
+        const foodVatAmount = businessDay.foodVatActive ? Math.round(foodTaxBase * Number(businessDay.foodVatRate || 0) / 100) : 0;
+        const alcoholVatAmount = businessDay.alcoholVatActive ? Math.round(alcoholTaxBase * Number(businessDay.alcoholVatRate || 0) / 100) : 0;
+        const serviceChargeAmount = businessDay.serviceChargeActive ? Math.round(discountedSubtotal * Number(businessDay.serviceChargeRate || 0) / 100) : 0;
+        const totalBill = discountedSubtotal + foodVatAmount + alcoholVatAmount + serviceChargeAmount;
+        const isCash = paymentMethod === 'Cash';
+        const changeDue = isCash ? cashReceived - totalBill : 0;
+        if (isCash && (!Number.isFinite(cashReceived) || cashReceived < totalBill)) {
+            throw Object.assign(new Error('Cash received is less than the amount due'), { status: 400 });
         }
-    }
+        if (isCash) {
+            const movements = await CashMovement.findAll({
+                where: { businessDayId: businessDay.id },
+                attributes: ['type', 'amount'],
+                transaction,
+                raw: true
+            });
+            const cashIn = movements.filter(item => item.type === 'in').reduce((sum, item) => sum + Number(item.amount), 0);
+            const cashOut = movements.filter(item => item.type === 'out').reduce((sum, item) => sum + Number(item.amount), 0);
+            const availableDrawerCash = Number(businessDay.openingCash || 0) + Number(businessDay.cashSales || 0) + cashIn - cashOut;
+            if (changeDue > availableDrawerCash) {
+                throw Object.assign(new Error(`Not enough cash in drawer for change. Available: ${availableDrawerCash}, change required: ${changeDue}`), { status: 409 });
+            }
+        }
 
-    await Order.update(
-        { status: 'Paid', paidBy: req.user?.id || null },
-        { where: { tableId: tableId, status: ['Pending', 'Order'] } }
-    );
+        await Order.update(
+            { status: 'Paid', paidBy: req.user.id },
+            { where: { id: { [Op.in]: orderIds }, status: { [Op.in]: ['Pending', 'Order'] } }, transaction }
+        );
+        table.status = 'CustomerPaid';
+        table.qrSessionActive = false;
+        table.qrSessionVersion = Number(table.qrSessionVersion || 0) + 1;
+        table.qrSessionOpenedAt = null;
+        await table.save({ transaction });
+        if (isCash) {
+            businessDay.cashSales = Number(businessDay.cashSales || 0) + totalBill;
+            await businessDay.save({ transaction });
+        }
+        if (voucherResult.voucher) {
+            voucherResult.voucher.usedCount = Number(voucherResult.voucher.usedCount) + 1;
+            await voucherResult.voucher.save({ transaction });
+        }
 
-    await Table.update({ status: 'CustomerPaid' }, { where: { id: tableId } });
-    if (businessDay && String(paymentMethod).toLowerCase() === 'cash') {
-        businessDay.cashSales = Number(businessDay.cashSales || 0) + totalBill;
-        await businessDay.save();
-    }
+        const receipt = await Receipt.create({
+            // Keep the temporary unique value within Receipt.receiptNumber VARCHAR(32).
+            // It is replaced with the human-readable number immediately after INSERT.
+            receiptNumber: `TMP-${crypto.randomBytes(12).toString('hex')}`,
+            businessDayId: businessDay.id,
+            tableId: table.id,
+            tableName: table.name,
+            subtotal: voucherResult.subtotal,
+            discountAmount: voucherResult.discountAmount + billDiscountAmount,
+            totalAmount: totalBill,
+            paymentMethod,
+            cashReceived: isCash ? cashReceived : null,
+            changeDue: isCash ? changeDue : null,
+            voucherCode: voucherResult.voucher?.code || null,
+            billDiscountPercent,
+            billDiscountAmount,
+            billDiscountReason: billDiscountPercent ? billDiscountReason : null,
+            foodVatAmount,
+            alcoholVatAmount,
+            serviceChargeAmount,
+            serviceChargeName: serviceChargeAmount ? businessDay.serviceChargeName : null,
+            paidBy: req.user.id,
+            paidAt: new Date()
+        }, { transaction });
+        const datePart = String(businessDay.businessDate).replace(/-/g, '');
+        receipt.receiptNumber = `ML-${datePart}-${String(receipt.id).padStart(6, '0')}`;
+        await receipt.save({ transaction });
+        await ReceiptItem.bulkCreate(items.map(item => ({
+            receiptId: receipt.id,
+            orderId: item.orderId,
+            productId: item.productId,
+            productName: item.product?.displayName || item.product?.name || `Product ${item.productId}`,
+            quantity: item.quantity,
+            unitPrice: item.price,
+            lineTotal: Number(item.price) * Number(item.quantity),
+            note: item.note || null
+        })), { transaction });
+        paymentResult = {
+            receiptId: receipt.id,
+            receiptNumber: receipt.receiptNumber,
+            totalBill,
+            subtotal: voucherResult.subtotal,
+            discountAmount: voucherResult.discountAmount + billDiscountAmount,
+            voucherDiscountAmount: voucherResult.discountAmount,
+            billDiscountPercent,
+            billDiscountAmount,
+            billDiscountReason: billDiscountPercent ? billDiscountReason : null,
+            foodVatAmount,
+            alcoholVatAmount,
+            serviceChargeAmount,
+            serviceChargeName: serviceChargeAmount ? businessDay.serviceChargeName : null,
+            voucherCode: normalizeCode(req.body?.voucherCode) || null,
+            changeDue: isCash ? changeDue : 0,
+            ordersCount: orders.length,
+            tableName: table.name
+        };
+    });
 
     req.io.emit('payment_completed', {
         tableId: tableId,
-        totalBill: totalBill,
+        totalBill: paymentResult.totalBill,
+        receiptNumber: paymentResult.receiptNumber,
         paymentMethod: paymentMethod,
         timestamp: new Date()
     });
@@ -317,9 +402,8 @@ const payBillByTable = async (req, res, next) => {
         success: true,
         message: 'Bill paid successfully',
         tableId: tableId,
-        totalBill: totalBill,
-        ordersCount: orders.length,
-        paymentMethod: paymentMethod || 'Cash'
+        ...paymentResult,
+        paymentMethod
     });
 };
 
