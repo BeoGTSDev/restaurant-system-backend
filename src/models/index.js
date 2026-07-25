@@ -99,6 +99,8 @@ PaymentTransaction.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'bu
 Table.hasMany(PaymentTransaction, { foreignKey: 'tableId', as: 'paymentTransactions' });
 PaymentTransaction.belongsTo(Table, { foreignKey: 'tableId', as: 'table' });
 PaymentTransaction.belongsTo(Receipt, { foreignKey: 'receiptId', as: 'receipt' });
+User.hasMany(PaymentTransaction, { foreignKey: 'createdBy', as: 'paymentRequests' });
+PaymentTransaction.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 
 OrderTransfer.belongsTo(Order, { foreignKey: 'originalOrderId', as: 'originalOrder' });
 OrderTransfer.belongsTo(Order, { foreignKey: 'newOrderId', as: 'newOrder' });

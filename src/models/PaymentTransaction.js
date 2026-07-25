@@ -8,6 +8,7 @@ module.exports = sequelize.define('PaymentTransaction', {
     providerTransactionId: { type: DataTypes.STRING(64), allowNull: true, unique: true },
     businessDayId: { type: DataTypes.INTEGER, allowNull: false },
     tableId: { type: DataTypes.INTEGER, allowNull: false },
+    createdBy: { type: DataTypes.INTEGER, allowNull: true },
     receiptId: { type: DataTypes.INTEGER, allowNull: true },
     amount: { type: DataTypes.DECIMAL(14, 2), allowNull: false },
     status: {

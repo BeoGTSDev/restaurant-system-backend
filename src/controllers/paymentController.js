@@ -115,17 +115,16 @@ const paymentResponse = (payment, clientToken) => {
     };
 };
 
-const createSePayPayment = async (req, res) => {
+const createPaymentForTable = async (req, res, tableId, requireActiveQrSession) => {
     if (!process.env.SEPAY_WEBHOOK_SECRET || !process.env.SEPAY_BANK_CODE || !process.env.SEPAY_ACCOUNT_NUMBER) {
         throw Object.assign(new Error('Online payment is not configured.'), { status: 503 });
     }
-    const tableId = req.customerTable.id;
     const clientToken = crypto.randomBytes(32).toString('hex');
     let response;
 
     await sequelize.transaction(async transaction => {
         const table = await Table.findByPk(tableId, { transaction, lock: transaction.LOCK.UPDATE });
-        if (!table || !table.qrSessionActive) {
+        if (!table || (requireActiveQrSession && !table.qrSessionActive)) {
             throw Object.assign(new Error('This table session is no longer active.'), { status: 401 });
         }
         if (table.status === 'CustomerPaid') {
@@ -142,6 +141,7 @@ const createSePayPayment = async (req, res) => {
             reference,
             businessDayId: bill.businessDay.id,
             tableId,
+            createdBy: req.user?.id || null,
             amount: bill.snapshot.totalAmount,
             billSnapshot: bill.snapshot,
             clientTokenHash: sha256(clientToken),
@@ -154,6 +154,21 @@ const createSePayPayment = async (req, res) => {
 
     req.io.emit('table_status_update', { tableId, status: 'BillCheck' });
     res.status(201).json({ success: true, data: response });
+};
+
+const createSePayPayment = (req, res) => createPaymentForTable(
+    req,
+    res,
+    req.customerTable.id,
+    true
+);
+
+const createPosSePayPayment = (req, res) => {
+    const tableId = Number(req.body?.tableId);
+    if (!Number.isInteger(tableId) || tableId <= 0) {
+        throw Object.assign(new Error('A valid table is required.'), { status: 400 });
+    }
+    return createPaymentForTable(req, res, tableId, false);
 };
 
 const getSePayPaymentStatus = async (req, res, next) => {
@@ -254,7 +269,7 @@ const handleSePayWebhook = async (req, res) => {
         }
 
         await Order.update(
-            { status: 'Paid', paidBy: null },
+            { status: 'Paid', paidBy: payment.createdBy || null },
             { where: { id: { [Op.in]: payment.billSnapshot.orderIds }, status: { [Op.in]: ['Pending', 'Order'] } }, transaction }
         );
         table.status = 'CustomerPaid';
@@ -276,7 +291,7 @@ const handleSePayWebhook = async (req, res) => {
             alcoholVatAmount: payment.billSnapshot.alcoholVatAmount,
             serviceChargeAmount: payment.billSnapshot.serviceChargeAmount,
             serviceChargeName: payment.billSnapshot.serviceChargeName,
-            paidBy: null,
+            paidBy: payment.createdBy || null,
             paidAt: new Date()
         }, { transaction });
         const datePart = String(bill.businessDay.businessDate).replace(/-/g, '');
@@ -315,4 +330,9 @@ const handleSePayWebhook = async (req, res) => {
     return res.status(200).json({ success: true });
 };
 
-module.exports = { createSePayPayment, getSePayPaymentStatus, handleSePayWebhook };
+module.exports = {
+    createSePayPayment,
+    createPosSePayPayment,
+    getSePayPaymentStatus,
+    handleSePayWebhook
+};
