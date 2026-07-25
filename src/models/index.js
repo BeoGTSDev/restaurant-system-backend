@@ -24,6 +24,7 @@ const ProductIngredient = require('./ProductIngredient')(sequelize);
 const Voucher = require('./Voucher');
 const Receipt = require('./Receipt');
 const ReceiptItem = require('./ReceiptItem');
+const PaymentTransaction = require('./PaymentTransaction');
 
 
 
@@ -93,6 +94,11 @@ User.hasMany(Receipt, { foreignKey: 'paidBy', as: 'receiptsProcessed' });
 Receipt.belongsTo(User, { foreignKey: 'paidBy', as: 'paymentStaff' });
 Receipt.hasMany(ReceiptItem, { foreignKey: 'receiptId', as: 'items' });
 ReceiptItem.belongsTo(Receipt, { foreignKey: 'receiptId', as: 'receipt' });
+BusinessDay.hasMany(PaymentTransaction, { foreignKey: 'businessDayId', as: 'paymentTransactions' });
+PaymentTransaction.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+Table.hasMany(PaymentTransaction, { foreignKey: 'tableId', as: 'paymentTransactions' });
+PaymentTransaction.belongsTo(Table, { foreignKey: 'tableId', as: 'table' });
+PaymentTransaction.belongsTo(Receipt, { foreignKey: 'receiptId', as: 'receipt' });
 
 OrderTransfer.belongsTo(Order, { foreignKey: 'originalOrderId', as: 'originalOrder' });
 OrderTransfer.belongsTo(Order, { foreignKey: 'newOrderId', as: 'newOrder' });
@@ -127,6 +133,7 @@ module.exports = {
     ProductIngredient,
     Voucher,
     Receipt,
-    ReceiptItem
+    ReceiptItem,
+    PaymentTransaction
 };
 

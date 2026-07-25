@@ -64,7 +64,11 @@ app.use(cors({
 }));
 
 // Body parser MUST come before routes
-app.use(express.json());
+app.use(express.json({
+    verify: (req, res, buffer) => {
+        req.rawBody = Buffer.from(buffer);
+    }
+}));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // routes will be registered after models/routes are required below
@@ -361,6 +365,7 @@ const operationalTransferRoutes = require('./routes/operationalTransferRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const voucherRoutes = require('./routes/voucherRoutes');
 const receiptRoutes = require('./routes/receiptRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -380,6 +385,7 @@ app.use('/api/operational-transfers', operationalTransferRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/vouchers', voucherRoutes);
 app.use('/api/receipts', receiptRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Error middleware must be registered after every route.
 app.use(errorHandler);
