@@ -28,6 +28,10 @@ const openTable = async (req, res, next) => {
     table.qrSessionActive = true;
     table.qrSessionVersion = Number(table.qrSessionVersion || 0) + 1;
     table.qrSessionOpenedAt = new Date();
+    table.billVoucherCode = null;
+    table.billDiscountPercent = 0;
+    table.billDiscountReason = null;
+    table.billDiscountApprovedBy = null;
     if (guestCount !== undefined) table.guestCount = String(guestCount);
     if (nationality) table.nationality = nationality;
     if (specialNote) table.specialNote = specialNote;

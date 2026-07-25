@@ -9,9 +9,11 @@ const {
     OrderItem,
     Product,
     Category,
+    Voucher,
     Receipt,
     ReceiptItem
 } = require('../models');
+const { calculateVoucher } = require('../services/voucherService');
 
 const sha256 = value => crypto.createHash('sha256').update(String(value)).digest('hex');
 
@@ -40,21 +42,33 @@ const loadBill = async (tableId, transaction, lock = false) => {
     });
     if (!items.length) throw Object.assign(new Error('The bill has no payable items.'), { status: 409 });
 
-    const subtotal = items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
+    const table = await Table.findByPk(tableId, { transaction });
+    const voucherResult = await calculateVoucher({
+        code: table?.billVoucherCode,
+        items,
+        transaction,
+        lock
+    });
+    const subtotal = voucherResult.subtotal;
+    const billDiscountPercent = Number(table?.billDiscountPercent || 0);
+    const billDiscountAmount = Math.round(voucherResult.totalAmount * billDiscountPercent / 100);
+    const discountedSubtotal = Math.max(0, voucherResult.totalAmount - billDiscountAmount);
     const alcoholSubtotal = items
         .filter(item => /beer|wine|cocktail|alcohol|spirit/i.test(item.product?.category?.name || ''))
         .reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
-    const foodSubtotal = subtotal - alcoholSubtotal;
+    const alcoholShare = subtotal > 0 ? alcoholSubtotal / subtotal : 0;
+    const alcoholTaxBase = discountedSubtotal * alcoholShare;
+    const foodTaxBase = discountedSubtotal - alcoholTaxBase;
     const foodVatAmount = businessDay.foodVatActive
-        ? Math.round(foodSubtotal * Number(businessDay.foodVatRate || 0) / 100)
+        ? Math.round(foodTaxBase * Number(businessDay.foodVatRate || 0) / 100)
         : 0;
     const alcoholVatAmount = businessDay.alcoholVatActive
-        ? Math.round(alcoholSubtotal * Number(businessDay.alcoholVatRate || 0) / 100)
+        ? Math.round(alcoholTaxBase * Number(businessDay.alcoholVatRate || 0) / 100)
         : 0;
     const serviceChargeAmount = businessDay.serviceChargeActive
-        ? Math.round(subtotal * Number(businessDay.serviceChargeRate || 0) / 100)
+        ? Math.round(discountedSubtotal * Number(businessDay.serviceChargeRate || 0) / 100)
         : 0;
-    const totalAmount = subtotal + foodVatAmount + alcoholVatAmount + serviceChargeAmount;
+    const totalAmount = discountedSubtotal + foodVatAmount + alcoholVatAmount + serviceChargeAmount;
     const snapshotItems = items.map(item => ({
         id: item.id,
         orderId: item.orderId,
@@ -65,9 +79,17 @@ const loadBill = async (tableId, transaction, lock = false) => {
         lineTotal: Number(item.price) * Number(item.quantity),
         note: item.note || null
     }));
-    const fingerprint = sha256(JSON.stringify(snapshotItems.map(item => [
-        item.id, item.orderId, item.productId, item.quantity, item.unitPrice
-    ])));
+    const fingerprint = sha256(JSON.stringify({
+        items: snapshotItems.map(item => [
+            item.id, item.orderId, item.productId, item.quantity, item.unitPrice
+        ]),
+        voucherCode: voucherResult.voucher?.code || null,
+        billDiscountPercent,
+        billDiscountReason: billDiscountPercent ? table.billDiscountReason : null,
+        foodVatRate: businessDay.foodVatActive ? Number(businessDay.foodVatRate || 0) : 0,
+        alcoholVatRate: businessDay.alcoholVatActive ? Number(businessDay.alcoholVatRate || 0) : 0,
+        serviceChargeRate: businessDay.serviceChargeActive ? Number(businessDay.serviceChargeRate || 0) : 0
+    }));
 
     return {
         businessDay,
@@ -77,6 +99,13 @@ const loadBill = async (tableId, transaction, lock = false) => {
             orderIds,
             items: snapshotItems,
             subtotal,
+            voucherCode: voucherResult.voucher?.code || null,
+            voucherDiscountAmount: voucherResult.discountAmount,
+            billDiscountPercent,
+            billDiscountAmount,
+            billDiscountReason: billDiscountPercent ? table.billDiscountReason : null,
+            discountAmount: voucherResult.discountAmount + billDiscountAmount,
+            discountedSubtotal,
             foodVatAmount,
             alcoholVatAmount,
             serviceChargeAmount,
@@ -169,6 +198,36 @@ const createPosSePayPayment = (req, res) => {
         throw Object.assign(new Error('A valid table is required.'), { status: 400 });
     }
     return createPaymentForTable(req, res, tableId, false);
+};
+
+const getCustomerBill = async (req, res) => {
+    const bill = await loadBill(req.customerTable.id);
+    res.json({ success: true, data: bill.snapshot });
+};
+
+const applyCustomerVoucher = async (req, res) => {
+    const code = String(req.body?.code || '').trim().toUpperCase();
+    if (!code) throw Object.assign(new Error('Enter a voucher code.'), { status: 400 });
+    let snapshot;
+    await sequelize.transaction(async transaction => {
+        const table = await Table.findByPk(req.customerTable.id, {
+            transaction,
+            lock: transaction.LOCK.UPDATE
+        });
+        if (!table || !table.qrSessionActive) {
+            throw Object.assign(new Error('This table session is no longer active.'), { status: 401 });
+        }
+        table.billVoucherCode = code;
+        await table.save({ transaction });
+        try {
+            snapshot = (await loadBill(table.id, transaction, true)).snapshot;
+        } catch (error) {
+            table.billVoucherCode = null;
+            await table.save({ transaction });
+            throw error;
+        }
+    });
+    res.json({ success: true, data: snapshot });
 };
 
 const getSePayPaymentStatus = async (req, res, next) => {
@@ -277,6 +336,17 @@ const handleSePayWebhook = async (req, res) => {
         table.qrSessionVersion = Number(table.qrSessionVersion || 0) + 1;
         table.qrSessionOpenedAt = null;
         await table.save({ transaction });
+        if (payment.billSnapshot.voucherCode) {
+            const voucher = await Voucher.findOne({
+                where: { code: payment.billSnapshot.voucherCode },
+                transaction,
+                lock: transaction.LOCK.UPDATE
+            });
+            if (voucher) {
+                voucher.usedCount = Number(voucher.usedCount || 0) + 1;
+                await voucher.save({ transaction });
+            }
+        }
 
         const receipt = await Receipt.create({
             receiptNumber: `TMP-${crypto.randomBytes(12).toString('hex')}`,
@@ -284,9 +354,13 @@ const handleSePayWebhook = async (req, res) => {
             tableId: table.id,
             tableName: table.name,
             subtotal: payment.billSnapshot.subtotal,
-            discountAmount: 0,
+            discountAmount: payment.billSnapshot.discountAmount,
             totalAmount: payment.amount,
             paymentMethod: 'SePay',
+            voucherCode: payment.billSnapshot.voucherCode,
+            billDiscountPercent: payment.billSnapshot.billDiscountPercent,
+            billDiscountAmount: payment.billSnapshot.billDiscountAmount,
+            billDiscountReason: payment.billSnapshot.billDiscountReason,
             foodVatAmount: payment.billSnapshot.foodVatAmount,
             alcoholVatAmount: payment.billSnapshot.alcoholVatAmount,
             serviceChargeAmount: payment.billSnapshot.serviceChargeAmount,
@@ -333,6 +407,8 @@ const handleSePayWebhook = async (req, res) => {
 module.exports = {
     createSePayPayment,
     createPosSePayPayment,
+    getCustomerBill,
+    applyCustomerVoucher,
     getSePayPaymentStatus,
     handleSePayWebhook
 };

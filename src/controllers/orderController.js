@@ -233,6 +233,58 @@ const getCustomerOrder = async (req, res, next) => {
     });
 };
 
+const setBillAdjustments = async (req, res, next) => {
+    const tableId = Number(req.params.tableId);
+    const voucherCode = normalizeCode(req.body?.voucherCode) || null;
+    const billDiscountPercent = Number(req.body?.billDiscountPercent || 0);
+    const billDiscountReason = String(req.body?.billDiscountReason || '').trim();
+    const allowedBillDiscounts = [0, 5, 10, 15, 20];
+    const allowedDiscountReasons = ['Guest complaint', 'Service recovery', 'Quality issue', 'Manager courtesy'];
+
+    if (!allowedBillDiscounts.includes(billDiscountPercent)) {
+        return next(Object.assign(new Error('Invalid bill discount percentage.'), { status: 400 }));
+    }
+    if (billDiscountPercent > 0 && req.user.role !== 'Admin' && !req.user.permissions.includes('approve_bill_discount')) {
+        return next(Object.assign(new Error('Bill discount requires manager approval permission.'), { status: 403 }));
+    }
+    if (billDiscountPercent > 0 && !allowedDiscountReasons.includes(billDiscountReason)) {
+        return next(Object.assign(new Error('Select an approved bill discount reason.'), { status: 400 }));
+    }
+
+    await sequelize.transaction(async transaction => {
+        const table = await Table.findByPk(tableId, { transaction, lock: transaction.LOCK.UPDATE });
+        if (!table) throw Object.assign(new Error('Table not found'), { status: 404 });
+        if (table.status === 'CustomerPaid') {
+            throw Object.assign(new Error('This bill has already been paid.'), { status: 409 });
+        }
+        if (voucherCode) {
+            const orders = await Order.findAll({
+                where: { tableId, status: { [Op.in]: ['Pending', 'Order'] } },
+                include: [{
+                    model: OrderItem,
+                    as: 'items',
+                    where: { status: { [Op.ne]: 'Cancelled' } },
+                    required: false,
+                    include: [{ model: Product, as: 'product', include: [{ model: Category, as: 'category' }] }]
+                }],
+                transaction
+            });
+            await calculateVoucher({
+                code: voucherCode,
+                items: orders.flatMap(order => order.items || []),
+                transaction
+            });
+        }
+        table.billVoucherCode = voucherCode;
+        table.billDiscountPercent = billDiscountPercent;
+        table.billDiscountReason = billDiscountPercent ? billDiscountReason : null;
+        table.billDiscountApprovedBy = billDiscountPercent ? req.user.id : null;
+        await table.save({ transaction });
+    });
+
+    res.json({ success: true, message: 'Bill adjustments saved.' });
+};
+
 const payBillByTable = async (req, res, next) => {
     const { tableId } = req.params;
     const paymentMethod = String(req.body?.paymentMethod || 'Cash').trim();
@@ -582,6 +634,7 @@ module.exports = {
     getCustomerOrder,
     payBillByTable,
     checkBillByTable,
+    setBillAdjustments,
     updateOrderItemStatus,
     cancelOrderItem
 };

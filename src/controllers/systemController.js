@@ -98,6 +98,8 @@ const startNewBusinessDay = async (req, res, next) => {
             {
                 status: 'Ready', guestCount: null, nationality: null, specialNote: null,
                 qrSessionActive: false, qrSessionOpenedAt: null,
+                billVoucherCode: null, billDiscountPercent: 0,
+                billDiscountReason: null, billDiscountApprovedBy: null,
                 qrSessionVersion: sequelize.literal('"qrSessionVersion" + 1')
             },
             { where: {}, transaction }
@@ -230,6 +232,10 @@ const resetTestEnvironment = async (req, res) => {
                 specialNote: null,
                 qrSessionActive: false,
                 qrSessionOpenedAt: null,
+                billVoucherCode: null,
+                billDiscountPercent: 0,
+                billDiscountReason: null,
+                billDiscountApprovedBy: null,
                 qrSessionVersion: sequelize.literal('"qrSessionVersion" + 1')
             },
             { where: {}, transaction }

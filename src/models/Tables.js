@@ -47,7 +47,11 @@ const Table = sequelize.define('Tables', {
     qrCode: { type: DataTypes.STRING(64), allowNull: true, unique: true },
     qrSessionActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     qrSessionVersion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    qrSessionOpenedAt: { type: DataTypes.DATE, allowNull: true }
+    qrSessionOpenedAt: { type: DataTypes.DATE, allowNull: true },
+    billVoucherCode: { type: DataTypes.STRING(16), allowNull: true },
+    billDiscountPercent: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    billDiscountReason: { type: DataTypes.STRING, allowNull: true },
+    billDiscountApprovedBy: { type: DataTypes.INTEGER, allowNull: true }
 },{
     timestamps: true
 });

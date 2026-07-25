@@ -245,7 +245,11 @@ const startServer = async () => {
             }],
             ['Tables', {
                 assignedStaffId: { type: DataTypes.INTEGER, allowNull: true },
-                allergyNote: { type: DataTypes.STRING, allowNull: true }
+                allergyNote: { type: DataTypes.STRING, allowNull: true },
+                billVoucherCode: { type: DataTypes.STRING(16), allowNull: true },
+                billDiscountPercent: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+                billDiscountReason: { type: DataTypes.STRING, allowNull: true },
+                billDiscountApprovedBy: { type: DataTypes.INTEGER, allowNull: true }
             }],
             ['receipts', {
                 billDiscountPercent: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },

@@ -6,6 +6,7 @@ const {
     getCustomerOrder,
     payBillByTable,
     checkBillByTable,
+    setBillAdjustments,
     updateOrderItemStatus,
     cancelOrderItem
 } = require('../controllers/orderController');
@@ -24,6 +25,7 @@ router.get('/customer/table/:tableId', verifyCustomerTableSession, getCustomerOr
 router.get('/', verifyToken, authorize('view_orders'), getAllOrders);
 
 router.get('/table/:tableId/bill', verifyToken, authorize('view_orders'), checkBillByTable);
+router.post('/table/:tableId/bill-adjustments', verifyToken, authorize('view_orders'), setBillAdjustments);
 
 router.put('/table/:tableId/pay', verifyToken, authorize('cashout'), payBillByTable);
 
