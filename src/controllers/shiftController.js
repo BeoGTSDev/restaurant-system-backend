@@ -1,9 +1,9 @@
-const { ShiftRecord, Order, User, BusinessDay } = require('../models');
+const { ShiftRecord, ShiftAreaConfig, Order, User, BusinessDay, Zone } = require('../models');
 const { sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 const openShift = async (req, res, next) => {
-    const { staffId, shiftName, position, area, notes } = req.body;
+    const { staffId, shiftName, position, area, notes, assignmentId } = req.body;
     const cashierId = Number(staffId || req.user.id);
     const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
     if (!businessDay) {
@@ -18,18 +18,37 @@ const openShift = async (req, res, next) => {
         return next(err);
     }
 
-    // Check if shift already open today
-    const existingShift = await ShiftRecord.findOne({
+    // One assignment per staff, business day and service period. Reassigning
+    // position or area updates the roster rather than creating clock events.
+    const existingShift = assignmentId
+      ? await ShiftRecord.findByPk(assignmentId)
+      : await ShiftRecord.findOne({
         where: {
             cashierId,
-            status: 'open'
+            businessDayId: businessDay.id,
+            shiftName: shiftName || 'Morning'
         }
-    });
+      });
 
     if (existingShift) {
-        const err = new Error('Shift already opened today');
-        err.status = 400;
-        return next(err);
+        const duplicate = await ShiftRecord.findOne({
+            where: {
+                id: { [Op.ne]: existingShift.id },
+                cashierId,
+                businessDayId: businessDay.id,
+                shiftName: shiftName || 'Morning'
+            }
+        });
+        if (duplicate) return next(Object.assign(new Error('This staff member is already assigned to that shift'), { status: 409 }));
+        await existingShift.update({
+            cashierId,
+            shiftName: shiftName || existingShift.shiftName,
+            position: position || null,
+            area: area || null,
+            notes: notes || null,
+            status: 'open'
+        });
+        return res.status(200).json({ success: true, message: 'Roster assignment updated', shift: existingShift });
     }
 
     const newShift = await ShiftRecord.create({
@@ -47,7 +66,7 @@ const openShift = async (req, res, next) => {
 
     res.status(201).json({
         success: true,
-        message: 'Shift opened successfully',
+        message: 'Roster assignment created',
         shift: {
             id: newShift.id,
             cashierId: newShift.cashierId,
@@ -59,6 +78,104 @@ const openShift = async (req, res, next) => {
             openedAt: newShift.openedAt
         }
     });
+};
+
+const getCurrentRoster = async (req, res, next) => {
+    const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
+    if (!businessDay) return res.json({ success: true, data: { businessDay: null, assignments: [], areas: [] } });
+    await ShiftRecord.update(
+        { shiftName: 'Mid' },
+        { where: { businessDayId: businessDay.id, shiftName: 'Afternoon' } }
+    );
+    const [assignments, areas, zones] = await Promise.all([
+        ShiftRecord.findAll({
+            where: { businessDayId: businessDay.id, status: 'open' },
+            include: [{ model: User, as: 'cashier', attributes: ['id', 'fullName', 'staffCode'] }],
+            order: [['shiftName', 'ASC'], ['area', 'ASC'], ['position', 'ASC']]
+        }),
+        ShiftAreaConfig.findAll({ where: { businessDayId: businessDay.id } }),
+        Zone.findAll({ order: [['id', 'ASC']] })
+    ]);
+    res.json({ success: true, data: { businessDay, assignments, areas, zones } });
+};
+
+const setAreaStatus = async (req, res, next) => {
+    const { shiftName, zoneId, isOpen } = req.body;
+    const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
+    if (!businessDay) return next(Object.assign(new Error('Open the business day before planning shifts'), { status: 423 }));
+    const zone = await Zone.findByPk(zoneId);
+    if (!zone) return next(Object.assign(new Error('Area not found'), { status: 404 }));
+    const [config] = await ShiftAreaConfig.findOrCreate({
+        where: { businessDayId: businessDay.id, shiftName, zoneId },
+        defaults: { isOpen: Boolean(isOpen) }
+    });
+    if (config.isOpen !== Boolean(isOpen)) await config.update({ isOpen: Boolean(isOpen) });
+    res.json({ success: true, data: config });
+};
+
+const removeAssignment = async (req, res, next) => {
+    const assignment = await ShiftRecord.findByPk(req.params.id);
+    if (!assignment) return next(Object.assign(new Error('Roster assignment not found'), { status: 404 }));
+    await assignment.destroy();
+    res.json({ success: true, message: 'Staff removed from roster' });
+};
+
+const saveRoster = async (req, res, next) => {
+    const { shiftName, areas = [], assignments = [] } = req.body;
+    if (!['Morning', 'Mid', 'Evening'].includes(shiftName)) {
+        return next(Object.assign(new Error('Invalid shift period'), { status: 400 }));
+    }
+    const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
+    if (!businessDay) return next(Object.assign(new Error('Open the business day before assigning the roster'), { status: 423 }));
+    const staffIds = assignments.map(item => Number(item.staffId));
+    if (new Set(staffIds).size !== staffIds.length) {
+        return next(Object.assign(new Error('A staff member can only have one position in a shift'), { status: 409 }));
+    }
+    for (const item of assignments) {
+        const allowed = item.area === 'Reception'
+            ? ['Cashier', 'Receptionist']
+            : ['Area Manager', 'Floor Staff'];
+        if (!allowed.includes(item.position)) {
+            return next(Object.assign(new Error(`Invalid position for ${item.area}`), { status: 400 }));
+        }
+    }
+    if (!assignments.some(item => item.area === 'Reception' && item.position === 'Receptionist')) {
+        return next(Object.assign(new Error('Reception requires a Receptionist'), { status: 400 }));
+    }
+    const openZoneIds = areas.filter(area => area.isOpen).map(area => Number(area.zoneId));
+    const openZones = await Zone.findAll({ where: { id: { [Op.in]: openZoneIds } } });
+    const missingManager = openZones.find(zone => !assignments.some(item => item.area === zone.name && item.position === 'Area Manager'));
+    if (missingManager) {
+        return next(Object.assign(new Error(`${missingManager.name} requires an Area Manager`), { status: 400 }));
+    }
+    await sequelize.transaction(async transaction => {
+        await ShiftRecord.destroy({
+            where: { businessDayId: businessDay.id, shiftName, status: 'open' },
+            transaction
+        });
+        if (assignments.length) {
+            await ShiftRecord.bulkCreate(assignments.map(item => ({
+                cashierId: Number(item.staffId),
+                businessDayId: businessDay.id,
+                shiftDate: businessDay.businessDate,
+                shiftName,
+                position: item.position,
+                area: item.area,
+                notes: item.notes || null,
+                status: 'open',
+                openedAt: new Date()
+            })), { transaction });
+        }
+        for (const area of areas) {
+            await ShiftAreaConfig.upsert({
+                businessDayId: businessDay.id,
+                shiftName,
+                zoneId: Number(area.zoneId),
+                isOpen: Boolean(area.isOpen)
+            }, { transaction });
+        }
+    });
+    res.json({ success: true, message: `${shiftName} roster assigned` });
 };
 
 const closeShift = async (req, res, next) => {
@@ -205,4 +322,4 @@ const getAllShifts = async (req, res, next) => {
     });
 };
 
-module.exports = { openShift, closeShift, getShiftReport, getAllShifts };
+module.exports = { openShift, closeShift, getShiftReport, getAllShifts, getCurrentRoster, setAreaStatus, removeAssignment, saveRoster };

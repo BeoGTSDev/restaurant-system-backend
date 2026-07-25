@@ -7,5 +7,6 @@ module.exports = sequelize => sequelize.define('Ingredient', {
     quantity: { type: DataTypes.DECIMAL(14, 3), allowNull: false, defaultValue: 0 },
     reorderLevel: { type: DataTypes.DECIMAL(14, 3), allowNull: false, defaultValue: 0 },
     supplier: { type: DataTypes.STRING, allowNull: true },
+    category: { type: DataTypes.STRING, allowNull: false, defaultValue: 'Other' },
     isActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }
 }, { tableName: 'ingredients', timestamps: true });

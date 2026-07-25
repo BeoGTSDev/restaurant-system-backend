@@ -1,0 +1,687 @@
+Ingredient_Code,Ingredient_Name,Unit,Opening_Quantity,Reorder_Level,Supplier,Inventory_Category,Menu_Item_No,Menu_Full_Name,Quantity_Per_Serving
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,1,Burrata & Tomato Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,1,Burrata & Tomato Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,1,Burrata & Tomato Salad,0.003
+ING-088,Burrata,piece,60,10,Maison Lucas Supply,Dairy & Cheese,1,Burrata & Tomato Salad,1
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,1,Burrata & Tomato Salad,0.1
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,2,Parma Ham & Arugula Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,2,Parma Ham & Arugula Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,2,Parma Ham & Arugula Salad,0.003
+ING-090,Parma Ham,kg,12,2,Maison Lucas Supply,Meat,2,Parma Ham & Arugula Salad,0.06
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,3,Salmon Carpaccio Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,3,Salmon Carpaccio Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,3,Salmon Carpaccio Salad,0.003
+ING-091,Salmon,kg,15,3,Maison Lucas Supply,Seafood,3,Salmon Carpaccio Salad,0.14
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,4,Seasonal Fruit Burrata Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,4,Seasonal Fruit Burrata Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,4,Seasonal Fruit Burrata Salad,0.003
+ING-088,Burrata,piece,60,10,Maison Lucas Supply,Dairy & Cheese,4,Seasonal Fruit Burrata Salad,1
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,5,Classic Caesar Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,5,Classic Caesar Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,5,Classic Caesar Salad,0.003
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,6,Grilled Chicken Caesar,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,6,Grilled Chicken Caesar,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,6,Grilled Chicken Caesar,0.003
+ING-092,Chicken,kg,25,5,Maison Lucas Supply,Meat,6,Grilled Chicken Caesar,0.16
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,7,Avocado & Shrimp Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,7,Avocado & Shrimp Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,7,Avocado & Shrimp Salad,0.003
+ING-093,Shrimp,kg,15,3,Maison Lucas Supply,Seafood,7,Avocado & Shrimp Salad,0.14
+ING-094,Avocado,piece,80,15,Maison Lucas Supply,Produce,7,Avocado & Shrimp Salad,0.5
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,8,Quinoa & Roasted Veg Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,8,Quinoa & Roasted Veg Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,8,Quinoa & Roasted Veg Salad,0.003
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,9,Mozzarella Caprese,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,9,Mozzarella Caprese,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,9,Mozzarella Caprese,0.003
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,9,Mozzarella Caprese,0.1
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,10,Mixed Green Garden Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,10,Mixed Green Garden Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,10,Mixed Green Garden Salad,0.003
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,11,Tuna & Egg Niçoise,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,11,Tuna & Egg Niçoise,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,11,Tuna & Egg Niçoise,0.003
+ING-095,Egg,piece,180,30,Maison Lucas Supply,Dairy & Cheese,11,Tuna & Egg Niçoise,1
+ING-096,Tuna,kg,12,2,Maison Lucas Supply,Seafood,11,Tuna & Egg Niçoise,0.14
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,12,Mushroom & Spinach Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,12,Mushroom & Spinach Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,12,Mushroom & Spinach Salad,0.003
+ING-097,Mushroom,kg,18,3,Maison Lucas Supply,Produce,12,Mushroom & Spinach Salad,0.1
+ING-098,Spinach,kg,12,2,Maison Lucas Supply,Produce,12,Mushroom & Spinach Salad,0.08
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,13,Duck Breast & Orange Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,13,Duck Breast & Orange Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,13,Duck Breast & Orange Salad,0.003
+ING-099,Duck,kg,12,3,Maison Lucas Supply,Meat,13,Duck Breast & Orange Salad,0.18
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,14,Kale & Pomegranate Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,14,Kale & Pomegranate Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,14,Kale & Pomegranate Salad,0.003
+ING-085,Mixed Greens,kg,30,5,Maison Lucas Supply,Produce,15,Seafood Ceviche Salad,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,15,Seafood Ceviche Salad,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,15,Seafood Ceviche Salad,0.003
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,15,Seafood Ceviche Salad,0.16
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,16,House-made Cheese Plate (3),0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,16,House-made Cheese Plate (3),0.003
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,17,House-made Cheese Plate (5),0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,17,House-made Cheese Plate (5),0.003
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,18,Parma Ham Platter,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,18,Parma Ham Platter,0.003
+ING-090,Parma Ham,kg,12,2,Maison Lucas Supply,Meat,18,Parma Ham Platter,0.06
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,19,Cold Cuts & Cheese Board,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,19,Cold Cuts & Cheese Board,0.003
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,20,Garlic Bread,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,20,Garlic Bread,0.003
+ING-101,Garlic,kg,8,1.5,Maison Lucas Supply,Produce,20,Garlic Bread,0.015
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,21,Cheese Fondue with Bread,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,21,Cheese Fondue with Bread,0.003
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,22,Oven-baked Garlic Clams,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,22,Oven-baked Garlic Clams,0.003
+ING-101,Garlic,kg,8,1.5,Maison Lucas Supply,Produce,22,Oven-baked Garlic Clams,0.015
+ING-102,Clam,kg,15,3,Maison Lucas Supply,Seafood,22,Oven-baked Garlic Clams,0.15
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,23,Fried Calamari,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,23,Fried Calamari,0.003
+ING-103,Calamari,kg,12,2,Maison Lucas Supply,Seafood,23,Fried Calamari,0.16
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,24,Beef Carpaccio,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,24,Beef Carpaccio,0.003
+ING-104,Beef,kg,25,5,Maison Lucas Supply,Meat,24,Beef Carpaccio,0.18
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,25,Salmon Tartare,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,25,Salmon Tartare,0.003
+ING-091,Salmon,kg,15,3,Maison Lucas Supply,Seafood,25,Salmon Tartare,0.14
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,26,Arancini (Cheese Rice Balls),0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,26,Arancini (Cheese Rice Balls),0.003
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,27,Truffle French Fries,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,27,Truffle French Fries,0.003
+ING-097,Mushroom,kg,18,3,Maison Lucas Supply,Produce,27,Truffle French Fries,0.1
+ING-105,Potato,kg,30,5,Maison Lucas Supply,Produce,27,Truffle French Fries,0.18
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,28,Sweet Potato Fries,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,28,Sweet Potato Fries,0.003
+ING-105,Potato,kg,30,5,Maison Lucas Supply,Produce,28,Sweet Potato Fries,0.18
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,29,Grilled Vegetables Plate,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,29,Grilled Vegetables Plate,0.003
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,30,Bruschetta Pomodoro,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,30,Bruschetta Pomodoro,0.003
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,30,Bruschetta Pomodoro,0.1
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,31,Bruschetta Parma & Ricotta,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,31,Bruschetta Parma & Ricotta,0.003
+ING-090,Parma Ham,kg,12,2,Maison Lucas Supply,Meat,31,Bruschetta Parma & Ricotta,0.06
+ING-106,Ricotta,kg,15,3,Maison Lucas Supply,Dairy & Cheese,31,Bruschetta Parma & Ricotta,0.07
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,32,Oven-baked Camembert,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,32,Oven-baked Camembert,0.003
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,33,Spicy Garlic Shrimp (Gambas),0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,33,Spicy Garlic Shrimp (Gambas),0.003
+ING-093,Shrimp,kg,15,3,Maison Lucas Supply,Seafood,33,Spicy Garlic Shrimp (Gambas),0.14
+ING-101,Garlic,kg,8,1.5,Maison Lucas Supply,Produce,33,Spicy Garlic Shrimp (Gambas),0.015
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,34,Chicken Liver Pâté,0.015
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,34,Chicken Liver Pâté,0.003
+ING-092,Chicken,kg,25,5,Maison Lucas Supply,Meat,34,Chicken Liver Pâté,0.16
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,35,Mushroom Soup,0.003
+ING-097,Mushroom,kg,18,3,Maison Lucas Supply,Produce,35,Mushroom Soup,0.1
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,35,Mushroom Soup,0.25
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,36,Minestrone Soup,0.003
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,36,Minestrone Soup,0.25
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,37,Clam Chowder,0.003
+ING-102,Clam,kg,15,3,Maison Lucas Supply,Seafood,37,Clam Chowder,0.15
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,37,Clam Chowder,0.25
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,38,Pumpkin Soup,0.003
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,38,Pumpkin Soup,0.25
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,39,Tomato Basil Soup,0.003
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,39,Tomato Basil Soup,0.1
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,39,Tomato Basil Soup,0.25
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,40,Onion Gratin Soup,0.003
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,40,Onion Gratin Soup,0.25
+ING-108,Onion,kg,20,4,Maison Lucas Supply,Produce,40,Onion Gratin Soup,0.06
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,41,Wood-Fired Ribeye Steak,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,41,Wood-Fired Ribeye Steak,0.004
+ING-104,Beef,kg,25,5,Maison Lucas Supply,Meat,41,Wood-Fired Ribeye Steak,0.18
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,42,Grilled Salmon Fillet,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,42,Grilled Salmon Fillet,0.004
+ING-091,Salmon,kg,15,3,Maison Lucas Supply,Seafood,42,Grilled Salmon Fillet,0.14
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,43,Duck Confit,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,43,Duck Confit,0.004
+ING-099,Duck,kg,12,3,Maison Lucas Supply,Meat,43,Duck Confit,0.18
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,44,Roasted Half Chicken,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,44,Roasted Half Chicken,0.004
+ING-092,Chicken,kg,25,5,Maison Lucas Supply,Meat,44,Roasted Half Chicken,0.16
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,45,Braised Beef Cheeks,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,45,Braised Beef Cheeks,0.004
+ING-104,Beef,kg,25,5,Maison Lucas Supply,Meat,45,Braised Beef Cheeks,0.18
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,46,Pork Ribs with BBQ Sauce,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,46,Pork Ribs with BBQ Sauce,0.004
+ING-109,Pork,kg,20,4,Maison Lucas Supply,Meat,46,Pork Ribs with BBQ Sauce,0.16
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,47,Pan-seared Scallops,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,47,Pan-seared Scallops,0.004
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,47,Pan-seared Scallops,0.16
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,48,Grilled Lamb Chops,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,48,Grilled Lamb Chops,0.004
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,49,Eggplant Parmigiana,0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,49,Eggplant Parmigiana,0.004
+ING-110,Parmesan,kg,14,3,Maison Lucas Supply,Dairy & Cheese,49,Eggplant Parmigiana,0.04
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,50,Seafood Stew (Cioppino),0.02
+ING-087,Sea Salt,kg,5,1,Maison Lucas Supply,Dry Goods,50,Seafood Stew (Cioppino),0.004
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,50,Seafood Stew (Cioppino),0.16
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,51,Margherita Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,51,Margherita Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,51,Margherita Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,51,Margherita Pizza,0.1
+ING-088,Burrata,piece,60,10,Maison Lucas Supply,Dairy & Cheese,52,Burrata Parma Margherita,1
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,52,Burrata Parma Margherita,0.1
+ING-090,Parma Ham,kg,12,2,Maison Lucas Supply,Meat,52,Burrata Parma Margherita,0.06
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,52,Burrata Parma Margherita,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,52,Burrata Parma Margherita,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,52,Burrata Parma Margherita,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,53,4 Cheese Pizza (Quattro Formaggi),0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,53,4 Cheese Pizza (Quattro Formaggi),0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,53,4 Cheese Pizza (Quattro Formaggi),0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,54,5 Cheese Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,54,5 Cheese Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,54,5 Cheese Pizza,0.1
+ING-092,Chicken,kg,25,5,Maison Lucas Supply,Meat,55,Teriyaki Chicken Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,55,Teriyaki Chicken Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,55,Teriyaki Chicken Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,55,Teriyaki Chicken Pizza,0.1
+ING-091,Salmon,kg,15,3,Maison Lucas Supply,Seafood,56,Salmon Sashimi Pizza,0.14
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,56,Salmon Sashimi Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,56,Salmon Sashimi Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,56,Salmon Sashimi Pizza,0.1
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,57,Seafood Spicy Tomato Pizza,0.1
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,57,Seafood Spicy Tomato Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,57,Seafood Spicy Tomato Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,57,Seafood Spicy Tomato Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,57,Seafood Spicy Tomato Pizza,0.1
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,58,Prosciutto Margherita,0.1
+ING-090,Parma Ham,kg,12,2,Maison Lucas Supply,Meat,58,Prosciutto Margherita,0.06
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,58,Prosciutto Margherita,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,58,Prosciutto Margherita,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,58,Prosciutto Margherita,0.1
+ING-097,Mushroom,kg,18,3,Maison Lucas Supply,Produce,59,Mushroom & Truffle Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,59,Mushroom & Truffle Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,59,Mushroom & Truffle Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,59,Mushroom & Truffle Pizza,0.1
+ING-109,Pork,kg,20,4,Maison Lucas Supply,Meat,60,Salami & Chorizo Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,60,Salami & Chorizo Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,60,Salami & Chorizo Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,60,Salami & Chorizo Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,61,Hawaiian Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,61,Hawaiian Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,61,Hawaiian Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,62,Vegetarian Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,62,Vegetarian Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,62,Vegetarian Pizza,0.1
+ING-104,Beef,kg,25,5,Maison Lucas Supply,Meat,63,Beef Yakiniku Pizza,0.18
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,63,Beef Yakiniku Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,63,Beef Yakiniku Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,63,Beef Yakiniku Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,64,Smoked Cheese & Bacon Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,64,Smoked Cheese & Bacon Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,64,Smoked Cheese & Bacon Pizza,0.1
+ING-114,Bacon,kg,14,3,Maison Lucas Supply,Meat,64,Smoked Cheese & Bacon Pizza,0.07
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,65,Anchovy & Olive Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,65,Anchovy & Olive Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,65,Anchovy & Olive Pizza,0.1
+ING-109,Pork,kg,20,4,Maison Lucas Supply,Meat,66,Spicy Nduja Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,66,Spicy Nduja Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,66,Spicy Nduja Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,66,Spicy Nduja Pizza,0.1
+ING-092,Chicken,kg,25,5,Maison Lucas Supply,Meat,67,Pesto & Chicken Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,67,Pesto & Chicken Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,67,Pesto & Chicken Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,67,Pesto & Chicken Pizza,0.1
+ING-096,Tuna,kg,12,2,Maison Lucas Supply,Seafood,68,Tuna & Onion Pizza,0.14
+ING-108,Onion,kg,20,4,Maison Lucas Supply,Produce,68,Tuna & Onion Pizza,0.06
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,68,Tuna & Onion Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,68,Tuna & Onion Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,68,Tuna & Onion Pizza,0.1
+ING-093,Shrimp,kg,15,3,Maison Lucas Supply,Seafood,69,Garlic & Shrimp Pizza,0.14
+ING-101,Garlic,kg,8,1.5,Maison Lucas Supply,Produce,69,Garlic & Shrimp Pizza,0.015
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,69,Garlic & Shrimp Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,69,Garlic & Shrimp Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,69,Garlic & Shrimp Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,70,Gorgonzola & Honey Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,70,Gorgonzola & Honey Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,70,Gorgonzola & Honey Pizza,0.1
+ING-115,Gorgonzola,kg,10,2,Maison Lucas Supply,Dairy & Cheese,70,Gorgonzola & Honey Pizza,0.06
+ING-088,Burrata,piece,60,10,Maison Lucas Supply,Dairy & Cheese,71,Burrata & Anchovy Pizza,1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,71,Burrata & Anchovy Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,71,Burrata & Anchovy Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,71,Burrata & Anchovy Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,72,Calzone (Folded Pizza),0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,72,Calzone (Folded Pizza),0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,72,Calzone (Folded Pizza),0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,73,Meat Lover's Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,73,Meat Lover's Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,73,Meat Lover's Pizza,0.1
+ING-098,Spinach,kg,12,2,Maison Lucas Supply,Produce,74,Spinach & Ricotta Pizza,0.08
+ING-106,Ricotta,kg,15,3,Maison Lucas Supply,Dairy & Cheese,74,Spinach & Ricotta Pizza,0.07
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,74,Spinach & Ricotta Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,74,Spinach & Ricotta Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,74,Spinach & Ricotta Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,75,Camembert & Apple Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,75,Camembert & Apple Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,75,Camembert & Apple Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,76,Half & Half: Marg / 4 Cheese,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,76,Half & Half: Marg / 4 Cheese,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,76,Half & Half: Marg / 4 Cheese,0.1
+ING-091,Salmon,kg,15,3,Maison Lucas Supply,Seafood,77,Half & Half: Teriyaki / Salmon,0.14
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,77,Half & Half: Teriyaki / Salmon,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,77,Half & Half: Teriyaki / Salmon,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,77,Half & Half: Teriyaki / Salmon,0.1
+ING-088,Burrata,piece,60,10,Maison Lucas Supply,Dairy & Cheese,78,Half & Half: Burrata / Veggie,1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,78,Half & Half: Burrata / Veggie,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,78,Half & Half: Burrata / Veggie,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,78,Half & Half: Burrata / Veggie,0.1
+ING-097,Mushroom,kg,18,3,Maison Lucas Supply,Produce,79,Half & Half: Truffle / Salami,0.1
+ING-109,Pork,kg,20,4,Maison Lucas Supply,Meat,79,Half & Half: Truffle / Salami,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,79,Half & Half: Truffle / Salami,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,79,Half & Half: Truffle / Salami,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,79,Half & Half: Truffle / Salami,0.1
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,80,Half & Half: Beef / Seafood,0.16
+ING-104,Beef,kg,25,5,Maison Lucas Supply,Meat,80,Half & Half: Beef / Seafood,0.18
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,80,Half & Half: Beef / Seafood,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,80,Half & Half: Beef / Seafood,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,80,Half & Half: Beef / Seafood,0.1
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,81,Margherita Extra (Buffalo),0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,81,Margherita Extra (Buffalo),0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,81,Margherita Extra (Buffalo),0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,81,Margherita Extra (Buffalo),0.1
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,82,Double Cheese Margherita,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,82,Double Cheese Margherita,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,82,Double Cheese Margherita,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,82,Double Cheese Margherita,0.1
+ING-109,Pork,kg,20,4,Maison Lucas Supply,Meat,83,Italian Sausage Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,83,Italian Sausage Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,83,Italian Sausage Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,83,Italian Sausage Pizza,0.1
+ING-090,Parma Ham,kg,12,2,Maison Lucas Supply,Meat,84,Fig & Prosciutto Pizza,0.06
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,84,Fig & Prosciutto Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,84,Fig & Prosciutto Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,84,Fig & Prosciutto Pizza,0.1
+ING-095,Egg,piece,180,30,Maison Lucas Supply,Dairy & Cheese,85,Carbonara Pizza,1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,85,Carbonara Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,85,Carbonara Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,85,Carbonara Pizza,0.1
+ING-105,Potato,kg,30,5,Maison Lucas Supply,Produce,86,Rosemary Potato Pizza,0.18
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,86,Rosemary Potato Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,86,Rosemary Potato Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,86,Rosemary Potato Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,87,Jalapeño & Pepperoni,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,87,Jalapeño & Pepperoni,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,87,Jalapeño & Pepperoni,0.1
+ING-101,Garlic,kg,8,1.5,Maison Lucas Supply,Produce,88,Roasted Garlic & Ricotta,0.015
+ING-106,Ricotta,kg,15,3,Maison Lucas Supply,Dairy & Cheese,88,Roasted Garlic & Ricotta,0.07
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,88,Roasted Garlic & Ricotta,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,88,Roasted Garlic & Ricotta,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,88,Roasted Garlic & Ricotta,0.1
+ING-095,Egg,piece,180,30,Maison Lucas Supply,Dairy & Cheese,89,Egg & Bacon Pizza,1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,89,Egg & Bacon Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,89,Egg & Bacon Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,89,Egg & Bacon Pizza,0.1
+ING-114,Bacon,kg,14,3,Maison Lucas Supply,Meat,89,Egg & Bacon Pizza,0.07
+ING-091,Salmon,kg,15,3,Maison Lucas Supply,Seafood,90,Smoked Salmon & Cream Cheese,0.14
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,90,Smoked Salmon & Cream Cheese,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,90,Smoked Salmon & Cream Cheese,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,90,Smoked Salmon & Cream Cheese,0.1
+ING-092,Chicken,kg,25,5,Maison Lucas Supply,Meat,91,BBQ Chicken Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,91,BBQ Chicken Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,91,BBQ Chicken Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,91,BBQ Chicken Pizza,0.1
+ING-104,Beef,kg,25,5,Maison Lucas Supply,Meat,92,Mexican Spicy Beef Pizza,0.18
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,92,Mexican Spicy Beef Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,92,Mexican Spicy Beef Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,92,Mexican Spicy Beef Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,93,Asparagus & Pancetta Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,93,Asparagus & Pancetta Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,93,Asparagus & Pancetta Pizza,0.1
+ING-114,Bacon,kg,14,3,Maison Lucas Supply,Meat,93,Asparagus & Pancetta Pizza,0.07
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,94,Artichoke & Olive Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,94,Artichoke & Olive Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,94,Artichoke & Olive Pizza,0.1
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,95,Squid Ink & Seafood Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,95,Squid Ink & Seafood Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,95,Squid Ink & Seafood Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,95,Squid Ink & Seafood Pizza,0.1
+ING-109,Pork,kg,20,4,Maison Lucas Supply,Meat,96,Spicy Korean Pork Pizza,0.16
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,96,Spicy Korean Pork Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,96,Spicy Korean Pork Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,96,Spicy Korean Pork Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,97,Brie & Cranberry Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,97,Brie & Cranberry Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,97,Brie & Cranberry Pizza,0.1
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,98,Caprese Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,98,Caprese Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,98,Caprese Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,98,Caprese Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,99,Vegan Cheese & Veg Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,99,Vegan Cheese & Veg Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,99,Vegan Cheese & Veg Pizza,0.1
+ING-111,Pizza Dough,kg,45,8,Maison Lucas Supply,Dry Goods,100,Nutella & Banana Pizza,0.25
+ING-112,Tomato Sauce,kg,30,5,Maison Lucas Supply,Produce,100,Nutella & Banana Pizza,0.08
+ING-113,Mozzarella,kg,25,5,Maison Lucas Supply,Dairy & Cheese,100,Nutella & Banana Pizza,0.1
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,101,Crab Tomato Cream Spaghetti,0.015
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,101,Crab Tomato Cream Spaghetti,0.1
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,101,Crab Tomato Cream Spaghetti,0.16
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,101,Crab Tomato Cream Spaghetti,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,102,Soy Garlic Beef Spaghetti,0.015
+ING-101,Garlic,kg,8,1.5,Maison Lucas Supply,Produce,102,Soy Garlic Beef Spaghetti,0.015
+ING-104,Beef,kg,25,5,Maison Lucas Supply,Meat,102,Soy Garlic Beef Spaghetti,0.18
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,102,Soy Garlic Beef Spaghetti,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,103,Classic Carbonara,0.015
+ING-095,Egg,piece,180,30,Maison Lucas Supply,Dairy & Cheese,103,Classic Carbonara,1
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,103,Classic Carbonara,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,104,Seafood Tomato Spaghetti,0.015
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,104,Seafood Tomato Spaghetti,0.1
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,104,Seafood Tomato Spaghetti,0.16
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,104,Seafood Tomato Spaghetti,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,105,Clam & Garlic (Vongole),0.015
+ING-101,Garlic,kg,8,1.5,Maison Lucas Supply,Produce,105,Clam & Garlic (Vongole),0.015
+ING-102,Clam,kg,15,3,Maison Lucas Supply,Seafood,105,Clam & Garlic (Vongole),0.15
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,105,Clam & Garlic (Vongole),0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,106,Bolognese Fettuccine,0.015
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,106,Bolognese Fettuccine,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,107,Salmon Cream Penne,0.015
+ING-091,Salmon,kg,15,3,Maison Lucas Supply,Seafood,107,Salmon Cream Penne,0.14
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,107,Salmon Cream Penne,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,108,Pesto Genovese Spaghetti,0.015
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,108,Pesto Genovese Spaghetti,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,109,Truffle Cream Mushroom Pasta,0.015
+ING-097,Mushroom,kg,18,3,Maison Lucas Supply,Produce,109,Truffle Cream Mushroom Pasta,0.1
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,109,Truffle Cream Mushroom Pasta,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,110,Spicy Arrabiata Penne,0.015
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,110,Spicy Arrabiata Penne,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,111,Aglio e Olio Spaghetti,0.015
+ING-101,Garlic,kg,8,1.5,Maison Lucas Supply,Produce,111,Aglio e Olio Spaghetti,0.015
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,111,Aglio e Olio Spaghetti,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,112,Lasagna Al Forno,0.015
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,112,Lasagna Al Forno,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,113,Squid Ink Spaghetti,0.015
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,113,Squid Ink Spaghetti,0.16
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,113,Squid Ink Spaghetti,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,114,Shrimp & Asparagus Cream,0.015
+ING-093,Shrimp,kg,15,3,Maison Lucas Supply,Seafood,114,Shrimp & Asparagus Cream,0.14
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,114,Shrimp & Asparagus Cream,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,115,Chicken & Broccoli Alfredo,0.015
+ING-092,Chicken,kg,25,5,Maison Lucas Supply,Meat,115,Chicken & Broccoli Alfredo,0.16
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,115,Chicken & Broccoli Alfredo,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,116,Eggplant & Ricotta Rigatoni,0.015
+ING-106,Ricotta,kg,15,3,Maison Lucas Supply,Dairy & Cheese,116,Eggplant & Ricotta Rigatoni,0.07
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,116,Eggplant & Ricotta Rigatoni,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,117,Mentaiko (Cod Roe) Spaghetti,0.015
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,117,Mentaiko (Cod Roe) Spaghetti,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,118,Sausage & Pepper Penne,0.015
+ING-109,Pork,kg,20,4,Maison Lucas Supply,Meat,118,Sausage & Pepper Penne,0.16
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,118,Sausage & Pepper Penne,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,119,Gorgonzola Cream Gnocchi,0.015
+ING-115,Gorgonzola,kg,10,2,Maison Lucas Supply,Dairy & Cheese,119,Gorgonzola Cream Gnocchi,0.06
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,119,Gorgonzola Cream Gnocchi,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,120,Tomato Basil Gnocchi,0.015
+ING-089,Tomato,kg,35,6,Maison Lucas Supply,Produce,120,Tomato Basil Gnocchi,0.1
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,120,Tomato Basil Gnocchi,0.12
+ING-097,Mushroom,kg,18,3,Maison Lucas Supply,Produce,121,Mushroom Risotto,0.1
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,121,Mushroom Risotto,0.25
+ING-110,Parmesan,kg,14,3,Maison Lucas Supply,Dairy & Cheese,121,Mushroom Risotto,0.02
+ING-117,Arborio Rice,kg,20,4,Maison Lucas Supply,Beverages,121,Mushroom Risotto,0.12
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,122,Seafood Saffron Risotto,0.16
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,122,Seafood Saffron Risotto,0.25
+ING-110,Parmesan,kg,14,3,Maison Lucas Supply,Dairy & Cheese,122,Seafood Saffron Risotto,0.02
+ING-117,Arborio Rice,kg,20,4,Maison Lucas Supply,Beverages,122,Seafood Saffron Risotto,0.12
+ING-090,Parma Ham,kg,12,2,Maison Lucas Supply,Meat,123,Parman & Butter Risotto,0.06
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,123,Parman & Butter Risotto,0.25
+ING-110,Parmesan,kg,14,3,Maison Lucas Supply,Dairy & Cheese,123,Parman & Butter Risotto,0.02
+ING-117,Arborio Rice,kg,20,4,Maison Lucas Supply,Beverages,123,Parman & Butter Risotto,0.12
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,124,Pumpkin & Bacon Risotto,0.25
+ING-110,Parmesan,kg,14,3,Maison Lucas Supply,Dairy & Cheese,124,Pumpkin & Bacon Risotto,0.02
+ING-114,Bacon,kg,14,3,Maison Lucas Supply,Meat,124,Pumpkin & Bacon Risotto,0.07
+ING-117,Arborio Rice,kg,20,4,Maison Lucas Supply,Beverages,124,Pumpkin & Bacon Risotto,0.12
+ING-097,Mushroom,kg,18,3,Maison Lucas Supply,Produce,125,Truffle & Asparagus Risotto,0.1
+ING-107,Kitchen Stock,L,30,5,Maison Lucas Supply,Sauces & Oils,125,Truffle & Asparagus Risotto,0.25
+ING-110,Parmesan,kg,14,3,Maison Lucas Supply,Dairy & Cheese,125,Truffle & Asparagus Risotto,0.02
+ING-117,Arborio Rice,kg,20,4,Maison Lucas Supply,Beverages,125,Truffle & Asparagus Risotto,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,126,Lemon Chicken Linguine,0.015
+ING-092,Chicken,kg,25,5,Maison Lucas Supply,Meat,126,Lemon Chicken Linguine,0.16
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,126,Lemon Chicken Linguine,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,127,Meatball Spaghetti,0.015
+ING-104,Beef,kg,25,5,Maison Lucas Supply,Meat,127,Meatball Spaghetti,0.18
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,127,Meatball Spaghetti,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,128,Scallop & Spinach Cream,0.015
+ING-098,Spinach,kg,12,2,Maison Lucas Supply,Produce,128,Scallop & Spinach Cream,0.08
+ING-100,Seafood Mix,kg,20,4,Maison Lucas Supply,Seafood,128,Scallop & Spinach Cream,0.16
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,128,Scallop & Spinach Cream,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,129,Anchovy & Caper Linguine,0.015
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,129,Anchovy & Caper Linguine,0.12
+ING-086,Olive Oil,L,12,2,Maison Lucas Supply,Sauces & Oils,130,Macaroni & Cheese,0.015
+ING-116,Dry Pasta,kg,80,6,Maison Lucas Supply,Dry Goods,130,Macaroni & Cheese,0.12
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,131,House-made Cheese Tart,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,131,House-made Cheese Tart,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,132,Matcha Fondant Chocolate,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,132,Matcha Fondant Chocolate,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,133,Classic Tiramisu,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,133,Classic Tiramisu,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,134,Panna Cotta with Berries,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,134,Panna Cotta with Berries,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,135,Affogato al Caffè,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,135,Affogato al Caffè,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,136,Crème Brûlée,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,136,Crème Brûlée,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,137,Chocolate Brownie,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,137,Chocolate Brownie,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,138,Lemon Sorbet,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,138,Lemon Sorbet,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,139,Mango Sorbet,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,139,Mango Sorbet,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,140,Vanilla Gelato (1 Scoop),0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,140,Vanilla Gelato (1 Scoop),0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,141,Chocolate Gelato (1 Scoop),0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,141,Chocolate Gelato (1 Scoop),0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,142,Pistachio Gelato (1 Scoop),0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,142,Pistachio Gelato (1 Scoop),0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,143,Strawberry Cheesecake,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,143,Strawberry Cheesecake,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,144,Apple Crumble,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,144,Apple Crumble,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,145,Chocolate Mousse,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,145,Chocolate Mousse,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,146,Passion Fruit Pavlova,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,146,Passion Fruit Pavlova,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,147,Caramel Flan,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,147,Caramel Flan,0.05
+ING-106,Ricotta,kg,15,3,Maison Lucas Supply,Dairy & Cheese,148,Ricotta & Honey Cannoli,0.07
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,148,Ricotta & Honey Cannoli,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,148,Ricotta & Honey Cannoli,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,149,Earl Grey Chiffon Cake,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,149,Earl Grey Chiffon Cake,0.05
+ING-118,Sugar,kg,20,4,Maison Lucas Supply,Dry Goods,150,Seasonal Fruit Platter,0.03
+ING-119,Fresh Cream,L,18,3,Maison Lucas Supply,Dairy & Cheese,150,Seasonal Fruit Platter,0.05
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,151,Fresh Watermelon Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,151,Fresh Watermelon Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,152,Fresh Pineapple Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,152,Fresh Pineapple Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,153,Fresh Passion Fruit Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,153,Fresh Passion Fruit Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,154,Fresh Orange Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,154,Fresh Orange Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,155,Fresh Apple Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,155,Fresh Apple Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,156,Fresh Carrot Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,156,Fresh Carrot Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,157,Fresh Guava Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,157,Fresh Guava Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,158,Fresh Lime Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,158,Fresh Lime Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,159,"Apple, Beet, Carrot (ABC)",0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,159,"Apple, Beet, Carrot (ABC)",0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,160,Pineapple & Mint Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,160,Pineapple & Mint Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,161,Orange & Carrot Mix,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,161,Orange & Carrot Mix,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,162,Green Detox Juice,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,162,Green Detox Juice,0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,163,"Ginger, Apple, Lemon",0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,163,"Ginger, Apple, Lemon",0.25
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,164,Mango Smoothie,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,164,Mango Smoothie,0.2
+ING-122,Milk,L,20,4,Maison Lucas Supply,Dairy & Cheese,164,Mango Smoothie,0.15
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,165,Strawberry Smoothie,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,165,Strawberry Smoothie,0.2
+ING-122,Milk,L,20,4,Maison Lucas Supply,Dairy & Cheese,165,Strawberry Smoothie,0.15
+ING-094,Avocado,piece,80,15,Maison Lucas Supply,Produce,166,Avocado Smoothie,0.5
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,166,Avocado Smoothie,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,166,Avocado Smoothie,0.2
+ING-122,Milk,L,20,4,Maison Lucas Supply,Dairy & Cheese,166,Avocado Smoothie,0.15
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,167,Banana & Peanut Butter,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,167,Banana & Peanut Butter,0.2
+ING-122,Milk,L,20,4,Maison Lucas Supply,Dairy & Cheese,167,Banana & Peanut Butter,0.15
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,168,Mixed Berry Smoothie,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,168,Mixed Berry Smoothie,0.2
+ING-122,Milk,L,20,4,Maison Lucas Supply,Dairy & Cheese,168,Mixed Berry Smoothie,0.15
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,169,Tropical Fruit Shake,0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,169,Tropical Fruit Shake,0.2
+ING-122,Milk,L,20,4,Maison Lucas Supply,Dairy & Cheese,169,Tropical Fruit Shake,0.15
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,170,Coconut Water (Fresh),0.1
+ING-121,Fresh Fruit Base,kg,30,5,Maison Lucas Supply,Produce,170,Coconut Water (Fresh),0.25
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,171,Coca-Cola,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,172,Coke Zero / Diet Coke,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,173,Sprite,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,174,Fanta Orange,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,175,Ginger Ale,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,176,Tonic Water,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,177,Soda Water,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,178,Red Bull,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,179,Lipton Iced Tea (Lemon),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,180,San Pellegrino Sparkling (500ml),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,181,San Pellegrino Sparkling (1L),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,182,Acqua Panna Still (500ml),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,183,Acqua Panna Still (1L),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,184,Dasani / Aquafina Water,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,185,Kombucha (Original),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,186,Kombucha (Ginger/Lemon),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,187,Kombucha (Berry),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,188,House Iced Tea (Unsweetened),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,189,Peach Iced Tea,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,190,Lychee Iced Tea,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,191,Vietnamese Iced Coffee (Sữa Đá),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,192,Vietnamese Black Coffee (Đen Đá),1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,193,Espresso,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,194,Double Espresso,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,195,Americano,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,196,Cappuccino,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,197,Latte,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,198,Mocha,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,199,Matcha Latte,1
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,200,Hot Chocolate,1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,201,4P's Yuzu Wheat Beer (Draft),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,203,Sapporo Draft Beer (Glass),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,204,Sapporo Draft Beer (Jug),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,205,Tiger Beer (Bottle),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,206,Tiger Crystal (Bottle),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,207,Heineken (Bottle),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,208,Heineken Silver (Bottle),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,209,Corona Extra (Bottle),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,210,Hoegaarden White (Bottle),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,211,Pasteur Street Jasmine IPA,1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,212,Heart of Darkness Pale Ale,1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,213,Belgo Blonde,1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,214,Bia Saigon Special (Bottle),1
+ING-124,Beer Stock,bottle,120,24,Maison Lucas Supply,Sauces & Oils,215,Asahi Super Dry (Bottle),1
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,216,Classic Mojito,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,216,Classic Mojito,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,216,Classic Mojito,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,217,Passion Fruit Mojito,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,217,Passion Fruit Mojito,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,217,Passion Fruit Mojito,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,218,Aperol Spritz,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,218,Aperol Spritz,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,218,Aperol Spritz,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,219,Classic Margarita,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,219,Classic Margarita,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,219,Classic Margarita,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,220,Gin & Tonic (Bombay Sapphire),0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,220,Gin & Tonic (Bombay Sapphire),0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,220,Gin & Tonic (Bombay Sapphire),0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,221,Gin & Tonic (Hendrick's),0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,221,Gin & Tonic (Hendrick's),0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,221,Gin & Tonic (Hendrick's),0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,222,Yuzu Sour,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,222,Yuzu Sour,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,222,Yuzu Sour,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,223,Negroni,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,223,Negroni,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,223,Negroni,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,224,Old Fashioned,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,224,Old Fashioned,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,224,Old Fashioned,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,225,Espresso Martini,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,225,Espresso Martini,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,225,Espresso Martini,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,226,Sangria (Red Wine),0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,226,Sangria (Red Wine),0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,226,Sangria (Red Wine),0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,227,Sangria (White Wine),0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,227,Sangria (White Wine),0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,227,Sangria (White Wine),0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,228,Whiskey Sour,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,228,Whiskey Sour,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,228,Whiskey Sour,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,229,Cosmopolitan,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,229,Cosmopolitan,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,229,Cosmopolitan,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,230,Pina Colada,0.12
+ING-125,House Spirit,L,15,3,Maison Lucas Supply,Bar,230,Pina Colada,0.05
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,230,Pina Colada,0.04
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,231,Virgin Mojito (No Alcohol),0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,231,Virgin Mojito (No Alcohol),1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,231,Virgin Mojito (No Alcohol),0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,232,Virgin Passion Mojito,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,232,Virgin Passion Mojito,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,232,Virgin Passion Mojito,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,233,Yuzu Sparkler,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,233,Yuzu Sparkler,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,233,Yuzu Sparkler,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,234,Shirley Temple,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,234,Shirley Temple,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,234,Shirley Temple,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,235,Virgin Pina Colada,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,235,Virgin Pina Colada,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,235,Virgin Pina Colada,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,236,Cucumber Basil Smash,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,236,Cucumber Basil Smash,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,236,Cucumber Basil Smash,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,237,Berry Lemonade,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,237,Berry Lemonade,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,237,Berry Lemonade,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,238,Tropical Sunrise,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,238,Tropical Sunrise,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,238,Tropical Sunrise,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,239,Peach & Thyme Iced Tea,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,239,Peach & Thyme Iced Tea,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,239,Peach & Thyme Iced Tea,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,240,Mango Mule,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,240,Mango Mule,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,240,Mango Mule,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,241,Watermelon Mint Cooler,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,241,Watermelon Mint Cooler,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,241,Watermelon Mint Cooler,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,242,Grapefruit Rosemary Sparkler,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,242,Grapefruit Rosemary Sparkler,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,242,Grapefruit Rosemary Sparkler,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,243,Apple Cider Spritz,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,243,Apple Cider Spritz,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,243,Apple Cider Spritz,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,244,Lemongrass Ginger Fizz,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,244,Lemongrass Ginger Fizz,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,244,Lemongrass Ginger Fizz,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,245,Guava Mint Breeze,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,245,Guava Mint Breeze,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,245,Guava Mint Breeze,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,246,Coconut Limeade,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,246,Coconut Limeade,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,246,Coconut Limeade,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,247,Blueberry Vanilla Soda,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,247,Blueberry Vanilla Soda,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,247,Blueberry Vanilla Soda,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,248,Kiwi & Apple Crush,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,248,Kiwi & Apple Crush,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,248,Kiwi & Apple Crush,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,249,Pomegranate Tonic,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,249,Pomegranate Tonic,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,249,Pomegranate Tonic,0.06
+ING-120,Ice,kg,80,15,Maison Lucas Supply,Beverages,250,4P's Signature Fruit Punch,0.12
+ING-123,Soda Base,bottle,120,24,Maison Lucas Supply,Beverages,250,4P's Signature Fruit Punch,1
+ING-126,Citrus Mix,L,18,3,Maison Lucas Supply,Sauces & Oils,250,4P's Signature Fruit Punch,0.06

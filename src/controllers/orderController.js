@@ -1,4 +1,4 @@
-const { Order, OrderItem, Product, Table, BusinessDay, CashMovement, ShiftRecord, sequelize } = require('../models');
+const { Order, OrderItem, Product, ProductIngredient, Ingredient, InventoryMovement, Table, BusinessDay, CashMovement, ShiftRecord, sequelize } = require('../models');
 const { resetExpiredDailyAvailability } = require('../utils/productAvailability');
 
 const createOrder = async (req, res, next) => {
@@ -77,6 +77,32 @@ const createOrder = async (req, res, next) => {
                 product.remainingQty -= quantity;
                 if (product.remainingQty === 0) product.status = 'Out of Stock';
                 await product.save({ transaction });
+            }
+            const recipe = await ProductIngredient.findAll({ where: { productId: product.id }, transaction });
+            for (const component of recipe) {
+                const ingredient = await Ingredient.findByPk(component.ingredientId, {
+                    transaction,
+                    lock: transaction.LOCK.UPDATE
+                });
+                const required = Number(component.quantityPerServing) * quantity;
+                const before = Number(ingredient.quantity);
+                if (before < required) {
+                    const err = new Error(`${product.displayName || product.name} cannot be ordered: ${ingredient.name} stock is insufficient`);
+                    err.status = 409;
+                    throw err;
+                }
+                ingredient.quantity = before - required;
+                await ingredient.save({ transaction });
+                await InventoryMovement.create({
+                    ingredientId: ingredient.id,
+                    type: 'out',
+                    quantity: required,
+                    beforeQuantity: before,
+                    afterQuantity: ingredient.quantity,
+                    reason: `Order: ${product.displayName || product.name}`,
+                    performedBy: req.user?.id || null,
+                    businessDayId: req.businessDay?.id || null
+                }, { transaction });
             }
             additionalPrice += product.price * quantity;
             orderItemsData.push({
@@ -439,6 +465,27 @@ const cancelOrderItem = async (req, res, next) => {
             cancelledItem.product.remainingQty += cancelledItem.quantity;
             cancelledItem.product.status = 'In Stock';
             await cancelledItem.product.save({ transaction });
+        }
+        const recipe = await ProductIngredient.findAll({ where: { productId: cancelledItem.productId }, transaction });
+        for (const component of recipe) {
+            const ingredient = await Ingredient.findByPk(component.ingredientId, {
+                transaction,
+                lock: transaction.LOCK.UPDATE
+            });
+            const restored = Number(component.quantityPerServing) * cancelledItem.quantity;
+            const before = Number(ingredient.quantity);
+            ingredient.quantity = before + restored;
+            await ingredient.save({ transaction });
+            await InventoryMovement.create({
+                ingredientId: ingredient.id,
+                type: 'in',
+                quantity: restored,
+                beforeQuantity: before,
+                afterQuantity: ingredient.quantity,
+                reason: `Cancelled item: ${cancelledItem.product.displayName || cancelledItem.product.name}`,
+                performedBy: req.user.id,
+                businessDayId: order.businessDayId || null
+            }, { transaction });
         }
     });
     req.io.emit('order_item_updated', { itemId: cancelledItem.id, status: 'Cancelled', tableRefresh: true });

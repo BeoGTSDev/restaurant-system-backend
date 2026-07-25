@@ -1,10 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
+const { Op } = require('sequelize');
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const { sequelize, Category, Product, Zone, Table } = require('../models');
+const { sequelize, Category, Product, Zone, Table, Ingredient, ProductIngredient } = require('../models');
+const inventoryCategory = require('./inventoryCategory');
 
 function parseCSVLine(line) {
     const result = [];
@@ -157,12 +159,75 @@ async function importTablesAndZonesData(csvPath, transaction) {
     return { zonesCreated, tablesCreated, skipped };
 }
 
+async function importInventoryData(csvPath, transaction) {
+    const rows = readCsvRows(csvPath, [
+        'Ingredient_Name', 'Unit', 'Opening_Quantity', 'Reorder_Level',
+        'Menu_Item_No', 'Menu_Full_Name', 'Quantity_Per_Serving'
+    ]);
+    const productIds = [...new Set(rows.map(row => Number(row.Menu_Item_No)).filter(Boolean))];
+    const products = await Product.findAll({ where: { id: { [Op.in]: productIds } }, transaction });
+    const productMap = new Map(products.map(product => [product.id, product]));
+
+    const ingredientDefinitions = new Map();
+    for (const row of rows) {
+        if (row.Ingredient_Name && !ingredientDefinitions.has(row.Ingredient_Name)) {
+            ingredientDefinitions.set(row.Ingredient_Name, {
+                name: row.Ingredient_Name,
+                unit: row.Unit,
+                quantity: Number(row.Opening_Quantity || 0),
+                reorderLevel: Number(row.Reorder_Level || 0),
+                supplier: row.Supplier || null,
+                category: row.Inventory_Category || inventoryCategory(row.Ingredient_Name),
+                isActive: true
+            });
+        }
+    }
+    const ingredientNames = [...ingredientDefinitions.keys()];
+    const existingIngredients = await Ingredient.findAll({ where: { name: { [Op.in]: ingredientNames } }, transaction });
+    const existingNames = new Set(existingIngredients.map(item => item.name));
+    const newIngredients = [...ingredientDefinitions.values()].filter(item => !existingNames.has(item.name));
+    if (newIngredients.length) await Ingredient.bulkCreate(newIngredients, { transaction });
+    const ingredients = await Ingredient.findAll({ where: { name: { [Op.in]: ingredientNames } }, transaction });
+    const ingredientMap = new Map(ingredients.map(item => [item.name, item]));
+
+    const existingLinks = await ProductIngredient.findAll({
+        where: { productId: { [Op.in]: productIds } },
+        transaction
+    });
+    const existingLinkKeys = new Set(existingLinks.map(link => `${link.productId}:${link.ingredientId}`));
+    const links = [];
+    let skipped = 0;
+    for (const row of rows) {
+        const product = productMap.get(Number(row.Menu_Item_No));
+        const ingredient = ingredientMap.get(row.Ingredient_Name);
+        if (!product || !ingredient) {
+            skipped += 1;
+            continue;
+        }
+        const key = `${product.id}:${ingredient.id}`;
+        if (existingLinkKeys.has(key)) {
+            skipped += 1;
+            continue;
+        }
+        existingLinkKeys.add(key);
+        links.push({
+            productId: product.id,
+            ingredientId: ingredient.id,
+            quantityPerServing: Number(row.Quantity_Per_Serving || 0),
+            unit: row.Unit
+        });
+    }
+    if (links.length) await ProductIngredient.bulkCreate(links, { transaction });
+    return { ingredientsCreated: newIngredients.length, recipeLinksCreated: links.length, skipped };
+}
+
 async function importCsvData() {
     const menuCsvPath = findCsvPath(process.env.MENU_CSV_PATH, 'menu_database.csv');
     const tablesZonesCsvPath = findCsvPath(process.env.TABLES_ZONES_CSV_PATH, 'tables_zones_database.csv');
+    const inventoryCsvPath = findCsvPath(process.env.INVENTORY_CSV_PATH, 'inventory_recipes_database.csv');
 
-    if (!menuCsvPath && !tablesZonesCsvPath) {
-        throw new Error('No import CSV files found. Expected menu_database.csv and/or tables_zones_database.csv in the project root.');
+    if (!menuCsvPath && !tablesZonesCsvPath && !inventoryCsvPath) {
+        throw new Error('No import CSV files found.');
     }
 
     await sequelize.authenticate();
@@ -178,6 +243,10 @@ async function importCsvData() {
         if (tablesZonesCsvPath) {
             const result = await importTablesAndZonesData(tablesZonesCsvPath, transaction);
             console.log(`Tables/zones import complete: ${result.zonesCreated} zones and ${result.tablesCreated} tables created, ${result.skipped} skipped.`);
+        }
+        if (inventoryCsvPath) {
+            const result = await importInventoryData(inventoryCsvPath, transaction);
+            console.log(`Inventory import complete: ${result.ingredientsCreated} ingredients and ${result.recipeLinksCreated} recipe links created, ${result.skipped} skipped.`);
         }
 
         await transaction.commit();
@@ -201,6 +270,7 @@ module.exports = {
     importCsvData,
     importMenuData,
     importTablesAndZonesData,
+    importInventoryData,
     parseCSVLine,
     readCsvRows
 };

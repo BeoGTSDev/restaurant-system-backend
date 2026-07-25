@@ -1,7 +1,17 @@
-const { Ingredient, InventoryMovement, User, BusinessDay, sequelize } = require('../models');
+const { Ingredient, InventoryMovement, ProductIngredient, Product, User, BusinessDay, sequelize } = require('../models');
 
 const list = async (req, res) => {
-    const ingredients = await Ingredient.findAll({ order: [['name', 'ASC']] });
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    const ingredients = await Ingredient.findAll({
+        include: [{
+            model: ProductIngredient,
+            as: 'productLinks',
+            include: [{ model: Product, as: 'product', attributes: ['id', 'name', 'displayName'] }]
+        }],
+        order: [['name', 'ASC']]
+    });
     const movements = await InventoryMovement.findAll({
         include: [
             { model: Ingredient, as: 'ingredient', attributes: ['id', 'name', 'unit'] },

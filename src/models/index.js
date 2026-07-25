@@ -19,6 +19,8 @@ const CashMovement = require('./CashMovement')(sequelize);
 const OperationalTransfer = require('./OperationalTransfer')(sequelize);
 const Ingredient = require('./Ingredient')(sequelize);
 const InventoryMovement = require('./InventoryMovement')(sequelize);
+const ShiftAreaConfig = require('./ShiftAreaConfig')(sequelize);
+const ProductIngredient = require('./ProductIngredient')(sequelize);
 
 
 
@@ -73,6 +75,12 @@ InventoryMovement.belongsTo(Ingredient, { foreignKey: 'ingredientId', as: 'ingre
 Ingredient.hasMany(InventoryMovement, { foreignKey: 'ingredientId', as: 'movements' });
 InventoryMovement.belongsTo(User, { foreignKey: 'performedBy', as: 'performer' });
 InventoryMovement.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+ShiftAreaConfig.belongsTo(BusinessDay, { foreignKey: 'businessDayId', as: 'businessDay' });
+ShiftAreaConfig.belongsTo(Zone, { foreignKey: 'zoneId', as: 'zone' });
+Product.hasMany(ProductIngredient, { foreignKey: 'productId', as: 'recipe' });
+ProductIngredient.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Ingredient.hasMany(ProductIngredient, { foreignKey: 'ingredientId', as: 'productLinks' });
+ProductIngredient.belongsTo(Ingredient, { foreignKey: 'ingredientId', as: 'ingredient' });
 
 OrderTransfer.belongsTo(Order, { foreignKey: 'originalOrderId', as: 'originalOrder' });
 OrderTransfer.belongsTo(Order, { foreignKey: 'newOrderId', as: 'newOrder' });
@@ -101,5 +109,9 @@ module.exports = {
     OperationalTransfer,
     Ingredient,
     InventoryMovement
+    ,
+    ShiftAreaConfig
+    ,
+    ProductIngredient
 };
 

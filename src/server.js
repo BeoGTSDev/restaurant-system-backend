@@ -213,6 +213,15 @@ const startServer = async () => {
                 }
             }
         }
+        const ingredientTable = await queryInterface.describeTable('ingredients').catch(() => null);
+        if (ingredientTable && !ingredientTable.category) {
+            await queryInterface.addColumn('ingredients', 'category', {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'Other'
+            });
+            console.log('Added category column to ingredients table');
+        }
         // Earlier versions stored allergy alerts in specialNote. Split them so
         // customer requests and safety alerts can be displayed at the same time.
         await sequelize.query(`
