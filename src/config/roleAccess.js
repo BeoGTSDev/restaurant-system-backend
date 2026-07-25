@@ -33,9 +33,9 @@ const DEFAULT_ROLE_PERMISSIONS = {
     Waiter: ['view_dashboard','view_menu','view_tables','create_order','view_orders','update_order','view_transfers'],
     Reception: ['view_dashboard','view_menu','view_tables','manage_tables','create_order','view_orders','approve_booking'],
     Cashier: ['view_dashboard','view_menu','view_tables','create_order','view_orders','view_receipts','cashout','manage_cash_day'],
-    Chef: ['view_dashboard','view_menu','view_orders','update_order_status'],
-    HR: ['view_dashboard','manage_users'],
-    SupplyManager: ['view_dashboard','view_menu','manage_products','manage_categories','manage_inventory'],
+    Chef: ['view_dashboard','view_menu','view_tables','view_orders','update_order_status'],
+    HR: ['view_dashboard','view_tables','manage_users'],
+    SupplyManager: ['view_dashboard','view_menu','view_tables','manage_products','manage_categories','manage_inventory'],
     Customer: []
 };
 

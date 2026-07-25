@@ -60,7 +60,7 @@ app.use(cors({
         ? callback(null, true)
         : callback(Object.assign(new Error('Origin not allowed by CORS'), { status: 403 })),
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'auth-token']
+    allowedHeaders: ['Content-Type', 'Authorization', 'auth-token', 'x-table-session']
 }));
 
 // Body parser MUST come before routes
