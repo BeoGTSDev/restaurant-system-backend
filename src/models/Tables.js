@@ -28,6 +28,8 @@ const Table = sequelize.define('Tables', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    guestLanguage: { type: DataTypes.STRING(8), allowNull: true },
+    guestAllergies: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
 
     specialNote: {
         type: DataTypes.STRING,

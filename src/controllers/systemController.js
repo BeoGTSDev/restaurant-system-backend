@@ -97,6 +97,8 @@ const startNewBusinessDay = async (req, res, next) => {
         await Table.update(
             {
                 status: 'Ready', guestCount: null, nationality: null, specialNote: null,
+                guestLanguage: null, guestAllergies: [],
+                allergyNote: null,
                 qrSessionActive: false, qrSessionOpenedAt: null,
                 billVoucherCode: null, billDiscountPercent: 0,
                 billDiscountReason: null, billDiscountApprovedBy: null,
@@ -229,6 +231,9 @@ const resetTestEnvironment = async (req, res) => {
                 status: 'Ready',
                 guestCount: null,
                 nationality: null,
+                guestLanguage: null,
+                guestAllergies: [],
+                allergyNote: null,
                 specialNote: null,
                 qrSessionActive: false,
                 qrSessionOpenedAt: null,

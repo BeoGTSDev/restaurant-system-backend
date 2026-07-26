@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { createTable, getAllTables, openTable, createCustomerTableSession, cleanTable, updateTable, deleteTable, transferTable } = require('../controllers/tableController');
+const { createTable, getAllTables, openTable, createCustomerTableSession, updateCustomerPreferences, cleanTable, updateTable, deleteTable, transferTable } = require('../controllers/tableController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const authorize = require('../middleware/authorize');
+const verifyCustomerTableSession = require('../middleware/customerTableSession');
 
 router.post('/customer/session', createCustomerTableSession);
+router.put('/customer/preferences', verifyCustomerTableSession, updateCustomerPreferences);
 router.get('/', verifyToken, authorize(['manage_tables', 'create_order', 'view_orders']), getAllTables);
 router.post('/create', verifyToken, authorize('manage_tables'), createTable);
 router.put('/:id/open', verifyToken, authorize('create_order'), openTable);

@@ -2,6 +2,7 @@ const { Table, Bill, Zone, Order, OperationalTransfer, BusinessDay, ShiftRecord,
 const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const { generateTableQrCode } = require('../utils/tableQr');
+const { GUEST_LANGUAGES, GUEST_ALLERGIES } = require('../constants/customerPreferences');
 
 const openTable = async (req, res, next) => {
     const { id } = req.params;
@@ -32,6 +33,8 @@ const openTable = async (req, res, next) => {
     table.billDiscountPercent = 0;
     table.billDiscountReason = null;
     table.billDiscountApprovedBy = null;
+    table.guestLanguage = null;
+    table.guestAllergies = [];
     if (guestCount !== undefined) table.guestCount = String(guestCount);
     if (nationality) table.nationality = nationality;
     if (specialNote) table.specialNote = specialNote;
@@ -60,7 +63,46 @@ const createCustomerTableSession = async (req, res, next) => {
         success: true,
         data: {
             token,
-            table: { id: table.id, name: table.name, status: table.status, zoneId: table.zoneId }
+            table: {
+                id: table.id,
+                name: table.name,
+                status: table.status,
+                zoneId: table.zoneId,
+                guestLanguage: table.guestLanguage,
+                guestAllergies: table.guestAllergies || []
+            }
+        }
+    });
+};
+
+const updateCustomerPreferences = async (req, res, next) => {
+    const language = String(req.body?.language || '').trim().toLowerCase();
+    const allergies = Array.isArray(req.body?.allergies) ? [...new Set(req.body.allergies)] : [];
+    if (!GUEST_LANGUAGES[language]) {
+        return next(Object.assign(new Error('Unsupported guest language.'), { status: 400 }));
+    }
+    if (allergies.some(item => !GUEST_ALLERGIES.includes(item))) {
+        return next(Object.assign(new Error('One or more allergy values are not supported.'), { status: 400 }));
+    }
+    const table = await Table.findByPk(req.customerTable.id);
+    table.guestLanguage = language;
+    table.nationality = GUEST_LANGUAGES[language].nationality;
+    table.guestAllergies = allergies;
+    table.allergyNote = allergies.length ? `ALLERGY: ${allergies.join(', ')}` : null;
+    await table.save();
+    req.io.emit('table_preferences_update', {
+        tableId: table.id,
+        guestLanguage: language,
+        nationality: table.nationality,
+        guestAllergies: allergies,
+        allergyNote: table.allergyNote
+    });
+    res.json({
+        success: true,
+        data: {
+            language,
+            nationality: table.nationality,
+            allergies
         }
     });
 };
@@ -181,6 +223,9 @@ const cleanTable = async (req, res, next) => {
         status: 'Ready',
         guestCount: null,
         nationality: null,
+        guestLanguage: null,
+        guestAllergies: [],
+        allergyNote: null,
         specialNote: null,
         qrSessionActive: false,
         qrSessionOpenedAt: null,
@@ -229,6 +274,14 @@ const updateTable = async (req, res, next) => {
     if (req.body.nationality !== undefined) table.nationality = req.body.nationality;
     if (req.body.specialNote !== undefined) table.specialNote = req.body.specialNote;
     if (req.body.allergyNote !== undefined) table.allergyNote = req.body.allergyNote;
+    if (req.body.guestAllergies !== undefined) {
+        const allergies = Array.isArray(req.body.guestAllergies) ? [...new Set(req.body.guestAllergies)] : [];
+        if (allergies.some(item => !GUEST_ALLERGIES.includes(item))) {
+            return next(Object.assign(new Error('One or more allergy values are not supported.'), { status: 400 }));
+        }
+        table.guestAllergies = allergies;
+        table.allergyNote = allergies.length ? `ALLERGY: ${allergies.join(', ')}` : null;
+    }
     
     await table.save();
 
@@ -296,6 +349,9 @@ const transferTable = async (req, res, next) => {
         targetTable.status = sourceTable.status;
         targetTable.guestCount = sourceTable.guestCount;
         targetTable.nationality = sourceTable.nationality;
+        targetTable.guestLanguage = sourceTable.guestLanguage;
+        targetTable.guestAllergies = sourceTable.guestAllergies;
+        targetTable.allergyNote = sourceTable.allergyNote;
         targetTable.specialNote = sourceTable.specialNote;
         targetTable.qrSessionActive = true;
         targetTable.qrSessionVersion = Number(targetTable.qrSessionVersion || 0) + 1;
@@ -306,6 +362,9 @@ const transferTable = async (req, res, next) => {
         sourceTable.status = 'Ready';
         sourceTable.guestCount = null;
         sourceTable.nationality = null;
+        sourceTable.guestLanguage = null;
+        sourceTable.guestAllergies = [];
+        sourceTable.allergyNote = null;
         sourceTable.specialNote = null;
         sourceTable.qrSessionActive = false;
         sourceTable.qrSessionVersion = Number(sourceTable.qrSessionVersion || 0) + 1;
@@ -342,5 +401,6 @@ const transferTable = async (req, res, next) => {
 
 module.exports = { createTable, getAllTables, openTable,
     createCustomerTableSession,
+    updateCustomerPreferences,
     requestBillCheck, requestOrderCheck, customerSelfPay,
     cleanTable, updateTable, deleteTable, transferTable };
