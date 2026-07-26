@@ -32,11 +32,13 @@ const app = express();
 const PORT = process.env.API_PORT || process.env.PORT || 5000;
 const server = http.createServer(app);
 
-const configuredOrigins = String(process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:3000,null')
+const configuredOrigins = String(process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:3000,http://localhost:3010,null')
     .split(',').map(value => value.trim()).filter(Boolean);
-const originAllowed = (origin) => !origin || configuredOrigins.includes(origin);
+const originAllowed = (origin) => !origin
+    || configuredOrigins.includes(origin)
+    || /^https:\/\/[a-z0-9-]+\.up\.railway\.app$/i.test(origin);
 const io = new Server(server, {
-    cors: { origin: configuredOrigins, methods: ['GET', 'POST'] }
+    cors: { origin: (origin, callback) => originAllowed(origin) ? callback(null, true) : callback(new Error('Origin not allowed by CORS')), methods: ['GET', 'POST'] }
 });
 
 // Security middleware
@@ -375,6 +377,7 @@ const inventoryRoutes = require('./routes/inventoryRoutes');
 const voucherRoutes = require('./routes/voucherRoutes');
 const receiptRoutes = require('./routes/receiptRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const kitchenRoutes = require('./routes/kitchenRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -395,6 +398,7 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/vouchers', voucherRoutes);
 app.use('/api/receipts', receiptRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/kitchen', kitchenRoutes);
 
 // Error middleware must be registered after every route.
 app.use(errorHandler);
