@@ -1,21 +1,37 @@
 const { Op } = require('sequelize');
 const { Receipt, ReceiptItem, User } = require('../models');
 
+const BUSINESS_TIMEZONE_OFFSET_MS = 7 * 60 * 60 * 1000;
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+const parseDateOnly = value => {
+    if (!DATE_ONLY.test(String(value || ''))) return null;
+    const [year, month, day] = String(value).split('-').map(Number);
+    const utc = Date.UTC(year, month - 1, day);
+    const check = new Date(utc);
+    if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) return null;
+    return { year, month, day, utc };
+};
+const vietnamDate = date => new Date(date.getTime() + BUSINESS_TIMEZONE_OFFSET_MS).toISOString().slice(0, 10);
+
 const parseRange = (startDate, endDate) => {
     if (!startDate || !endDate) throw Object.assign(new Error('Start date and end date are required.'), { status: 400 });
-    const start = new Date(`${startDate}T00:00:00.000Z`);
-    const end = new Date(`${endDate}T23:59:59.999Z`);
-    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || start > end) {
+    const startParts = parseDateOnly(startDate);
+    const endParts = parseDateOnly(endDate);
+    if (!startParts || !endParts || startParts.utc > endParts.utc) {
         throw Object.assign(new Error('Invalid receipt date range.'), { status: 400 });
     }
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
-    const earliest = new Date(todayEnd);
-    earliest.setDate(earliest.getDate() - 29);
-    earliest.setHours(0, 0, 0, 0);
-    if (start < earliest || end > todayEnd || end.getTime() - start.getTime() > 30 * 86400000) {
+    const today = vietnamDate(new Date());
+    const todayParts = parseDateOnly(today);
+    const earliest = new Date(todayParts.utc);
+    earliest.setUTCDate(earliest.getUTCDate() - 29);
+    if (startParts.utc < earliest.getTime()
+        || endParts.utc > todayParts.utc
+        || endParts.utc - startParts.utc > 29 * 86400000) {
         throw Object.assign(new Error('Receipts can only be searched within the most recent 30 days.'), { status: 400 });
     }
+    // Convert Vietnam calendar-day boundaries to UTC instants for paidAt.
+    const start = new Date(startParts.utc - BUSINESS_TIMEZONE_OFFSET_MS);
+    const end = new Date(endParts.utc + 86400000 - BUSINESS_TIMEZONE_OFFSET_MS - 1);
     return { start, end };
 };
 

@@ -7,6 +7,7 @@ module.exports = sequelize.define('ReceiptItem', {
     orderId: { type: DataTypes.INTEGER, allowNull: true },
     productId: { type: DataTypes.INTEGER, allowNull: true },
     productName: { type: DataTypes.STRING, allowNull: false },
+    categoryName: { type: DataTypes.STRING, allowNull: true },
     quantity: { type: DataTypes.INTEGER, allowNull: false },
     unitPrice: { type: DataTypes.DECIMAL(14, 2), allowNull: false },
     lineTotal: { type: DataTypes.DECIMAL(14, 2), allowNull: false },

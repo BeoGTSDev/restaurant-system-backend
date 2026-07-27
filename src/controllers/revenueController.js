@@ -1,16 +1,23 @@
 const {
-    Order, OrderItem, Product, Category, BusinessDay,
-    ShiftRecord, OrderTransfer, CashMovement, User, Receipt
+    Order, BusinessDay, ShiftRecord, OrderTransfer, CashMovement, User, Receipt, ReceiptItem
 } = require('../models');
-const { Op, fn, col, literal } = require('sequelize');
+const { Op, fn, col } = require('sequelize');
 
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+const vietnamDayBoundary = (value, endOfDay = false) => {
+    if (!DATE_ONLY.test(String(value || ''))) return null;
+    const [year, month, day] = String(value).split('-').map(Number);
+    const utc = Date.UTC(year, month - 1, day);
+    const check = new Date(utc);
+    if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) return null;
+    return new Date(`${value}T${endOfDay ? '23:59:59.999' : '00:00:00.000'}+07:00`);
+};
 
 const getDailyRevenue = async (req, res, next) => {
     const businessDay = await BusinessDay.findOne({
         where: { status: 'open' },
         order: [['startedAt', 'DESC']]
     });
-    const NOW = new Date();
     if (!businessDay) {
         return res.status(200).json({
             success: true,
@@ -20,27 +27,12 @@ const getDailyRevenue = async (req, res, next) => {
         });
     }
 
-    // Revenue belongs to the active POS business session, not to the calendar
-    // date. This makes a newly opened day start at zero even when it is opened
-    // again on the same calendar day.
-    const revenueWindow = {
-        [Op.gte]: businessDay.startedAt,
-        [Op.lte]: NOW
-    };
-
-    const totalRevenue = await Order.sum('totalPrice', {
-        where: {
-            status: 'Paid',
-            updatedAt: revenueWindow
-        }
-    });
-
-    const totalOrders = await Order.count({
-        where: {
-            status: 'Paid',
-            updatedAt: revenueWindow
-        }
-    });
+    // A receipt is the immutable paid-bill snapshot. Order.totalPrice is a
+    // pre-adjustment operational value and must not be used as revenue.
+    const [totalRevenue, totalOrders] = await Promise.all([
+        Receipt.sum('totalAmount', { where: { businessDayId: businessDay.id } }),
+        Receipt.count({ where: { businessDayId: businessDay.id } })
+    ]);
 
     res.status(200).json({
         success: true,
@@ -57,69 +49,54 @@ const getDailyRevenue = async (req, res, next) => {
 
 const getBestSellingProducts = async (req, res, next) => {
     const { limit = 10, startDate, endDate } = req.query;
-
-    const whereClause = { status: 'Paid' };
+    const receiptWhere = {};
     if (startDate || endDate) {
-        whereClause.createdAt = {};
-        if (startDate) {
-            whereClause.createdAt[Op.gte] = new Date(startDate);
+        const start = startDate ? vietnamDayBoundary(startDate) : null;
+        const end = endDate ? vietnamDayBoundary(endDate, true) : null;
+        if ((startDate && !start) || (endDate && !end) || (start && end && start > end)) {
+            return next(Object.assign(new Error('Invalid best-seller date range.'), { status: 400 }));
         }
-        if (endDate) {
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999);
-            whereClause.createdAt[Op.lte] = end;
-        }
+        receiptWhere.paidAt = {};
+        if (start) receiptWhere.paidAt[Op.gte] = start;
+        if (end) receiptWhere.paidAt[Op.lte] = end;
     }
 
     try {
-        const bestSellers = await OrderItem.findAll({
-        attributes: [
-            'productId',
-            [fn('SUM', col('OrderItem.quantity')), 'totalQuantity'],
-            [fn('SUM', col('OrderItem.price')), 'totalRevenue']
-        ],
-        include: [
-            {
-                model: Order,
-                as: 'order',
+        const safeLimit = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+        const bestSellers = await ReceiptItem.findAll({
+            attributes: [
+                'productId',
+                'productName',
+                'categoryName',
+                [fn('SUM', col('ReceiptItem.quantity')), 'totalQuantity'],
+                [fn('SUM', col('ReceiptItem.lineTotal')), 'totalRevenue']
+            ],
+            include: [{
+                model: Receipt,
+                as: 'receipt',
                 attributes: [],
-                where: whereClause,
+                where: receiptWhere,
                 required: true
-            },
-            {
-                model: Product,
-                as: 'product',
-                attributes: ['id', 'name', 'price'],
-                include: [
-                    {
-                        model: Category,
-                        as: 'category',
-                        attributes: ['id', 'name']
-                    }
-                ],
-                required: true
-            }
-        ],
-        group: ['product.id', 'product->category.id', 'OrderItem.productId'],
-        order: [[fn('SUM', col('OrderItem.quantity')), 'DESC']],
-        subQuery: false,
-        limit: parseInt(limit),
-        raw: false
-    });
+            }],
+            group: ['ReceiptItem.productId', 'ReceiptItem.productName', 'ReceiptItem.categoryName'],
+            order: [[fn('SUM', col('ReceiptItem.quantity')), 'DESC']],
+            limit: safeLimit,
+            raw: true,
+            subQuery: false
+        });
 
         res.status(200).json({
-        success: true,
-        message: 'Best selling products',
-        data: bestSellers.map(item => ({
-            productId: item.productId,
-            productName: item.product.name,
-            productPrice: item.product.price,
-            category: item.product.category ? item.product.category.name : 'N/A',
-            totalQuantitySold: parseInt(item.dataValues.totalQuantity),
-            totalRevenue: parseFloat(item.dataValues.totalRevenue) || 0
-        })),
-        dateRange: startDate && endDate ? `${startDate} to ${endDate}` : 'All time',
-        limit: parseInt(limit)
+            success: true,
+            message: 'Best selling products',
+            data: bestSellers.map(item => ({
+                productId: item.productId,
+                productName: item.productName,
+                category: item.categoryName || 'N/A',
+                totalQuantitySold: Number(item.totalQuantity || 0),
+                totalRevenue: Number(item.totalRevenue || 0)
+            })),
+            dateRange: startDate || endDate ? `${startDate || 'beginning'} to ${endDate || 'now'}` : 'All time',
+            limit: safeLimit
         });
     } catch (err) {
         console.error('getBestSellingProducts error:', err);
@@ -129,49 +106,57 @@ const getBestSellingProducts = async (req, res, next) => {
 
 const getMonthlyRevenue = async (req, res, next) => {
     const { year, month } = req.query;
-
-    const whereClause = { status: 'Paid' };
+    const dayWhere = {};
+    if (month && !year) {
+        return next(Object.assign(new Error('Report year is required when month is provided.'), { status: 400 }));
+    }
     if (year) {
-        const startOfYear = new Date(year, 0, 1);
-        const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
-        whereClause.createdAt = {
-            [Op.gte]: startOfYear,
-            [Op.lte]: endOfYear
-        };
-
-        if (month) {
-            const monthNum = parseInt(month) - 1;
-            const startOfMonth = new Date(year, monthNum, 1);
-            const endOfMonth = new Date(year, monthNum + 1, 0, 23, 59, 59, 999);
-            whereClause.createdAt = {
-                [Op.gte]: startOfMonth,
-                [Op.lte]: endOfMonth
-            };
+        const yearNumber = Number(year);
+        if (!Number.isInteger(yearNumber) || yearNumber < 2000 || yearNumber > 2200) {
+            return next(Object.assign(new Error('Invalid report year.'), { status: 400 }));
         }
+        let start = `${yearNumber}-01-01`;
+        let end = `${yearNumber}-12-31`;
+        if (month) {
+            const monthNumber = Number(month);
+            if (!Number.isInteger(monthNumber) || monthNumber < 1 || monthNumber > 12) {
+                return next(Object.assign(new Error('Invalid report month.'), { status: 400 }));
+            }
+            start = `${yearNumber}-${String(monthNumber).padStart(2, '0')}-01`;
+            end = new Date(Date.UTC(yearNumber, monthNumber, 0)).toISOString().slice(0, 10);
+        }
+        dayWhere.businessDate = { [Op.between]: [start, end] };
     }
 
-    const allOrders = await Order.findAll({
-        where: whereClause,
-        attributes: ['id', 'totalPrice', 'createdAt'],
+    const receipts = await Receipt.findAll({
+        attributes: ['totalAmount'],
+        include: [{
+            model: BusinessDay,
+            as: 'businessDay',
+            attributes: ['businessDate'],
+            where: dayWhere,
+            required: true
+        }],
         raw: true
     });
 
     const groupedByMonth = {};
-    allOrders.forEach(order => {
-        const date = new Date(order.createdAt);
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    receipts.forEach(receipt => {
+        const businessDate = receipt['businessDay.businessDate'];
+        const [receiptYear, receiptMonth] = String(businessDate).split('-').map(Number);
+        const monthKey = `${receiptYear}-${String(receiptMonth).padStart(2, '0')}`;
         
         if (!groupedByMonth[monthKey]) {
             groupedByMonth[monthKey] = {
-                year: date.getFullYear(),
-                month: date.getMonth() + 1,
-                monthName: date.toLocaleString('en', { month: 'long' }),
+                year: receiptYear,
+                month: receiptMonth,
+                monthName: new Date(Date.UTC(receiptYear, receiptMonth - 1, 1)).toLocaleString('en', { month: 'long', timeZone: 'UTC' }),
                 totalRevenue: 0,
                 totalOrders: 0
             };
         }
 
-        groupedByMonth[monthKey].totalRevenue += parseFloat(order.totalPrice) || 0;
+        groupedByMonth[monthKey].totalRevenue += Number(receipt.totalAmount) || 0;
         groupedByMonth[monthKey].totalOrders += 1;
     });
 
@@ -228,19 +213,44 @@ const getOperationsReport = async (req, res) => {
             where: { businessDayId: businessDay.id },
             order: [['createdAt', 'DESC']]
         }),
-        Receipt.findAll({ where: { businessDayId: businessDay.id }, attributes: ['totalAmount'] })
+        Receipt.findAll({
+            where: { businessDayId: businessDay.id },
+            attributes: [
+                'id', 'receiptNumber', 'tableId', 'tableName', 'subtotal',
+                'discountAmount', 'totalAmount', 'paymentMethod', 'cashReceived',
+                'changeDue', 'voucherCode', 'billDiscountAmount', 'foodVatAmount',
+                'alcoholVatAmount', 'serviceChargeAmount', 'paidBy', 'paidAt'
+            ],
+            include: [{ model: User, as: 'paymentStaff', attributes: ['id', 'fullName', 'staffCode'] }],
+            order: [['paidAt', 'DESC']]
+        })
     ]);
 
-    const paidOrders = orders.filter(order => order.status === 'Paid');
     const cashIn = cashMovements.filter(item => item.type === 'in').reduce((s, item) => s + Number(item.amount), 0);
     const cashOut = cashMovements.filter(item => item.type === 'out').reduce((s, item) => s + Number(item.amount), 0);
+    const sumReceipt = field => receipts.reduce((sum, receipt) => sum + Number(receipt[field] || 0), 0);
+    const paymentBreakdown = receipts.reduce((result, receipt) => {
+        const method = receipt.paymentMethod || 'Other';
+        if (!result[method]) result[method] = { count: 0, amount: 0 };
+        result[method].count += 1;
+        result[method].amount += Number(receipt.totalAmount || 0);
+        return result;
+    }, {});
+    const calculatedCashSales = receipts
+        .filter(receipt => receipt.paymentMethod === 'Cash')
+        .reduce((sum, receipt) => sum + Number(receipt.totalAmount || 0), 0);
     res.status(200).json({
         success: true,
         data: {
             businessDay,
             summary: {
-                revenue: receipts.reduce((s, receipt) => s + Number(receipt.totalAmount), 0),
-                paidOrders: paidOrders.length,
+                revenue: sumReceipt('totalAmount'),
+                grossSales: sumReceipt('subtotal'),
+                discounts: sumReceipt('discountAmount'),
+                foodVat: sumReceipt('foodVatAmount'),
+                alcoholVat: sumReceipt('alcoholVatAmount'),
+                serviceCharge: sumReceipt('serviceChargeAmount'),
+                paidOrders: receipts.length,
                 activeOrders: orders.filter(order => ['Pending', 'Order'].includes(order.status)).length,
                 shifts: shifts.length,
                 activeShifts: shifts.filter(shift => shift.status === 'open').length,
@@ -248,12 +258,16 @@ const getOperationsReport = async (req, res) => {
                 openingCash: Number(businessDay.openingCash || 0),
                 cashIn,
                 cashOut,
-                expectedCash: Number(businessDay.openingCash || 0) + Number(businessDay.cashSales || 0) + cashIn - cashOut
+                cashSales: calculatedCashSales,
+                recordedCashSales: Number(businessDay.cashSales || 0),
+                expectedCash: Number(businessDay.openingCash || 0) + calculatedCashSales + cashIn - cashOut,
+                paymentBreakdown
             },
             shifts,
             transfers,
             cashMovements,
-            orders
+            orders,
+            receipts
         }
     });
 };

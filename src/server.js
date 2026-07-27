@@ -264,6 +264,9 @@ const startServer = async () => {
                 ,serviceChargeAmount: { type: DataTypes.DECIMAL(14, 2), allowNull: false, defaultValue: 0 }
                 ,serviceChargeName: { type: DataTypes.STRING, allowNull: true }
             }],
+            ['receipt_items', {
+                categoryName: { type: DataTypes.STRING, allowNull: true }
+            }],
             ['payment_transactions', {
                 createdBy: { type: DataTypes.INTEGER, allowNull: true }
             }],

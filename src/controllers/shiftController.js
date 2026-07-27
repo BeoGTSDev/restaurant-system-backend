@@ -1,4 +1,4 @@
-const { ShiftRecord, ShiftAreaConfig, Order, User, BusinessDay, Zone } = require('../models');
+const { ShiftRecord, ShiftAreaConfig, Order, User, BusinessDay, Zone, Receipt } = require('../models');
 const { sequelize } = require('../models');
 const { Op } = require('sequelize');
 
@@ -196,19 +196,17 @@ const closeShift = async (req, res, next) => {
         return next(err);
     }
 
-    // Calculate revenue attributed to this staff shift.
-    const ordersForShift = await Order.findAll({
+    // Attribute settled revenue to the staff account that processed payment,
+    // within this deployment window and business day.
+    const paidAt = { [Op.gte]: shift.openedAt || shift.createdAt };
+    if (shift.closedAt) paidAt[Op.lte] = shift.closedAt;
+    const totalRevenue = Number(await Receipt.sum('totalAmount', {
         where: {
-            status: 'Paid',
-            shiftId: shift.id
-        },
-        attributes: [
-            [sequelize.fn('SUM', sequelize.col('totalPrice')), 'total']
-        ],
-        raw: true
-    });
-
-    const totalRevenue = parseFloat(ordersForShift[0]?.total || 0);
+            businessDayId: shift.businessDayId,
+            paidBy: shift.cashierId,
+            paidAt
+        }
+    }) || 0);
     shift.totalRevenue = totalRevenue;
     shift.notes = notes || '';
     shift.status = 'closed';
@@ -250,14 +248,23 @@ const getShiftReport = async (req, res, next) => {
         return next(err);
     }
 
-    // Get all orders for this shift
+    const receiptWhere = {
+        businessDayId: shift.businessDayId,
+        paidBy: shift.cashierId,
+        paidAt: { [Op.gte]: shift.openedAt || shift.createdAt }
+    };
+    if (shift.closedAt) receiptWhere.paidAt[Op.lte] = shift.closedAt;
+    const receipts = await Receipt.findAll({
+        where: receiptWhere,
+        order: [['paidAt', 'ASC']]
+    });
+
+    // Order activity is kept separately from settled revenue. It is filtered
+    // by the same business day and the account that created the order.
     const orders = await Order.findAll({
         where: {
-            status: 'Paid',
-            createdAt: {
-                [Op.gte]: new Date(`${shift.shiftDate} 00:00:00`),
-                [Op.lte]: new Date(`${shift.shiftDate} 23:59:59`)
-            }
+            businessDayId: shift.businessDayId,
+            createdBy: shift.cashierId
         },
         attributes: ['id', 'tableId', 'totalPrice', 'createdAt'],
         order: [['createdAt', 'ASC']],
@@ -285,9 +292,11 @@ const getShiftReport = async (req, res, next) => {
         },
         ordersSummary: {
             totalOrders: orders.length,
-            totalAmount: orders.reduce((sum, o) => sum + parseFloat(o.totalPrice), 0)
+            paidBills: receipts.length,
+            totalAmount: receipts.reduce((sum, receipt) => sum + Number(receipt.totalAmount), 0)
         },
-        orders: orders
+        orders,
+        receipts
     });
 };
 

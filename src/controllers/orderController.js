@@ -416,6 +416,7 @@ const payBillByTable = async (req, res, next) => {
             orderId: item.orderId,
             productId: item.productId,
             productName: item.product?.displayName || item.product?.name || `Product ${item.productId}`,
+            categoryName: item.product?.category?.name || null,
             quantity: item.quantity,
             unitPrice: item.price,
             lineTotal: Number(item.price) * Number(item.quantity),
