@@ -29,7 +29,7 @@ router.post('/table/:tableId/bill-adjustments', verifyToken, authorize('view_ord
 
 router.put('/table/:tableId/pay', verifyToken, authorize('cashout'), payBillByTable);
 
-router.put('/items/:itemId/status', verifyToken, authorize('update_order_status'), updateOrderItemStatus);
+router.put('/items/:itemId/status', verifyToken, authorize(['update_order_status', 'work_kitchen_station']), updateOrderItemStatus);
 router.post('/items/:itemId/cancel', verifyToken, authorize(['create_order', 'update_order']), cancelOrderItem);
 
 module.exports = router;

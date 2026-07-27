@@ -11,6 +11,10 @@ const PERMISSIONS = [
     ['update_order', 'Edit or transfer active orders'],
     ['delete_order', 'Cancel or remove order items'],
     ['update_order_status', 'Update kitchen order status'],
+    ['view_dishup', 'Open the Dish Up kitchen display'],
+    ['manage_expeditor', 'Fire, complete, fail, cancel and return dishes at Expeditor'],
+    ['work_kitchen_station', 'Join kitchen stations and update preparation status'],
+    ['view_kitchen_logs', 'View Dish Up status history and kitchen audit logs'],
     ['view_transfers', 'View transfer history'],
     ['manage_users', 'Create and manage staff accounts'],
     ['manage_inventory', 'Manage ingredients, recipes and stock'],
@@ -27,13 +31,13 @@ const PERMISSIONS = [
 
 const DEFAULT_ROLE_PERMISSIONS = {
     Admin: PERMISSIONS.map(([name]) => name),
-    RM: ['view_dashboard','view_menu','manage_products','set_menu_availability','manage_categories','view_tables','manage_tables','create_order','view_orders','update_order','delete_order','view_transfers','manage_users','manage_inventory','view_receipts','view_reports','manage_shifts','cashout','approve_bill_discount','manage_vouchers','manage_cash_day','approve_booking'],
-    AssistantManager: ['view_dashboard','view_menu','manage_products','set_menu_availability','view_tables','manage_tables','create_order','view_orders','update_order','delete_order','view_transfers','manage_inventory','view_receipts','view_reports','manage_shifts','cashout','approve_bill_discount','manage_vouchers','manage_cash_day','approve_booking'],
-    Leader: ['view_dashboard','view_menu','set_menu_availability','view_tables','manage_tables','create_order','view_orders','update_order','delete_order','view_transfers','view_receipts','manage_shifts','approve_bill_discount'],
+    RM: ['view_dashboard','view_menu','manage_products','set_menu_availability','manage_categories','view_tables','manage_tables','create_order','view_orders','update_order','delete_order','view_transfers','manage_users','manage_inventory','view_receipts','view_reports','manage_shifts','cashout','approve_bill_discount','manage_vouchers','manage_cash_day','approve_booking','view_dishup','manage_expeditor','work_kitchen_station','view_kitchen_logs'],
+    AssistantManager: ['view_dashboard','view_menu','manage_products','set_menu_availability','view_tables','manage_tables','create_order','view_orders','update_order','delete_order','view_transfers','manage_inventory','view_receipts','view_reports','manage_shifts','cashout','approve_bill_discount','manage_vouchers','manage_cash_day','approve_booking','view_dishup','manage_expeditor','work_kitchen_station','view_kitchen_logs'],
+    Leader: ['view_dashboard','view_menu','set_menu_availability','view_tables','manage_tables','create_order','view_orders','update_order','delete_order','view_transfers','view_receipts','manage_shifts','approve_bill_discount','view_dishup','manage_expeditor','view_kitchen_logs'],
     Waiter: ['view_dashboard','view_menu','view_tables','create_order','view_orders','update_order','view_transfers'],
     Reception: ['view_dashboard','view_menu','view_tables','manage_tables','create_order','view_orders','approve_booking'],
     Cashier: ['view_dashboard','view_menu','view_tables','create_order','view_orders','view_receipts','cashout','manage_cash_day'],
-    Chef: ['view_dashboard','view_menu','view_tables','view_orders','update_order_status'],
+    Chef: ['view_dashboard','view_menu','view_tables','view_orders','update_order_status','view_dishup','work_kitchen_station'],
     HR: ['view_dashboard','view_tables','manage_users'],
     SupplyManager: ['view_dashboard','view_menu','view_tables','manage_products','manage_categories','manage_inventory'],
     Customer: []

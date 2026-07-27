@@ -5,7 +5,8 @@ const { resetExpiredDailyAvailability } = require('../utils/productAvailability'
 const { calculateVoucher, normalizeCode } = require('../services/voucherService');
 
 const createOrder = async (req, res, next) => {
-    const { tableId, items } = req.body;
+    const { tableId, items, courseTiming = 'ALL_NOW' } = req.body;
+    const normalizedCourseTiming = ['ALL_NOW', 'SHARE', 'SAME_TIME'].includes(courseTiming) ? courseTiming : 'ALL_NOW';
     if (!Array.isArray(items) || items.length === 0) {
         const err = new Error('Order must contain at least one item');
         err.status = 400;
@@ -112,7 +113,10 @@ const createOrder = async (req, res, next) => {
                 productId: item.productId,
                 quantity,
                 price: product.price,
-                note: item.note || null
+                note: item.note || null,
+                courseTiming: ['ALL_NOW', 'SHARE', 'SAME_TIME'].includes(item.courseTiming) ? item.courseTiming : normalizedCourseTiming,
+                orderSource: req.user?.id ? 'STAFF' : 'CUSTOMER',
+                orderedByName: req.user?.fullName || req.user?.role || 'Customer'
             });
             itemDetailsForSocket.push({
                 productName: product.name,
@@ -520,7 +524,7 @@ const updateOrderItemStatus = async (req, res, next) => {
     const { itemId } = req.params;
     const { status, note } = req.body;
     
-    const validStatus = ['Pending', 'Fired', 'Cooking', 'Ready', 'Served', 'Cancelled', 'Remake', 'Fail'];
+    const validStatus = ['Pending', 'Fired', 'Cooking', 'Ready', 'Pickup', 'Served', 'Cancelled', 'Remake', 'Fail'];
     if (!validStatus.includes(status)) {
         const err = new Error('Invalid status');
         err.status = 400;

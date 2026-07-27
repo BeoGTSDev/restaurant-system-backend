@@ -22,23 +22,33 @@ const ROLE_PERMISSIONS = DEFAULT_ROLE_PERMISSIONS;
 const initData = async () => {
     try {
         // create permissions
+        const newlyCreatedPermissions = new Set();
         for (const [permName, description] of PERMISSION_DEFINITIONS) {
-            await Permission.findOrCreate({ where: { name: permName }, defaults: { description } });
+            const [permission, created] = await Permission.findOrCreate({ where: { name: permName }, defaults: { description } });
+            if (created) newlyCreatedPermissions.add(permission.name);
         }
 
         // create roles
         const roleMap = {};
+        const newlyCreatedRoles = new Set();
         for (const roleName of ROLES) {
-            const [role] = await Role.findOrCreate({ where: { name: roleName }, defaults: { label: roleName } });
+            const [role, created] = await Role.findOrCreate({ where: { name: roleName }, defaults: { label: roleName } });
             roleMap[roleName] = role;
+            if (created) newlyCreatedRoles.add(roleName);
         }
 
-        // assign permissions to roles
+        // Apply the full default matrix only to new roles. Existing role choices
+        // made in Roles & Access are preserved; only newly introduced permissions
+        // are added according to their default role mapping.
         for (const [roleName, perms] of Object.entries(ROLE_PERMISSIONS)) {
             const role = roleMap[roleName];
             if (!role) continue;
-            const permRecords = await Permission.findAll({ where: { name: perms } });
-            await role.setPermissions(permRecords);
+            const namesToAdd = newlyCreatedRoles.has(roleName)
+                ? perms
+                : perms.filter(name => newlyCreatedPermissions.has(name));
+            if (!namesToAdd.length) continue;
+            const permRecords = await Permission.findAll({ where: { name: namesToAdd } });
+            await role.addPermissions(permRecords);
         }
 
         // create admin user if none exists

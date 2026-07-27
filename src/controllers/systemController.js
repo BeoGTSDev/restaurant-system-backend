@@ -158,12 +158,11 @@ const closeBusinessDay = async (req, res, next) => {
         err.status = 409;
         return next(err);
     }
-    const [activeOrders, openShifts] = await Promise.all([
-        Order.count({ where: { status: { [Op.in]: ['Pending', 'Order'] } } }),
-        ShiftRecord.count({ where: { status: 'open' } })
-    ]);
-    if (activeOrders || openShifts) {
-        const err = new Error(`Cannot close: ${activeOrders} active order(s), ${openShifts} open shift(s)`);
+    const activeOrders = await Order.count({
+        where: { status: { [Op.in]: ['Pending', 'Order'] } }
+    });
+    if (activeOrders) {
+        const err = new Error(`Cannot close: ${activeOrders} active order(s)`);
         err.status = 409;
         return next(err);
     }
@@ -175,6 +174,10 @@ const closeBusinessDay = async (req, res, next) => {
     businessDay.difference = closingCash - summary.expectedCash;
     businessDay.status = 'closed';
     businessDay.closedAt = new Date();
+    await ShiftRecord.update(
+        { status: 'closed', closedAt: businessDay.closedAt },
+        { where: { businessDayId: businessDay.id, status: 'open' } }
+    );
     await businessDay.save();
     req.io.emit('business_day_closed', { id: businessDay.id });
     res.status(200).json({

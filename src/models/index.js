@@ -25,6 +25,8 @@ const Voucher = require('./Voucher');
 const Receipt = require('./Receipt');
 const ReceiptItem = require('./ReceiptItem');
 const PaymentTransaction = require('./PaymentTransaction');
+const KitchenEvent = require('./KitchenEvent');
+const KitchenBillHistory = require('./KitchenBillHistory');
 
 
 
@@ -45,6 +47,10 @@ OrderItem.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
 
 Product.hasMany(OrderItem, { foreignKey: 'productId', as: 'orderItems' });
 OrderItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+OrderItem.hasMany(KitchenEvent, { foreignKey: 'orderItemId', as: 'kitchenEvents' });
+KitchenEvent.belongsTo(OrderItem, { foreignKey: 'orderItemId', as: 'item' });
+Order.hasOne(KitchenBillHistory, { foreignKey: 'orderId', as: 'kitchenHistory' });
+KitchenBillHistory.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
 
 ShiftRecord.belongsTo(User, { foreignKey: 'cashierId', as: 'cashier' });
 User.hasMany(ShiftRecord, { foreignKey: 'cashierId', as: 'shifts' });
@@ -137,5 +143,8 @@ module.exports = {
     Receipt,
     ReceiptItem,
     PaymentTransaction
+    ,
+    KitchenEvent,
+    KitchenBillHistory
 };
 

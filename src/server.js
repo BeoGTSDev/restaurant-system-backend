@@ -266,6 +266,9 @@ const startServer = async () => {
             }],
             ['payment_transactions', {
                 createdBy: { type: DataTypes.INTEGER, allowNull: true }
+            }],
+            ['kitchen_events', {
+                businessDayId: { type: DataTypes.INTEGER, allowNull: true }
             }]
         ];
         for (const [tableName, columns] of linkedTables) {
@@ -313,9 +316,30 @@ const startServer = async () => {
             WHERE "allergyNote" IS NULL AND "specialNote" LIKE 'ALLERGY:%'
         `).catch(() => {});
 
+        const orderItemTable = await queryInterface.describeTable('OrderItems').catch(() => null);
+        if (orderItemTable) {
+            const kitchenColumns = {
+                courseTiming: { type: DataTypes.ENUM('ALL_NOW', 'SHARE', 'SAME_TIME'), allowNull: false, defaultValue: 'ALL_NOW' },
+                orderSource: { type: DataTypes.ENUM('STAFF', 'CUSTOMER'), allowNull: false, defaultValue: 'STAFF' },
+                orderedByName: { type: DataTypes.STRING(120), allowNull: true },
+                priority: { type: DataTypes.ENUM('NORMAL', 'ASAP', 'REMAKE'), allowNull: false, defaultValue: 'NORMAL' },
+                prepMinutes: { type: DataTypes.INTEGER, allowNull: true },
+                firedAt: { type: DataTypes.DATE, allowNull: true },
+                cookingAt: { type: DataTypes.DATE, allowNull: true },
+                pickupAt: { type: DataTypes.DATE, allowNull: true },
+                servedAt: { type: DataTypes.DATE, allowNull: true },
+                previousStatus: { type: DataTypes.STRING(24), allowNull: true },
+                failReason: { type: DataTypes.STRING(120), allowNull: true }
+            };
+            for (const [columnName, definition] of Object.entries(kitchenColumns)) {
+                if (!orderItemTable[columnName]) await queryInterface.addColumn('OrderItems', columnName, definition);
+            }
+        }
+
         // Ensure PostgreSQL ENUM includes 'Disabled' before sync
         try {
             await sequelize.query(`ALTER TYPE "enum_Products_status" ADD VALUE IF NOT EXISTS 'Disabled'`);
+            await sequelize.query(`ALTER TYPE "enum_OrderItems_status" ADD VALUE IF NOT EXISTS 'Pickup'`);
             await sequelize.query(`ALTER TYPE "enum_shift_records_status" ADD VALUE IF NOT EXISTS 'break'`);
         } catch (_) { /* ENUM value may already exist or type may not exist yet */ }
 
