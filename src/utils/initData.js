@@ -54,8 +54,19 @@ const initData = async () => {
         // create admin user if none exists
         const userCount = await User.count();
         if (userCount === 0) {
+            const insecureDevelopmentBootstrap =
+                process.env.NODE_ENV !== 'production'
+                && String(process.env.ALLOW_INSECURE_DEV_ADMIN).toLowerCase() === 'true';
+            const initialPassword = process.env.ADMIN_INITIAL_PASSWORD
+                || (insecureDevelopmentBootstrap ? 'admin123' : null);
+            if (!initialPassword) {
+                throw new Error(
+                    'ADMIN_INITIAL_PASSWORD is required when creating the first administrator. '
+                    + 'For isolated local development only, explicitly set ALLOW_INSECURE_DEV_ADMIN=true.'
+                );
+            }
             const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash('admin123', salt);
+            const hashedPassword = await bcrypt.hash(initialPassword, salt);
             const adminRole = roleMap['Admin'];
 
             const admin = await User.create({
@@ -75,8 +86,7 @@ const initData = async () => {
                         const secret = speakeasy.generateSecret({ name: 'RMS Admin (' + admin.email + ')' });
                         admin.totpSecret = secret.base32;
                         await admin.save();
-                        console.log('Admin 2FA secret generated. Add this to your authenticator app using this URL:');
-                        console.log(secret.otpauth_url);
+                        console.log('Admin 2FA secret generated. Complete enrolment using an authorised administrative process.');
                     } else {
                         console.log('ADMIN_2FA_REQUIRED is true but speakeasy is not installed; please install speakeasy to enable 2FA.');
                     }
@@ -85,7 +95,7 @@ const initData = async () => {
                 console.warn('Failed to auto-generate admin 2FA secret:', e.message || e);
             }
 
-            console.log('Admin user created | Email: admin@rms.com | Password: admin123');
+            console.log('Initial administrator account created. Rotate its password before operational use.');
         }
 
         console.log('Roles and permissions initialized');
