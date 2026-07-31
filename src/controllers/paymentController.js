@@ -14,6 +14,8 @@ const {
     ReceiptItem
 } = require('../models');
 const { calculateVoucher } = require('../services/voucherService');
+const { calculateBillTotals } = require('../services/billingService');
+const { verifyWebhookSignature } = require('../services/webhookSecurityService');
 
 const sha256 = value => crypto.createHash('sha256').update(String(value)).digest('hex');
 
@@ -49,26 +51,24 @@ const loadBill = async (tableId, transaction, lock = false) => {
         transaction,
         lock
     });
-    const subtotal = voucherResult.subtotal;
     const billDiscountPercent = Number(table?.billDiscountPercent || 0);
-    const billDiscountAmount = Math.round(voucherResult.totalAmount * billDiscountPercent / 100);
-    const discountedSubtotal = Math.max(0, voucherResult.totalAmount - billDiscountAmount);
-    const alcoholSubtotal = items
-        .filter(item => /beer|wine|cocktail|alcohol|spirit/i.test(item.product?.category?.name || ''))
-        .reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
-    const alcoholShare = subtotal > 0 ? alcoholSubtotal / subtotal : 0;
-    const alcoholTaxBase = discountedSubtotal * alcoholShare;
-    const foodTaxBase = discountedSubtotal - alcoholTaxBase;
-    const foodVatAmount = businessDay.foodVatActive
-        ? Math.round(foodTaxBase * Number(businessDay.foodVatRate || 0) / 100)
-        : 0;
-    const alcoholVatAmount = businessDay.alcoholVatActive
-        ? Math.round(alcoholTaxBase * Number(businessDay.alcoholVatRate || 0) / 100)
-        : 0;
-    const serviceChargeAmount = businessDay.serviceChargeActive
-        ? Math.round(discountedSubtotal * Number(businessDay.serviceChargeRate || 0) / 100)
-        : 0;
-    const totalAmount = discountedSubtotal + foodVatAmount + alcoholVatAmount + serviceChargeAmount;
+    const totals = calculateBillTotals({
+        items,
+        voucherSubtotal: voucherResult.subtotal,
+        voucherTotal: voucherResult.totalAmount,
+        voucherDiscountAmount: voucherResult.discountAmount,
+        billDiscountPercent,
+        foodVatActive: businessDay.foodVatActive,
+        foodVatRate: businessDay.foodVatRate,
+        alcoholVatActive: businessDay.alcoholVatActive,
+        alcoholVatRate: businessDay.alcoholVatRate,
+        serviceChargeActive: businessDay.serviceChargeActive,
+        serviceChargeRate: businessDay.serviceChargeRate
+    });
+    const {
+        subtotal, billDiscountAmount, discountedSubtotal, foodVatAmount,
+        alcoholVatAmount, serviceChargeAmount, totalAmount
+    } = totals;
     const snapshotItems = items.map(item => ({
         id: item.id,
         orderId: item.orderId,
@@ -105,7 +105,7 @@ const loadBill = async (tableId, transaction, lock = false) => {
             billDiscountPercent,
             billDiscountAmount,
             billDiscountReason: billDiscountPercent ? table.billDiscountReason : null,
-            discountAmount: voucherResult.discountAmount + billDiscountAmount,
+            discountAmount: totals.discountAmount,
             discountedSubtotal,
             foodVatAmount,
             alcoholVatAmount,
@@ -258,15 +258,12 @@ const getSePayPaymentStatus = async (req, res, next) => {
 };
 
 const verifySePaySignature = req => {
-    const secret = process.env.SEPAY_WEBHOOK_SECRET;
-    const timestamp = String(req.header('X-SePay-Timestamp') || '');
-    const supplied = String(req.header('X-SePay-Signature') || '').replace(/^sha256=/i, '');
-    if (!secret || !timestamp || !/^[a-f0-9]{64}$/i.test(supplied) || !req.rawBody) return false;
-    if (Math.abs(Math.floor(Date.now() / 1000) - Number(timestamp)) > 300) return false;
-    const expected = crypto.createHmac('sha256', secret)
-        .update(`${timestamp}.${req.rawBody.toString('utf8')}`)
-        .digest('hex');
-    return crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(supplied, 'hex'));
+    return verifyWebhookSignature({
+        secret: process.env.SEPAY_WEBHOOK_SECRET,
+        timestamp: String(req.header('X-SePay-Timestamp') || ''),
+        suppliedSignature: req.header('X-SePay-Signature'),
+        rawBody: req.rawBody
+    });
 };
 
 const handleSePayWebhook = async (req, res) => {

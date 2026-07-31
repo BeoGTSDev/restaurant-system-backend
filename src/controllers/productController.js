@@ -1,31 +1,7 @@
 const { Product, Category, ProductIngredient, Ingredient } = require('../models/index');
 const { getBusinessDate, resetExpiredDailyAvailability } = require('../utils/productAvailability');
-
-const parseRemainingQty = (value) => {
-    if (value === undefined || value === null || value === '') return null;
-    const quantity = Number(value);
-    if (!Number.isInteger(quantity) || quantity < 0) {
-        const err = new Error('Remaining quantity must be a non-negative whole number');
-        err.status = 400;
-        throw err;
-    }
-    return quantity;
-};
-
-const availabilityValues = (status, remainingQty) => {
-    if (status === 'Disabled') {
-        return { status, remainingQty: null, availabilityDate: null };
-    }
-
-    const quantity = parseRemainingQty(remainingQty);
-    if (status === 'Out of Stock' || quantity === 0) {
-        return { status: 'Out of Stock', remainingQty: 0, availabilityDate: getBusinessDate() };
-    }
-    if (quantity !== null) {
-        return { status: 'In Stock', remainingQty: quantity, availabilityDate: getBusinessDate() };
-    }
-    return { status: 'In Stock', remainingQty: null, availabilityDate: null };
-};
+const { availabilityValues: buildAvailabilityValues } = require('../services/availabilityService');
+const availabilityValues = (status, remainingQty) => buildAvailabilityValues(status, remainingQty, getBusinessDate());
 
 const createProduct = async (req, res, next) => {
     const { name, internalName, displayName, description, price, categoryId, status, remainingQty } = req.body;

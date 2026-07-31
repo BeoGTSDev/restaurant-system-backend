@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const { Order, OrderItem, Product, Category, ProductIngredient, Ingredient, InventoryMovement, Table, BusinessDay, CashMovement, ShiftRecord, Voucher, Receipt, ReceiptItem, sequelize } = require('../models');
 const { resetExpiredDailyAvailability } = require('../utils/productAvailability');
 const { calculateVoucher, normalizeCode } = require('../services/voucherService');
+const { calculateBillTotals, calculateCashSettlement } = require('../services/billingService');
 
 const createOrder = async (req, res, next) => {
     const { tableId, items, courseTiming = 'ALL_NOW' } = req.body;
@@ -334,23 +335,26 @@ const payBillByTable = async (req, res, next) => {
             transaction,
             lock: true
         });
-        const billDiscountAmount = Math.round(voucherResult.totalAmount * billDiscountPercent / 100);
-        const discountedSubtotal = Math.max(0, voucherResult.totalAmount - billDiscountAmount);
-        const alcoholGross = items
-            .filter(item => /beer|wine|cocktail|alcohol|spirit/i.test(item.product?.category?.name || ''))
-            .reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
-        const alcoholShare = voucherResult.subtotal > 0 ? alcoholGross / voucherResult.subtotal : 0;
-        const alcoholTaxBase = discountedSubtotal * alcoholShare;
-        const foodTaxBase = discountedSubtotal - alcoholTaxBase;
-        const foodVatAmount = businessDay.foodVatActive ? Math.round(foodTaxBase * Number(businessDay.foodVatRate || 0) / 100) : 0;
-        const alcoholVatAmount = businessDay.alcoholVatActive ? Math.round(alcoholTaxBase * Number(businessDay.alcoholVatRate || 0) / 100) : 0;
-        const serviceChargeAmount = businessDay.serviceChargeActive ? Math.round(discountedSubtotal * Number(businessDay.serviceChargeRate || 0) / 100) : 0;
-        const totalBill = discountedSubtotal + foodVatAmount + alcoholVatAmount + serviceChargeAmount;
+        const totals = calculateBillTotals({
+            items,
+            voucherSubtotal: voucherResult.subtotal,
+            voucherTotal: voucherResult.totalAmount,
+            voucherDiscountAmount: voucherResult.discountAmount,
+            billDiscountPercent,
+            foodVatActive: businessDay.foodVatActive,
+            foodVatRate: businessDay.foodVatRate,
+            alcoholVatActive: businessDay.alcoholVatActive,
+            alcoholVatRate: businessDay.alcoholVatRate,
+            serviceChargeActive: businessDay.serviceChargeActive,
+            serviceChargeRate: businessDay.serviceChargeRate
+        });
+        const {
+            billDiscountAmount, discountedSubtotal, foodVatAmount,
+            alcoholVatAmount, serviceChargeAmount
+        } = totals;
+        const totalBill = totals.totalAmount;
         const isCash = paymentMethod === 'Cash';
-        const changeDue = isCash ? cashReceived - totalBill : 0;
-        if (isCash && (!Number.isFinite(cashReceived) || cashReceived < totalBill)) {
-            throw Object.assign(new Error('Cash received is less than the amount due'), { status: 400 });
-        }
+        let changeDue = 0;
         if (isCash) {
             const movements = await CashMovement.findAll({
                 where: { businessDayId: businessDay.id },
@@ -361,9 +365,7 @@ const payBillByTable = async (req, res, next) => {
             const cashIn = movements.filter(item => item.type === 'in').reduce((sum, item) => sum + Number(item.amount), 0);
             const cashOut = movements.filter(item => item.type === 'out').reduce((sum, item) => sum + Number(item.amount), 0);
             const availableDrawerCash = Number(businessDay.openingCash || 0) + Number(businessDay.cashSales || 0) + cashIn - cashOut;
-            if (changeDue > availableDrawerCash) {
-                throw Object.assign(new Error(`Not enough cash in drawer for change. Available: ${availableDrawerCash}, change required: ${changeDue}`), { status: 409 });
-            }
+            changeDue = calculateCashSettlement({ totalAmount: totalBill, cashReceived, availableDrawerCash }).changeDue;
         }
 
         await Order.update(
@@ -392,7 +394,7 @@ const payBillByTable = async (req, res, next) => {
             tableId: table.id,
             tableName: table.name,
             subtotal: voucherResult.subtotal,
-            discountAmount: voucherResult.discountAmount + billDiscountAmount,
+            discountAmount: totals.discountAmount,
             totalAmount: totalBill,
             paymentMethod,
             cashReceived: isCash ? cashReceived : null,

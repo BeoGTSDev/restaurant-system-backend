@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const { Order, OrderItem, Product, Category, Table, KitchenEvent, KitchenBillHistory, User, BusinessDay } = require('../models');
 const { KITCHEN_STATIONS, stationForCategory, stationConfig } = require('../constants/kitchenStations');
+const { getKitchenAction, getKitchenTiming } = require('../services/kitchenWorkflowService');
 
 const ACTIVE_ITEM_STATUSES = ['Pending', 'Fired', 'Cooking', 'Ready', 'Pickup', 'Remake'];
 const TERMINAL_ITEM_STATUSES = ['Served', 'Cancelled'];
@@ -37,11 +38,14 @@ const loadKitchenItems = async (statuses = ACTIVE_ITEM_STATUSES, activeOrdersOnl
         const prepMinutes = Number(item.prepMinutes || station.prepMinutes);
         // Compatibility for Cooking rows created by the legacy generic status endpoint,
         // which changed the status without persisting cookingAt.
-        const effectiveCookingAt = item.cookingAt || (item.status === 'Cooking' ? item.updatedAt : null);
-        const processStartedAt = effectiveCookingAt;
-        const expectedAt = processStartedAt
-            ? new Date(new Date(processStartedAt).getTime() + prepMinutes * 60000)
-            : null;
+        const timing = getKitchenTiming({
+            status: item.status,
+            cookingAt: item.cookingAt,
+            updatedAt: item.updatedAt,
+            prepMinutes
+        });
+        const effectiveCookingAt = timing.processStartedAt;
+        const expectedAt = timing.expectedAt;
         return {
             id: item.id,
             orderId: item.orderId,
@@ -72,9 +76,7 @@ const loadKitchenItems = async (statuses = ACTIVE_ITEM_STATUSES, activeOrdersOnl
             createdAt: item.createdAt,
             updatedAt: item.updatedAt,
             expectedAt,
-            overdue: Boolean(expectedAt)
-                && Date.now() > expectedAt.getTime()
-                && item.status === 'Cooking',
+            overdue: timing.overdue,
             guestLanguage: item.order?.table?.guestLanguage,
             nationality: item.order?.table?.nationality || item.order?.table?.guestLanguage,
             guestCount: item.order?.table?.guestCount,
@@ -198,20 +200,10 @@ const getStationQueue = async (req, res) => {
     });
 };
 
-const ACTIONS = {
-    FIRE: { allowed: ['Pending'], status: 'Fired', priority: 'NORMAL', timestamp: 'firedAt' },
-    ASAP: { allowed: ['Pending', 'Fired', 'Remake'], status: 'Fired', priority: 'ASAP', timestamp: 'firedAt' },
-    COOK: { allowed: ['Fired', 'Remake'], status: 'Cooking', timestamp: 'cookingAt' },
-    PICKUP: { allowed: ['Cooking'], status: 'Pickup', timestamp: 'pickupAt' },
-    DONE: { allowed: ['Pickup', 'Ready'], status: 'Served', timestamp: 'servedAt' },
-    FAIL: { allowed: ['Fired', 'Cooking', 'Pickup', 'Ready', 'Served'], status: 'Remake', priority: 'REMAKE', timestamp: 'firedAt' },
-    CANCEL: { allowed: ['Pending', 'Fired', 'Cooking', 'Pickup', 'Ready', 'Remake'], status: 'Cancelled' }
-};
-
 const bulkAction = async (req, res) => {
     const action = String(req.body.action || '').toUpperCase();
     const itemIds = [...new Set((req.body.itemIds || []).map(Number).filter(Number.isInteger))];
-    const definition = ACTIONS[action];
+    const definition = getKitchenAction(action);
     if (!definition || !itemIds.length) return res.status(400).json({ success: false, message: 'Choose items and a valid kitchen action.' });
     const items = await OrderItem.findAll({ where: { id: itemIds }, include: [{ model: Order, as: 'order' }] });
     if (items.length !== itemIds.length || items.some(item => !definition.allowed.includes(item.status))) {

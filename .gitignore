@@ -2,6 +2,7 @@ node_modules
 .env
 logs
 logs/
+coverage/
 frontend/.electron-user-data/
 backend/src/utils/migrations/*.js
 .continue

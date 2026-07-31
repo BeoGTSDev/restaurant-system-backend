@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-      "test": "jest --runInBand",
+    "test": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage",
     "seed": "node src/utils/migrations/seedTestData.js",
     "import:data": "node src/utils/importCsvData.js",
     "import:vouchers": "node src/utils/importVouchersCsv.js",

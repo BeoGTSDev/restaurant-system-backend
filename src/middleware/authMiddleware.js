@@ -24,6 +24,9 @@ const verifyToken = async (req, res, next) => {
         });
 
         if (!user) return res.status(401).json({ message: 'Invalid Token: user not found' });
+        if (!user.isActive) {
+            return res.status(403).json({ message: 'Account is disabled' });
+        }
 
         const permissions = (user.role && user.role.Permissions) ? user.role.Permissions.map(p => p.name) : [];
 
@@ -63,4 +66,4 @@ const authorize = (required) => {
     };
 };
 
-module.exports = { verifyToken, verifyAdmin };
+module.exports = { extractToken, verifyToken, verifyAdmin, authorize };
