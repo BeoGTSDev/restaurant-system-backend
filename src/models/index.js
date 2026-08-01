@@ -27,6 +27,7 @@ const ReceiptItem = require('./ReceiptItem');
 const PaymentTransaction = require('./PaymentTransaction');
 const KitchenEvent = require('./KitchenEvent');
 const KitchenBillHistory = require('./KitchenBillHistory');
+const IdempotencyRecord = require('./IdempotencyRecord');
 
 
 
@@ -145,6 +146,7 @@ module.exports = {
     PaymentTransaction
     ,
     KitchenEvent,
-    KitchenBillHistory
+    KitchenBillHistory,
+    IdempotencyRecord
 };
 

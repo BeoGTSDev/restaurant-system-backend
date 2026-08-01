@@ -17,6 +17,7 @@ const swaggerSetup = require('./config/swagger');
 const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimitMiddleware');
+const idempotency = require('./middleware/idempotency');
 
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -62,7 +63,7 @@ app.use(cors({
         ? callback(null, true)
         : callback(Object.assign(new Error('Origin not allowed by CORS'), { status: 403 })),
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'auth-token', 'x-table-session']
+    allowedHeaders: ['Content-Type', 'Authorization', 'auth-token', 'x-table-session', 'Idempotency-Key']
 }));
 
 // Body parser MUST come before routes
@@ -72,6 +73,7 @@ app.use(express.json({
     }
 }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(idempotency);
 
 // routes will be registered after models/routes are required below
 
