@@ -8,8 +8,9 @@ try { speakeasy = require('speakeasy'); } catch (e) { /* will handle absence whe
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
+  const normalizedEmail = String(email || '').trim().toLowerCase();
 
-  const user = await User.findOne({ where: { email }, include: [{ association: 'role', include: [{ association: 'Permissions' }] }] });
+  const user = await User.findOne({ where: { email: normalizedEmail }, include: [{ association: 'role', include: [{ association: 'Permissions' }] }] });
 
   if (!user) {
     const err = new Error('Invalid credentials');
@@ -138,8 +139,9 @@ const staffLogin = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   const { fullName, password, email } = req.body;
+  const normalizedEmail = String(email || '').trim().toLowerCase();
 
-  const existingUser = await User.findOne({ where: { email } });
+  const existingUser = await User.findOne({ where: { email: normalizedEmail } });
   if (existingUser) {
     const err = new Error('Email already exists');
     err.status = 400;
@@ -149,7 +151,7 @@ const register = async (req, res, next) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  const newUser = await User.create({ fullName, email, password: hashedPassword });
+  const newUser = await User.create({ fullName, email: normalizedEmail, password: hashedPassword });
 
   res.status(201).json({
     success: true,

@@ -19,10 +19,11 @@ const generateNextStaffCode = async () => {
 
 const createUser = async (req, res, next) => {
   const { fullName, email, password, pin, roleId } = req.body;
+  const normalizedEmail = String(email || '').trim().toLowerCase();
   const staffCode = String(req.body.staffCode || await generateNextStaffCode()).trim();
   const secret = password || pin;
 
-  const existingUser = await User.findOne({ where: { email } });
+  const existingUser = await User.findOne({ where: { email: normalizedEmail } });
   if (existingUser) {
     const err = new Error('Email already exists');
     err.status = 400;
@@ -65,7 +66,7 @@ const createUser = async (req, res, next) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(String(secret), salt);
 
-  const newUser = await User.create({ fullName, email, password: hashedPassword, staffCode, roleId: role.id, isActive: true });
+  const newUser = await User.create({ fullName, email: normalizedEmail, password: hashedPassword, staffCode, roleId: role.id, isActive: true });
 
   res.status(201).json({
     success: true,
@@ -154,6 +155,7 @@ const getAllUser = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   const { id } = req.params;
   const { fullName, email, password, pin, isActive, staffCode, roleId } = req.body;
+  const normalizedEmail = email === undefined ? undefined : String(email).trim().toLowerCase();
 
   const user = await User.findByPk(id);
   if (!user) {
@@ -162,8 +164,8 @@ const updateUser = async (req, res, next) => {
     return next(err);
   }
 
-  if (email && email !== user.email) {
-    const exist = await User.findOne({ where: { email } });
+  if (normalizedEmail && normalizedEmail !== user.email) {
+    const exist = await User.findOne({ where: { email: normalizedEmail } });
     if (exist) {
       const err = new Error('Email already in use');
       err.status = 400;
@@ -202,7 +204,7 @@ const updateUser = async (req, res, next) => {
   }
 
   if (fullName !== undefined) user.fullName = fullName;
-  if (email !== undefined) user.email = email;
+  if (normalizedEmail !== undefined) user.email = normalizedEmail;
   if (staffCode !== undefined) user.staffCode = staffCode;
   if (isActive !== undefined) user.isActive = isActive;
 
