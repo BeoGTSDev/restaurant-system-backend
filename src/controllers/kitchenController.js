@@ -10,13 +10,24 @@ const TERMINAL_ITEM_STATUSES = ['Served', 'Cancelled'];
 
 // HTTP handler: loads load kitchen items data. It reads req data, uses models/services, and sends JSON with res.
 const loadKitchenItems = async (statuses = ACTIVE_ITEM_STATUSES, activeOrdersOnly = true) => {
+    // Live kitchen boards are always scoped to the currently open business day.
+    // Closing a day therefore removes its tickets from Expected/Station views,
+    // while immutable completed snapshots remain available through History.
+    const businessDay = activeOrdersOnly
+        ? await BusinessDay.findOne({ where: { status: 'open' }, order: [['startedAt', 'DESC']] })
+        : null;
+    if (activeOrdersOnly && !businessDay) return [];
+
     const items = await OrderItem.findAll({
         where: { status: { [Op.in]: statuses } },
         include: [
             {
                 model: Order,
                 as: 'order',
-                where: activeOrdersOnly ? { status: { [Op.in]: ['Pending', 'Order'] } } : undefined,
+                where: activeOrdersOnly ? {
+                    status: { [Op.in]: ['Pending', 'Order'] },
+                    businessDayId: businessDay.id
+                } : undefined,
                 attributes: ['id', 'dayOrderNumber', 'tableId', 'businessDayId', 'createdAt', 'createdBy'],
                 include: [{
                     model: Table,
