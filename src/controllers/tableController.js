@@ -386,7 +386,7 @@ const transferTable = async (req, res, next) => {
 
         const businessDay = await BusinessDay.findOne({ where: { status: 'open' }, transaction });
         const shift = req.user?.id
-            ? await ShiftRecord.findOne({ where: { userId: req.user.id, status: { [Op.in]: ['active', 'break'] } }, transaction })
+            ? await ShiftRecord.findOne({ where: { cashierId: req.user.id, status: { [Op.in]: ['open', 'break'] } }, transaction })
             : null;
         await OperationalTransfer.create({
             type: 'table',
