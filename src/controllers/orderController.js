@@ -596,7 +596,6 @@ const cancelOrderItem = async (req, res, next) => {
     let cancelledItem;
     await sequelize.transaction(async transaction => {
         cancelledItem = await OrderItem.findByPk(itemId, {
-            include: [{ model: Product, as: 'product' }],
             transaction,
             lock: transaction.LOCK.UPDATE
         });
@@ -605,6 +604,12 @@ const cancelOrderItem = async (req, res, next) => {
             err.status = 409;
             throw err;
         }
+        // Lock the associated product separately. PostgreSQL cannot apply a
+        // blanket FOR UPDATE to the nullable side of Sequelize's LEFT JOIN.
+        const product = await Product.findByPk(cancelledItem.productId, {
+            transaction,
+            lock: transaction.LOCK.UPDATE
+        });
         cancelledItem.status = 'Cancelled';
         cancelledItem.cancelledBy = req.user.id;
         cancelledItem.cancellationApprovedBy = approvedBy;
@@ -614,10 +619,10 @@ const cancelOrderItem = async (req, res, next) => {
         const order = await Order.findByPk(cancelledItem.orderId, { transaction, lock: transaction.LOCK.UPDATE });
         order.totalPrice = Math.max(0, Number(order.totalPrice) - Number(cancelledItem.price) * cancelledItem.quantity);
         await order.save({ transaction });
-        if (cancelledItem.product?.remainingQty != null) {
-            cancelledItem.product.remainingQty += cancelledItem.quantity;
-            cancelledItem.product.status = 'In Stock';
-            await cancelledItem.product.save({ transaction });
+        if (product?.remainingQty != null) {
+            product.remainingQty = Number(product.remainingQty) + Number(cancelledItem.quantity);
+            product.status = 'In Stock';
+            await product.save({ transaction });
         }
         const recipe = await ProductIngredient.findAll({ where: { productId: cancelledItem.productId }, transaction });
         for (const component of recipe) {
@@ -635,7 +640,7 @@ const cancelOrderItem = async (req, res, next) => {
                 quantity: restored,
                 beforeQuantity: before,
                 afterQuantity: ingredient.quantity,
-                reason: `Cancelled item: ${cancelledItem.product.displayName || cancelledItem.product.name}`,
+                reason: `Cancelled item: ${product?.displayName || product?.name || `Product ${cancelledItem.productId}`}`,
                 performedBy: req.user.id,
                 businessDayId: order.businessDayId || null
             }, { transaction });
