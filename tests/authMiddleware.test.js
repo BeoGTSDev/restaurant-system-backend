@@ -4,7 +4,9 @@ const app = require('../src/server');
 
 describe('Auth middleware', () => {
   it('returns 401 for protected route without token', async () => {
-    const res = await request('http://localhost:5000').get('/api/roles');
-    expect([401, 302]).toContain(res.status); // 302 for redirect in some setups
+    const res = await request(app).get('/api/roles');
+
+    expect(res.status).toBe(401);
+    expect(res.body).toEqual({ message: 'Access Denied: No Token Provided' });
   });
 });
