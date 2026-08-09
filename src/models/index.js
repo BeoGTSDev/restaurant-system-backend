@@ -1,3 +1,5 @@
+// Database model: defines fields and storage rules for index records.
+// Load all database tables and define how their records connect to each other.
 const { sequelize } = require('../config/database');
 
 

@@ -1,3 +1,4 @@
+// Test file: checks webhookSecurityService.test behavior and protects it from later changes.
 const {
     createWebhookSignature, verifyWebhookSignature
 } = require('../src/services/webhookSecurityService');

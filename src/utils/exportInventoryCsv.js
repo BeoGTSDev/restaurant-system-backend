@@ -1,12 +1,15 @@
+// Reusable helper code used by startup or business files.
 const fs = require('fs');
 const path = require('path');
 const { ProductIngredient, Product, Ingredient, sequelize } = require('../models');
 
+// Helper: runs the csv step and returns the value to its caller.
 const csv = value => {
     const text = String(value ?? '');
     return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 };
 
+// Helper: runs the export inventory csv step and returns the value to its caller.
 async function exportInventoryCsv() {
     const links = await ProductIngredient.findAll({
         include: [

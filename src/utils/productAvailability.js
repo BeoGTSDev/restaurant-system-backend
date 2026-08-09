@@ -1,7 +1,9 @@
+// Reusable helper code used by startup or business files.
 const { Op } = require('sequelize');
 
 const BUSINESS_TIME_ZONE = process.env.BUSINESS_TIME_ZONE || 'Asia/Ho_Chi_Minh';
 
+// Helper: loads get business date data and returns the value to its caller.
 const getBusinessDate = () => {
     const parts = new Intl.DateTimeFormat('en-CA', {
         timeZone: BUSINESS_TIME_ZONE,
@@ -13,6 +15,7 @@ const getBusinessDate = () => {
     return `${values.year}-${values.month}-${values.day}`;
 };
 
+// Helper: removes, closes, or resets reset expired daily availability and returns the value to its caller.
 const resetExpiredDailyAvailability = async (Product, transaction) => {
     const today = getBusinessDate();
     await Product.update(

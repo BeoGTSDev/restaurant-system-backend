@@ -1,3 +1,4 @@
+// Test file: checks idempotencyMiddleware.test behavior and protects it from later changes.
 jest.mock('../src/models', () => ({
     IdempotencyRecord: {
         findOne: jest.fn(),
@@ -8,6 +9,7 @@ jest.mock('../src/models', () => ({
 const { IdempotencyRecord } = require('../src/models');
 const idempotency = require('../src/middleware/idempotency');
 
+// Function: runs the response step and returns its result to the caller.
 const response = () => ({
     statusCode: 200,
     status: jest.fn(function status(code) { this.statusCode = code; return this; }),

@@ -1,3 +1,4 @@
+// Database model: defines fields and storage rules for CashMovement records.
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => sequelize.define('CashMovement', {

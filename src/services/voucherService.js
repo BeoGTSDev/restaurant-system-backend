@@ -1,10 +1,14 @@
+// Service file: holds reusable voucherService business rules.
 const { Voucher } = require('../models');
 
 const DRINK_CATEGORIES = new Set(['beer', 'cocktail', 'mocktail', 'juice', 'smoothie', 'soft drink', 'beverages', 'bar']);
+// Business rule: turns input values into normalize code. A controller passes values in and receives the result.
 const normalizeCode = code => String(code || '').trim().toUpperCase();
 
+// Business rule: checks validate voucher code format and returns a safe yes/no result. A controller passes values in and receives the result.
 const validateVoucherCodeFormat = code => /^(DR|FD)(10|25|50)\d{3}$/.test(normalizeCode(code));
 
+// Business rule: turns input values into calculate voucher. A controller passes values in and receives the result.
 const calculateVoucher = async ({ code, items, transaction, lock = false }) => {
     const normalized = normalizeCode(code);
     const subtotal = items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);

@@ -1,3 +1,5 @@
+// Service file: holds reusable kitchenWorkflowService business rules.
+// The backend is the final judge of every kitchen state move shown by the UI.
 const KITCHEN_ACTIONS = Object.freeze({
     FIRE: { allowed: ['Pending'], status: 'Fired', priority: 'NORMAL', timestamp: 'firedAt' },
     ASAP: { allowed: ['Pending', 'Fired', 'Remake'], status: 'Fired', priority: 'ASAP', timestamp: 'firedAt' },
@@ -8,8 +10,10 @@ const KITCHEN_ACTIONS = Object.freeze({
     CANCEL: { allowed: ['Pending', 'Fired', 'Cooking', 'Pickup', 'Ready', 'Remake'], status: 'Cancelled' }
 });
 
+// Business rule: loads get kitchen action data. A controller passes values in and receives the result.
 const getKitchenAction = action => KITCHEN_ACTIONS[String(action || '').toUpperCase()] || null;
 
+// Business rule: checks can apply kitchen action and returns a safe yes/no result. A controller passes values in and receives the result.
 const canApplyKitchenAction = (action, statuses) => {
     const definition = getKitchenAction(action);
     return Boolean(definition)
@@ -18,6 +22,7 @@ const canApplyKitchenAction = (action, statuses) => {
         && statuses.every(status => definition.allowed.includes(status));
 };
 
+// Business rule: loads get kitchen timing data. A controller passes values in and receives the result.
 const getKitchenTiming = ({ status, cookingAt, updatedAt, prepMinutes, now = new Date() }) => {
     const effectiveCookingAt = cookingAt || (status === 'Cooking' ? updatedAt : null);
     if (!effectiveCookingAt) {

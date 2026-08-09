@@ -1,3 +1,4 @@
+// Reusable helper code used by startup or business files.
 const bcrypt = require('bcryptjs');
 const { User, Role, Permission } = require('../models');
 const { PERMISSIONS: PERMISSION_DEFINITIONS, DEFAULT_ROLE_PERMISSIONS } = require('../config/roleAccess');
@@ -19,6 +20,7 @@ const ROLES = [
 
 const ROLE_PERMISSIONS = DEFAULT_ROLE_PERMISSIONS;
 
+// Helper: runs the init data step and returns the value to its caller.
 const initData = async () => {
     try {
         // create permissions

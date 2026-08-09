@@ -1,8 +1,11 @@
+// Controller file: receives request data, applies productController rules, and returns JSON.
 const { Product, Category, ProductIngredient, Ingredient } = require('../models/index');
 const { getBusinessDate, resetExpiredDailyAvailability } = require('../utils/productAvailability');
 const { availabilityValues: buildAvailabilityValues } = require('../services/availabilityService');
+// HTTP handler: runs the availability values step. It reads req data, uses models/services, and sends JSON with res.
 const availabilityValues = (status, remainingQty) => buildAvailabilityValues(status, remainingQty, getBusinessDate());
 
+// HTTP handler: creates or starts create product. It reads req data, uses models/services, and sends JSON with res.
 const createProduct = async (req, res, next) => {
     const { name, internalName, displayName, description, price, categoryId, status, remainingQty } = req.body;
 
@@ -41,6 +44,7 @@ const createProduct = async (req, res, next) => {
     });
 };
 
+// HTTP handler: runs the bulk create products step. It reads req data, uses models/services, and sends JSON with res.
 const bulkCreateProducts = async (req, res, next) => {
     const products = req.body?.products;
 
@@ -90,6 +94,7 @@ const bulkCreateProducts = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get all products data. It reads req data, uses models/services, and sends JSON with res.
 const getAllProducts = async (req, res, next) => {
     await resetExpiredDailyAvailability(Product);
     const products = await Product.findAll({
@@ -101,6 +106,7 @@ const getAllProducts = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get public products data. It reads req data, uses models/services, and sends JSON with res.
 const getPublicProducts = async (req, res) => {
     await resetExpiredDailyAvailability(Product);
     const products = await Product.findAll({
@@ -130,6 +136,7 @@ const getPublicProducts = async (req, res) => {
     });
 };
 
+// HTTP handler: changes and saves update product. It reads req data, uses models/services, and sends JSON with res.
 const updateProduct = async (req, res, next) => {
     const { id } = req.params;
     const { name, internalName, displayName, description, price, categoryId, status, remainingQty } = req.body;
@@ -193,6 +200,7 @@ const updateProduct = async (req, res, next) => {
     });
 };
 
+// HTTP handler: changes and saves update product availability. It reads req data, uses models/services, and sends JSON with res.
 const updateProductAvailability = async (req, res, next) => {
     const product = await Product.findByPk(req.params.id);
     if (!product) return next(Object.assign(new Error('Product not found'), { status: 404 }));
@@ -204,6 +212,7 @@ const updateProductAvailability = async (req, res, next) => {
     res.json({ success: true, message: 'Menu availability updated', product });
 };
 
+// HTTP handler: removes, closes, or resets delete product. It reads req data, uses models/services, and sends JSON with res.
 const deleteProduct = async (req, res, next) => {
     const { id } = req.params;
 

@@ -1,6 +1,8 @@
+// Reusable helper code used by startup or business files.
 const { sequelize, Permission, Role } = require('../models');
 const { PERMISSIONS, DEFAULT_ROLE_PERMISSIONS } = require('../config/roleAccess');
 
+// Helper: handles the sync role access action and returns the value to its caller.
 const syncRoleAccess = async () => {
     await sequelize.sync();
     for (const [name, description] of PERMISSIONS) {

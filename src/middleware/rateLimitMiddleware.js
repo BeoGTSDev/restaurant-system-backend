@@ -1,3 +1,4 @@
+// Middleware: checks or prepares a request before its controller runs.
 const rateLimit = require('express-rate-limit');
 
 // General API rate limiter

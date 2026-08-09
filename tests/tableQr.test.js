@@ -1,3 +1,4 @@
+// Test file: checks tableQr.test behavior and protects it from later changes.
 const { generateTableQrCode } = require('../src/utils/tableQr');
 
 describe('table QR code generation', () => {

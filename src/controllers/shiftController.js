@@ -1,7 +1,9 @@
+// Controller file: receives request data, applies shiftController rules, and returns JSON.
 const { ShiftRecord, ShiftAreaConfig, Order, User, BusinessDay, Zone, Receipt } = require('../models');
 const { sequelize } = require('../models');
 const { Op } = require('sequelize');
 
+// HTTP handler: creates or starts open shift. It reads req data, uses models/services, and sends JSON with res.
 const openShift = async (req, res, next) => {
     const { staffId, shiftName, position, area, notes, assignmentId } = req.body;
     const cashierId = Number(staffId || req.user.id);
@@ -80,6 +82,7 @@ const openShift = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get current roster data. It reads req data, uses models/services, and sends JSON with res.
 const getCurrentRoster = async (req, res, next) => {
     const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
     if (!businessDay) return res.json({ success: true, data: { businessDay: null, assignments: [], areas: [] } });
@@ -99,6 +102,7 @@ const getCurrentRoster = async (req, res, next) => {
     res.json({ success: true, data: { businessDay, assignments, areas, zones } });
 };
 
+// HTTP handler: changes and saves set area status. It reads req data, uses models/services, and sends JSON with res.
 const setAreaStatus = async (req, res, next) => {
     const { shiftName, zoneId, isOpen } = req.body;
     const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
@@ -113,6 +117,7 @@ const setAreaStatus = async (req, res, next) => {
     res.json({ success: true, data: config });
 };
 
+// HTTP handler: removes, closes, or resets remove assignment. It reads req data, uses models/services, and sends JSON with res.
 const removeAssignment = async (req, res, next) => {
     const assignment = await ShiftRecord.findByPk(req.params.id);
     if (!assignment) return next(Object.assign(new Error('Roster assignment not found'), { status: 404 }));
@@ -120,6 +125,7 @@ const removeAssignment = async (req, res, next) => {
     res.json({ success: true, message: 'Staff removed from roster' });
 };
 
+// HTTP handler: changes and saves save roster. It reads req data, uses models/services, and sends JSON with res.
 const saveRoster = async (req, res, next) => {
     const { shiftName, areas = [], assignments = [] } = req.body;
     if (!['Morning', 'Mid', 'Evening'].includes(shiftName)) {
@@ -178,6 +184,7 @@ const saveRoster = async (req, res, next) => {
     res.json({ success: true, message: `${shiftName} roster assigned` });
 };
 
+// HTTP handler: removes, closes, or resets close shift. It reads req data, uses models/services, and sends JSON with res.
 const closeShift = async (req, res, next) => {
     const { shiftId, notes } = req.body;
 
@@ -227,6 +234,7 @@ const closeShift = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get shift report data. It reads req data, uses models/services, and sends JSON with res.
 const getShiftReport = async (req, res, next) => {
     const { shiftId } = req.params;
 
@@ -300,6 +308,7 @@ const getShiftReport = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get all shifts data. It reads req data, uses models/services, and sends JSON with res.
 const getAllShifts = async (req, res, next) => {
     const { startDate, endDate, cashierId, status } = req.query;
 

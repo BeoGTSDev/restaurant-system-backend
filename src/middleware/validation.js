@@ -1,3 +1,4 @@
+// Middleware: checks or prepares a request before its controller runs.
 const { body, validationResult } = require('express-validator');
 
 // Validation rules for login
@@ -24,6 +25,7 @@ const registerValidators = [
 ];
 
 // Check validation results middleware
+// Request check: checks check validation and returns a safe yes/no result. It calls next() only when the request may continue.
 const checkValidation = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

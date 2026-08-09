@@ -1,9 +1,11 @@
+// Controller file: receives request data, applies systemController rules, and returns JSON.
 const { Op } = require('sequelize');
 const {
     sequelize, BusinessDay, CashMovement, ShiftRecord, Order, Product, Table
 } = require('../models');
 const { getBusinessDate } = require('../utils/productAvailability');
 
+// HTTP handler: turns input values into parse cash. It reads req data, uses models/services, and sends JSON with res.
 const parseCash = (value, label) => {
     const amount = Number(value);
     if (!Number.isFinite(amount) || amount < 0) {
@@ -14,6 +16,7 @@ const parseCash = (value, label) => {
     return amount;
 };
 
+// HTTP handler: runs the cash summary step. It reads req data, uses models/services, and sends JSON with res.
 const cashSummary = async (businessDay) => {
     if (!businessDay) return null;
     const movements = await CashMovement.findAll({
@@ -33,6 +36,7 @@ const cashSummary = async (businessDay) => {
     };
 };
 
+// HTTP handler: loads get business day data. It reads req data, uses models/services, and sends JSON with res.
 const getBusinessDay = async (req, res) => {
     const current = await BusinessDay.findOne({
         where: { status: 'open' },
@@ -46,9 +50,11 @@ const getBusinessDay = async (req, res) => {
     });
 };
 
+// HTTP handler: changes and saves update charge settings. It reads req data, uses models/services, and sends JSON with res.
 const updateChargeSettings = async (req, res, next) => {
     const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
     if (!businessDay) return next(Object.assign(new Error('Open the business day before configuring charges'), { status: 423 }));
+    // HTTP handler: runs the rate step. It reads req data, uses models/services, and sends JSON with res.
     const rate = (value, label, max = 30) => {
         const number = Number(value);
         if (!Number.isFinite(number) || number < 0 || number > max) {
@@ -69,6 +75,7 @@ const updateChargeSettings = async (req, res, next) => {
     res.json({ success: true, message: 'VAT and service charge settings updated', data: businessDay });
 };
 
+// HTTP handler: creates or starts start new business day. It reads req data, uses models/services, and sends JSON with res.
 const startNewBusinessDay = async (req, res, next) => {
     const existing = await BusinessDay.findOne({ where: { status: 'open' } });
     if (existing) {
@@ -123,6 +130,7 @@ const startNewBusinessDay = async (req, res, next) => {
     res.status(201).json({ success: true, message: 'Business day opened', data: businessDay });
 };
 
+// HTTP handler: creates or starts create cash movement. It reads req data, uses models/services, and sends JSON with res.
 const createCashMovement = async (req, res, next) => {
     const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
     if (!businessDay) {
@@ -151,6 +159,7 @@ const createCashMovement = async (req, res, next) => {
     res.status(201).json({ success: true, message: 'Cash movement recorded', data: movement, summary: await cashSummary(businessDay) });
 };
 
+// HTTP handler: removes, closes, or resets close business day. It reads req data, uses models/services, and sends JSON with res.
 const closeBusinessDay = async (req, res, next) => {
     const businessDay = await BusinessDay.findOne({ where: { status: 'open' } });
     if (!businessDay) {
@@ -188,6 +197,7 @@ const closeBusinessDay = async (req, res, next) => {
     });
 };
 
+// HTTP handler: removes, closes, or resets reset test environment. It reads req data, uses models/services, and sends JSON with res.
 const resetTestEnvironment = async (req, res) => {
     const resetAt = new Date();
     let cancelledOrders = 0;

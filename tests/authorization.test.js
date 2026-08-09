@@ -1,7 +1,9 @@
+// Test file: checks authorization.test behavior and protects it from later changes.
 jest.mock('../src/models', () => ({ User: {}, Role: {}, Permission: {} }));
 
 const { extractToken, verifyAdmin, authorize } = require('../src/middleware/authMiddleware');
 
+// Function: runs the response step and returns its result to the caller.
 const response = () => {
     const res = {};
     res.status = jest.fn(() => res);

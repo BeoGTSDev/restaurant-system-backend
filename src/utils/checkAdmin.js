@@ -1,5 +1,7 @@
+// Reusable helper code used by startup or business files.
 const { sequelize, User, Role, Permission } = require('../models');
 
+// Helper: checks check admin and returns a safe yes/no result and returns the value to its caller.
 async function checkAdmin() {
     try {
         await sequelize.authenticate();

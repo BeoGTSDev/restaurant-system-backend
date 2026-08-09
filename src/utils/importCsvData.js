@@ -1,3 +1,4 @@
+// Reusable helper code used by startup or business files.
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
@@ -8,6 +9,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const { sequelize, Category, Product, Zone, Table, Ingredient, ProductIngredient } = require('../models');
 const inventoryCategory = require('./inventoryCategory');
 
+// Helper: turns input values into parse csvline and returns the value to its caller.
 function parseCSVLine(line) {
     const result = [];
     let current = '';
@@ -40,6 +42,7 @@ function parseCSVLine(line) {
     return result;
 }
 
+// Helper: loads read csv rows data and returns the value to its caller.
 function readCsvRows(csvPath, requiredHeaders) {
     if (!csvPath) {
         throw new Error('CSV file not found');
@@ -68,6 +71,7 @@ function readCsvRows(csvPath, requiredHeaders) {
     });
 }
 
+// Helper: runs the find csv path step and returns the value to its caller.
 function findCsvPath(environmentPath, fileName) {
     const candidates = [
         environmentPath,
@@ -79,6 +83,7 @@ function findCsvPath(environmentPath, fileName) {
     return candidates.find(candidate => fs.existsSync(candidate));
 }
 
+// Helper: runs the import menu data step and returns the value to its caller.
 async function importMenuData(csvPath, transaction) {
     const rows = readCsvRows(csvPath, ['Full_Name', 'Price_VND', 'Category']);
     let inserted = 0;
@@ -122,6 +127,7 @@ async function importMenuData(csvPath, transaction) {
     return { inserted, skipped };
 }
 
+// Helper: runs the import tables and zones data step and returns the value to its caller.
 async function importTablesAndZonesData(csvPath, transaction) {
     const rows = readCsvRows(csvPath, ['Zone_Name', 'Zone_Description', 'Table_Name']);
     let zonesCreated = 0;
@@ -159,6 +165,7 @@ async function importTablesAndZonesData(csvPath, transaction) {
     return { zonesCreated, tablesCreated, skipped };
 }
 
+// Helper: runs the import inventory data step and returns the value to its caller.
 async function importInventoryData(csvPath, transaction) {
     const rows = readCsvRows(csvPath, [
         'Ingredient_Name', 'Unit', 'Opening_Quantity', 'Reorder_Level',
@@ -221,6 +228,7 @@ async function importInventoryData(csvPath, transaction) {
     return { ingredientsCreated: newIngredients.length, recipeLinksCreated: links.length, skipped };
 }
 
+// Helper: runs the import csv data step and returns the value to its caller.
 async function importCsvData() {
     const menuCsvPath = findCsvPath(process.env.MENU_CSV_PATH, 'menu_database.csv');
     const tablesZonesCsvPath = findCsvPath(process.env.TABLES_ZONES_CSV_PATH, 'tables_zones_database.csv');

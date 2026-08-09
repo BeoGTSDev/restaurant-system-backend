@@ -1,5 +1,7 @@
+// Controller file: receives request data, applies categoryController rules, and returns JSON.
 const Category = require('../models/Category');
 
+// HTTP handler: creates or starts create category. It reads req data, uses models/services, and sends JSON with res.
 const createCategory = async (req, res, next) => {
     const { name, description } = req.body;
 
@@ -18,6 +20,7 @@ const createCategory = async (req, res, next) => {
     });
 };
 
+// HTTP handler: runs the bulk create categories step. It reads req data, uses models/services, and sends JSON with res.
 const bulkCreateCategories = async (req, res, next) => {
     const categories = req.body?.categories;
 
@@ -56,6 +59,7 @@ const bulkCreateCategories = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get all categories data. It reads req data, uses models/services, and sends JSON with res.
 const getAllCategories = async (req, res, next) => {
     const categories = await Category.findAll();
     res.status(200).json({

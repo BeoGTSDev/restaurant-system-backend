@@ -1,3 +1,4 @@
+// Test file: checks kitchenWorkflowService.test behavior and protects it from later changes.
 const {
     getKitchenAction, canApplyKitchenAction, getKitchenTiming
 } = require('../src/services/kitchenWorkflowService');

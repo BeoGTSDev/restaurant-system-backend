@@ -1,3 +1,4 @@
+// Test file: checks check_admin_login behavior and protects it from later changes.
 // Simple integration check using built-in fetch (Node 18+)
 (async () => {
   try {

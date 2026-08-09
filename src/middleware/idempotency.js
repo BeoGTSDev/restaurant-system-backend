@@ -1,3 +1,5 @@
+// Middleware: checks or prepares a request before its controller runs.
+// Stop a replayed offline write from creating the same database change twice.
 const { UniqueConstraintError } = require('sequelize');
 const { IdempotencyRecord } = require('../models');
 

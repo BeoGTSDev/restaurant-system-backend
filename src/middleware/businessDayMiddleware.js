@@ -1,5 +1,7 @@
+// Middleware: checks or prepares a request before its controller runs.
 const { BusinessDay } = require('../models');
 
+// Request check: checks require open business day and returns a safe yes/no result. It calls next() only when the request may continue.
 const requireOpenBusinessDay = async (req, res, next) => {
     const current = await BusinessDay.findOne({ where: { status: 'open' } });
     if (!current) {

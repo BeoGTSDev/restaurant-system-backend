@@ -1,3 +1,4 @@
+// Test file: checks integration.auth.test behavior and protects it from later changes.
 const mockFindOne = jest.fn();
 
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
@@ -20,6 +21,7 @@ const admin = {
   }
 };
 
+// Function: runs the execute login step and returns its result to the caller.
 const executeLogin = async (email) => {
   const req = {
     body: { email, password: 'admin123' },

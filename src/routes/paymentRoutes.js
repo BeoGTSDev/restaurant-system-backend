@@ -1,3 +1,4 @@
+// Route file: maps URLs to checks and controller functions.
 const express = require('express');
 const verifyCustomerTableSession = require('../middleware/customerTableSession');
 const { verifyToken } = require('../middleware/authMiddleware');

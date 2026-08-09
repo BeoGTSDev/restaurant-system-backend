@@ -1,3 +1,4 @@
+// Test file: checks authMiddleware.active.test behavior and protects it from later changes.
 jest.mock('../src/models', () => ({
   User: { findByPk: jest.fn() },
   Role: {},
@@ -11,6 +12,7 @@ jest.mock('jsonwebtoken', () => ({
 const { User } = require('../src/models');
 const { verifyToken } = require('../src/middleware/authMiddleware');
 
+// Function: runs the response step and returns its result to the caller.
 const response = () => {
   const res = {};
   res.status = jest.fn(() => res);

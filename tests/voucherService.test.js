@@ -1,3 +1,4 @@
+// Test file: checks voucherService.test behavior and protects it from later changes.
 jest.mock('../src/models', () => ({
     Voucher: { findOne: jest.fn() }
 }));
@@ -7,10 +8,12 @@ const {
     normalizeCode, validateVoucherCodeFormat, calculateVoucher
 } = require('../src/services/voucherService');
 
+// Function: runs the item step and returns its result to the caller.
 const item = (price, quantity, category) => ({
     price, quantity, product: { category: { name: category } }
 });
 
+// Function: runs the valid voucher step and returns its result to the caller.
 const validVoucher = overrides => ({
     code: 'FD25001',
     isActive: true,

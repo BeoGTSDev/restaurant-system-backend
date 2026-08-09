@@ -1,5 +1,7 @@
+// Controller file: receives request data, applies zoneController rules, and returns JSON.
 const { Zone, Table } = require('../models');
 
+// HTTP handler: creates or starts create zone. It reads req data, uses models/services, and sends JSON with res.
 const createZone = async (req, res, next) => {
     const { name, description } = req.body;
 
@@ -24,6 +26,7 @@ const createZone = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get all zones data. It reads req data, uses models/services, and sends JSON with res.
 const getAllZones = async (req, res, next) => {
     const zones = await Zone.findAll({
         include: [
@@ -41,6 +44,7 @@ const getAllZones = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get zone by id data. It reads req data, uses models/services, and sends JSON with res.
 const getZoneById = async (req, res, next) => {
     const { id } = req.params;
     const zone = await Zone.findByPk(id, {
@@ -66,6 +70,7 @@ const getZoneById = async (req, res, next) => {
     });
 };
 
+// HTTP handler: changes and saves update zone. It reads req data, uses models/services, and sends JSON with res.
 const updateZone = async (req, res, next) => {
     const { id } = req.params;
     const { name, description } = req.body;
@@ -97,6 +102,7 @@ const updateZone = async (req, res, next) => {
     });
 };
 
+// HTTP handler: removes, closes, or resets delete zone. It reads req data, uses models/services, and sends JSON with res.
 const deleteZone = async (req, res, next) => {
     const { id } = req.params;
 

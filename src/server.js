@@ -1,3 +1,6 @@
+// Source file: provides server code used by this application.
+// Main flow: client -> middleware -> route -> controller -> PostgreSQL -> JSON response.
+// This file starts HTTP and Socket.IO and joins every backend part together.
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -35,6 +38,7 @@ const server = http.createServer(app);
 
 const configuredOrigins = String(process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:3000,http://localhost:3010,null')
     .split(',').map(value => value.trim()).filter(Boolean);
+// Function: runs the origin allowed step and returns its result to the caller.
 const originAllowed = (origin) => !origin
     || configuredOrigins.includes(origin)
     || /^https:\/\/[a-z0-9-]+\.up\.railway\.app$/i.test(origin);
@@ -105,6 +109,7 @@ io.on('connection', (socket) => {
     });
 });
 
+// Function: creates or starts start server and returns its result to the caller.
 const startServer = async () => {
     try {
         await sequelize.authenticate();

@@ -1,3 +1,5 @@
+// Controller file: receives request data, applies kitchenController rules, and returns JSON.
+// Kitchen flow: load items -> show queue -> save safe status move -> write event history.
 const { Op } = require('sequelize');
 const { Order, OrderItem, Product, Category, Table, KitchenEvent, KitchenBillHistory, User, BusinessDay } = require('../models');
 const { KITCHEN_STATIONS, stationForCategory, stationConfig } = require('../constants/kitchenStations');
@@ -6,6 +8,7 @@ const { getKitchenAction, getKitchenTiming } = require('../services/kitchenWorkf
 const ACTIVE_ITEM_STATUSES = ['Pending', 'Fired', 'Cooking', 'Ready', 'Pickup', 'Remake'];
 const TERMINAL_ITEM_STATUSES = ['Served', 'Cancelled'];
 
+// HTTP handler: loads load kitchen items data. It reads req data, uses models/services, and sends JSON with res.
 const loadKitchenItems = async (statuses = ACTIVE_ITEM_STATUSES, activeOrdersOnly = true) => {
     const items = await OrderItem.findAll({
         where: { status: { [Op.in]: statuses } },
@@ -88,10 +91,12 @@ const loadKitchenItems = async (statuses = ACTIVE_ITEM_STATUSES, activeOrdersOnl
     });
 };
 
+// HTTP handler: loads get kitchen config data. It reads req data, uses models/services, and sends JSON with res.
 const getKitchenConfig = async (req, res) => {
     res.json({ success: true, data: { stations: KITCHEN_STATIONS } });
 };
 
+// HTTP handler: runs the snapshot completed orders step. It reads req data, uses models/services, and sends JSON with res.
 const snapshotCompletedOrders = async orderIds => {
     const uniqueOrderIds = [...new Set(orderIds.map(Number).filter(Number.isInteger))];
     if (!uniqueOrderIds.length) return;
@@ -152,6 +157,7 @@ const snapshotCompletedOrders = async orderIds => {
     }
 };
 
+// HTTP handler: loads get expected queue data. It reads req data, uses models/services, and sends JSON with res.
 const getExpectedQueue = async (req, res) => {
     const items = await loadKitchenItems();
     const tables = Object.values(items.reduce((groups, item) => {
@@ -183,6 +189,7 @@ const getExpectedQueue = async (req, res) => {
     res.json({ success: true, data: { generatedAt: new Date(), tables, items } });
 };
 
+// HTTP handler: loads get station queue data. It reads req data, uses models/services, and sends JSON with res.
 const getStationQueue = async (req, res) => {
     const stationCode = String(req.params.code || '').toUpperCase();
     if (!KITCHEN_STATIONS.some(station => station.code === stationCode)) {
@@ -200,6 +207,7 @@ const getStationQueue = async (req, res) => {
     });
 };
 
+// HTTP handler: runs the bulk action step. It reads req data, uses models/services, and sends JSON with res.
 const bulkAction = async (req, res) => {
     const action = String(req.body.action || '').toUpperCase();
     const itemIds = [...new Set((req.body.itemIds || []).map(Number).filter(Number.isInteger))];
@@ -229,6 +237,7 @@ const bulkAction = async (req, res) => {
     res.json({ success: true, data: { action, updated: items.length } });
 };
 
+// HTTP handler: runs the return items step. It reads req data, uses models/services, and sends JSON with res.
 const returnItems = async (req, res) => {
     const itemIds = (req.body.itemIds || []).map(Number);
     const items = await OrderItem.findAll({ where: { id: itemIds }, include: [{ model: Order, as: 'order' }] });
@@ -243,6 +252,7 @@ const returnItems = async (req, res) => {
     res.json({ success: true, data: { updated: items.length } });
 };
 
+// HTTP handler: loads get history data. It reads req data, uses models/services, and sends JSON with res.
 const getHistory = async (req, res) => {
     const businessDay = await BusinessDay.findOne({ where: { status: 'open' }, order: [['startedAt', 'DESC']] });
     const eventRecords = businessDay
@@ -271,6 +281,7 @@ const getHistory = async (req, res) => {
     res.json({ success: true, data: { events } });
 };
 
+// HTTP handler: loads get completed queue data. It reads req data, uses models/services, and sends JSON with res.
 const getCompletedQueue = async (req, res) => {
     const terminalOrderIds = await OrderItem.findAll({
         where: { status: { [Op.in]: TERMINAL_ITEM_STATUSES } },

@@ -1,3 +1,4 @@
+// Middleware: checks or prepares a request before its controller runs.
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -14,6 +15,7 @@ const storage = multer.diskStorage({
     }
 });
 
+// Request check: runs the file filter step. It calls next() only when the request may continue.
 const fileFilter = (req, file, cb) => {
     if (['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) {
         cb(null, true);
@@ -32,6 +34,7 @@ const upload = multer({
 
 module.exports = upload;
 
+// Request check: runs the valid signature step. It calls next() only when the request may continue.
 const validSignature = (buffer, mimetype) => {
     if (mimetype === 'image/jpeg') return buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
     if (mimetype === 'image/png') return buffer.subarray(0, 8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a]));

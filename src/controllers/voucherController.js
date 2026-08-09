@@ -1,7 +1,9 @@
+// Controller file: receives request data, applies voucherController rules, and returns JSON.
 const { Order, OrderItem, Product, Category, Voucher, Receipt } = require('../models');
 const { Op } = require('sequelize');
 const { calculateVoucher } = require('../services/voucherService');
 
+// HTTP handler: checks validate for table and returns a safe yes/no result. It reads req data, uses models/services, and sends JSON with res.
 const validateForTable = async (req, res, next) => {
     try {
         const orders = await Order.findAll({
@@ -27,6 +29,7 @@ const validateForTable = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
+// HTTP handler: loads list vouchers data. It reads req data, uses models/services, and sends JSON with res.
 const listVouchers = async (req, res) => {
     const vouchers = await Voucher.findAll({ order: [['createdAt', 'DESC']] });
     const receipts = await Receipt.findAll({
@@ -41,6 +44,7 @@ const listVouchers = async (req, res) => {
     res.json({ success: true, data: vouchers.map(voucher => ({ ...voucher.toJSON(), receipts: usage[voucher.code] || [] })) });
 };
 
+// HTTP handler: changes and saves update voucher. It reads req data, uses models/services, and sends JSON with res.
 const updateVoucher = async (req, res, next) => {
     const voucher = await Voucher.findByPk(req.params.id);
     if (!voucher) return next(Object.assign(new Error('Voucher not found'), { status: 404 }));

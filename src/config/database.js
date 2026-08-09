@@ -1,8 +1,10 @@
+// Startup configuration shared by the application.
 const { Sequelize } = require('sequelize');
 
 const isSslEnabled = String(process.env.DB_SSL || '').toLowerCase() === 'true';
 const rejectUnauthorized = String(process.env.DB_SSL_REJECT_UNAUTHORIZED || '').toLowerCase() === 'true';
 
+// Function: runs the expand railway template step and returns its result to the caller.
 const expandRailwayTemplate = (value) => {
     if (!value || typeof value !== 'string') return value;
     return value.replace(/\$\{\{([A-Z0-9_]+)\}\}/g, (_, key) => process.env[key] || '');
@@ -59,6 +61,7 @@ const sequelize = preferredDatabaseUrl
     );
 
 
+// Function: runs the connect db step and returns its result to the caller.
 const connectDB = async () => {
     try {
         await sequelize.authenticate();

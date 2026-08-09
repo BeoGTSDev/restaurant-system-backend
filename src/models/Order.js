@@ -1,3 +1,4 @@
+// Database model: defines fields and storage rules for Order records.
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 

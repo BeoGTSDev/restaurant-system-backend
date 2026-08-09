@@ -1,8 +1,10 @@
+// Controller file: receives request data, applies receiptController rules, and returns JSON.
 const { Op } = require('sequelize');
 const { Receipt, ReceiptItem, User } = require('../models');
 
 const BUSINESS_TIMEZONE_OFFSET_MS = 7 * 60 * 60 * 1000;
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+// HTTP handler: turns input values into parse date only. It reads req data, uses models/services, and sends JSON with res.
 const parseDateOnly = value => {
     if (!DATE_ONLY.test(String(value || ''))) return null;
     const [year, month, day] = String(value).split('-').map(Number);
@@ -11,8 +13,10 @@ const parseDateOnly = value => {
     if (check.getUTCFullYear() !== year || check.getUTCMonth() !== month - 1 || check.getUTCDate() !== day) return null;
     return { year, month, day, utc };
 };
+// HTTP handler: runs the vietnam date step. It reads req data, uses models/services, and sends JSON with res.
 const vietnamDate = date => new Date(date.getTime() + BUSINESS_TIMEZONE_OFFSET_MS).toISOString().slice(0, 10);
 
+// HTTP handler: turns input values into parse range. It reads req data, uses models/services, and sends JSON with res.
 const parseRange = (startDate, endDate) => {
     if (!startDate || !endDate) throw Object.assign(new Error('Start date and end date are required.'), { status: 400 });
     const startParts = parseDateOnly(startDate);
@@ -35,6 +39,7 @@ const parseRange = (startDate, endDate) => {
     return { start, end };
 };
 
+// HTTP handler: loads list receipts data. It reads req data, uses models/services, and sends JSON with res.
 const listReceipts = async (req, res, next) => {
     try {
         const { start, end } = parseRange(req.query.startDate, req.query.endDate);
@@ -51,6 +56,7 @@ const listReceipts = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
+// HTTP handler: loads get receipt data. It reads req data, uses models/services, and sends JSON with res.
 const getReceipt = async (req, res, next) => {
     const receipt = await Receipt.findByPk(req.params.id, {
         include: [

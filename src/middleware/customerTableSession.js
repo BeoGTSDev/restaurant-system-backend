@@ -1,6 +1,9 @@
+// Middleware: checks or prepares a request before its controller runs.
+// Tie a guest request to one table and its current QR session; reject old sessions.
 const jwt = require('jsonwebtoken');
 const { Table } = require('../models');
 
+// Request check: checks verify customer table session and returns a safe yes/no result. It calls next() only when the request may continue.
 const verifyCustomerTableSession = async (req, res, next) => {
     try {
         const token = req.header('x-table-session');

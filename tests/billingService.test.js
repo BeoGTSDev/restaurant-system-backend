@@ -1,5 +1,7 @@
+// Test file: checks billingService.test behavior and protects it from later changes.
 const { lineTotal, calculateBillTotals, calculateCashSettlement } = require('../src/services/billingService');
 
+// Function: runs the item step and returns its result to the caller.
 const item = (price, quantity, category) => ({
     price, quantity, product: { category: { name: category } }
 });

@@ -1,3 +1,4 @@
+// Reusable helper code used by startup or business files.
 const groups = [
     ['Seafood', /salmon|shrimp|seafood|clam|calamari|tuna/i],
     ['Meat', /chicken|beef|pork|duck|parma ham|bacon/i],

@@ -1,3 +1,5 @@
+// Controller file: receives request data, applies paymentController rules, and returns JSON.
+// Payment flow: fixed bill -> pending SePay row -> signed webhook -> final receipt.
 const crypto = require('crypto');
 const { Op } = require('sequelize');
 const {
@@ -17,8 +19,10 @@ const { calculateVoucher } = require('../services/voucherService');
 const { calculateBillTotals } = require('../services/billingService');
 const { verifyWebhookSignature } = require('../services/webhookSecurityService');
 
+// HTTP handler: runs the sha256 step. It reads req data, uses models/services, and sends JSON with res.
 const sha256 = value => crypto.createHash('sha256').update(String(value)).digest('hex');
 
+// HTTP handler: loads load bill data. It reads req data, uses models/services, and sends JSON with res.
 const loadBill = async (tableId, transaction, lock = false) => {
     const businessDay = await BusinessDay.findOne({
         where: { status: 'open' },
@@ -117,6 +121,7 @@ const loadBill = async (tableId, transaction, lock = false) => {
     };
 };
 
+// HTTP handler: creates or starts create reference. It reads req data, uses models/services, and sends JSON with res.
 const createReference = async transaction => {
     for (let attempt = 0; attempt < 8; attempt += 1) {
         const reference = `ML${crypto.randomInt(10000000, 100000000)}`;
@@ -126,6 +131,7 @@ const createReference = async transaction => {
     throw Object.assign(new Error('Could not allocate a payment reference.'), { status: 503 });
 };
 
+// HTTP handler: runs the payment response step. It reads req data, uses models/services, and sends JSON with res.
 const paymentResponse = (payment, clientToken) => {
     const bankCode = String(process.env.SEPAY_BANK_CODE).trim();
     const accountNumber = String(process.env.SEPAY_ACCOUNT_NUMBER).trim();
@@ -145,6 +151,7 @@ const paymentResponse = (payment, clientToken) => {
     };
 };
 
+// HTTP handler: creates or starts create payment for table. It reads req data, uses models/services, and sends JSON with res.
 const createPaymentForTable = async (req, res, tableId, requireActiveQrSession) => {
     if (!process.env.SEPAY_WEBHOOK_SECRET || !process.env.SEPAY_BANK_CODE || !process.env.SEPAY_ACCOUNT_NUMBER) {
         throw Object.assign(new Error('Online payment is not configured.'), { status: 503 });
@@ -186,6 +193,7 @@ const createPaymentForTable = async (req, res, tableId, requireActiveQrSession) 
     res.status(201).json({ success: true, data: response });
 };
 
+// HTTP handler: creates or starts create se pay payment. It reads req data, uses models/services, and sends JSON with res.
 const createSePayPayment = (req, res) => createPaymentForTable(
     req,
     res,
@@ -193,6 +201,7 @@ const createSePayPayment = (req, res) => createPaymentForTable(
     true
 );
 
+// HTTP handler: creates or starts create pos se pay payment. It reads req data, uses models/services, and sends JSON with res.
 const createPosSePayPayment = (req, res) => {
     const tableId = Number(req.body?.tableId);
     if (!Number.isInteger(tableId) || tableId <= 0) {
@@ -201,11 +210,13 @@ const createPosSePayPayment = (req, res) => {
     return createPaymentForTable(req, res, tableId, false);
 };
 
+// HTTP handler: loads get customer bill data. It reads req data, uses models/services, and sends JSON with res.
 const getCustomerBill = async (req, res) => {
     const bill = await loadBill(req.customerTable.id);
     res.json({ success: true, data: bill.snapshot });
 };
 
+// HTTP handler: changes and saves apply customer voucher. It reads req data, uses models/services, and sends JSON with res.
 const applyCustomerVoucher = async (req, res) => {
     const code = String(req.body?.code || '').trim().toUpperCase();
     if (!code) throw Object.assign(new Error('Enter a voucher code.'), { status: 400 });
@@ -231,6 +242,7 @@ const applyCustomerVoucher = async (req, res) => {
     res.json({ success: true, data: snapshot });
 };
 
+// HTTP handler: loads get se pay payment status data. It reads req data, uses models/services, and sends JSON with res.
 const getSePayPaymentStatus = async (req, res, next) => {
     const payment = await PaymentTransaction.findOne({ where: { reference: String(req.params.reference).toUpperCase() } });
     if (!payment || !req.query.token || !crypto.timingSafeEqual(
@@ -257,6 +269,7 @@ const getSePayPaymentStatus = async (req, res, next) => {
     });
 };
 
+// HTTP handler: checks verify se pay signature and returns a safe yes/no result. It reads req data, uses models/services, and sends JSON with res.
 const verifySePaySignature = req => {
     return verifyWebhookSignature({
         secret: process.env.SEPAY_WEBHOOK_SECRET,
@@ -266,6 +279,7 @@ const verifySePaySignature = req => {
     });
 };
 
+// HTTP handler: handles the handle se pay webhook action. It reads req data, uses models/services, and sends JSON with res.
 const handleSePayWebhook = async (req, res) => {
     if (!verifySePaySignature(req)) {
         return res.status(401).json({ success: false, message: 'Invalid webhook signature' });

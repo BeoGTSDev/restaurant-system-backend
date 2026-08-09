@@ -1,3 +1,4 @@
+// Route file: maps URLs to checks and controller functions.
 const express = require('express');
 const router = express.Router();
 const { openShift, closeShift, getShiftReport, getAllShifts, getCurrentRoster, setAreaStatus, removeAssignment, saveRoster } = require('../controllers/shiftController');

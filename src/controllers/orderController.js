@@ -1,3 +1,5 @@
+// Controller file: receives request data, applies orderController rules, and returns JSON.
+// Order flow: route input -> table/stock checks -> saved orders/items -> JSON and live event.
 const { Op } = require('sequelize');
 const crypto = require('crypto');
 const { Order, OrderItem, Product, Category, ProductIngredient, Ingredient, InventoryMovement, Table, BusinessDay, CashMovement, ShiftRecord, Voucher, Receipt, ReceiptItem, sequelize } = require('../models');
@@ -5,6 +7,7 @@ const { resetExpiredDailyAvailability } = require('../utils/productAvailability'
 const { calculateVoucher, normalizeCode } = require('../services/voucherService');
 const { calculateBillTotals, calculateCashSettlement } = require('../services/billingService');
 
+// HTTP handler: creates or starts create order. It reads req data, uses models/services, and sends JSON with res.
 const createOrder = async (req, res, next) => {
     const { tableId, items, courseTiming = 'ALL_NOW' } = req.body;
     const normalizedCourseTiming = ['ALL_NOW', 'SHARE', 'SAME_TIME'].includes(courseTiming) ? courseTiming : 'ALL_NOW';
@@ -183,6 +186,7 @@ const createOrder = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get all orders data. It reads req data, uses models/services, and sends JSON with res.
 const getAllOrders = async (req, res, next) => {
     const orders = await Order.findAll({
         include: [
@@ -201,6 +205,7 @@ const getAllOrders = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get customer order data. It reads req data, uses models/services, and sends JSON with res.
 const getCustomerOrder = async (req, res, next) => {
     const { tableId } = req.params;
     const table = await Table.findByPk(tableId, {
@@ -238,6 +243,7 @@ const getCustomerOrder = async (req, res, next) => {
     });
 };
 
+// HTTP handler: changes and saves set bill adjustments. It reads req data, uses models/services, and sends JSON with res.
 const setBillAdjustments = async (req, res, next) => {
     const tableId = Number(req.params.tableId);
     const voucherCode = normalizeCode(req.body?.voucherCode) || null;
@@ -290,6 +296,7 @@ const setBillAdjustments = async (req, res, next) => {
     res.json({ success: true, message: 'Bill adjustments saved.' });
 };
 
+// HTTP handler: runs the pay bill by table step. It reads req data, uses models/services, and sends JSON with res.
 const payBillByTable = async (req, res, next) => {
     const { tableId } = req.params;
     const paymentMethod = String(req.body?.paymentMethod || 'Cash').trim();
@@ -466,6 +473,7 @@ const payBillByTable = async (req, res, next) => {
     });
 };
 
+// HTTP handler: checks check bill by table and returns a safe yes/no result. It reads req data, uses models/services, and sends JSON with res.
 const checkBillByTable = async (req, res, next) => {
     const { tableId } = req.params;
 
@@ -523,6 +531,7 @@ const checkBillByTable = async (req, res, next) => {
     });
 };
 
+// HTTP handler: changes and saves update order item status. It reads req data, uses models/services, and sends JSON with res.
 const updateOrderItemStatus = async (req, res, next) => {
     const { itemId } = req.params;
     const { status, note } = req.body;
@@ -575,6 +584,7 @@ const updateOrderItemStatus = async (req, res, next) => {
     });
 };
 
+// HTTP handler: removes, closes, or resets cancel order item. It reads req data, uses models/services, and sends JSON with res.
 const cancelOrderItem = async (req, res, next) => {
     const { itemId } = req.params;
     const { approvedBy, reason } = req.body;

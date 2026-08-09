@@ -1,3 +1,6 @@
+// Service file: holds reusable availabilityService business rules.
+// Reserve or return a product's daily quantity before the order change is committed.
+// Business rule: turns input values into parse remaining qty. A controller passes values in and receives the result.
 const parseRemainingQty = value => {
     if (value === undefined || value === null || value === '') return null;
     const quantity = Number(value);
@@ -7,6 +10,7 @@ const parseRemainingQty = value => {
     return quantity;
 };
 
+// Business rule: runs the availability values step. A controller passes values in and receives the result.
 const availabilityValues = (status, remainingQty, businessDate) => {
     if (status === 'Disabled') return { status, remainingQty: null, availabilityDate: null };
     const quantity = parseRemainingQty(remainingQty);
@@ -19,6 +23,7 @@ const availabilityValues = (status, remainingQty, businessDate) => {
     return { status: 'In Stock', remainingQty: null, availabilityDate: null };
 };
 
+// Business rule: runs the reserve availability step. A controller passes values in and receives the result.
 const reserveAvailability = (remainingQty, requestedQuantity) => {
     const requested = Number(requestedQuantity);
     if (!Number.isInteger(requested) || requested <= 0) {

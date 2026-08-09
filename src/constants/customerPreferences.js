@@ -1,3 +1,4 @@
+// Source file: provides customerPreferences code used by this application.
 const GUEST_LANGUAGES = Object.freeze({
     en: { nationality: 'US', label: 'English' },
     vi: { nationality: 'VN', label: 'Vietnamese' },

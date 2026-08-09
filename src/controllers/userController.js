@@ -1,9 +1,11 @@
+// Controller file: receives request data, applies userController rules, and returns JSON.
 // backend/src/controllers/userController.js
 const { Op } = require('sequelize');
 const { User, Role, ShiftRecord } = require('../models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// HTTP handler: creates or starts generate next staff code. It reads req data, uses models/services, and sends JSON with res.
 const generateNextStaffCode = async () => {
   const users = await User.findAll({
     attributes: ['staffCode'],
@@ -17,6 +19,7 @@ const generateNextStaffCode = async () => {
   return String(highest + 1).padStart(4, '0');
 };
 
+// HTTP handler: creates or starts create user. It reads req data, uses models/services, and sends JSON with res.
 const createUser = async (req, res, next) => {
   const { fullName, email, password, pin, roleId } = req.body;
   const normalizedEmail = String(email || '').trim().toLowerCase();
@@ -75,6 +78,7 @@ const createUser = async (req, res, next) => {
   });
 };
 
+// HTTP handler: loads get next staff code data. It reads req data, uses models/services, and sends JSON with res.
 const getNextStaffCode = async (req, res) => {
   res.status(200).json({
     success: true,
@@ -82,6 +86,7 @@ const getNextStaffCode = async (req, res) => {
   });
 };
 
+// HTTP handler: loads get me data. It reads req data, uses models/services, and sends JSON with res.
 const getMe = async (req, res, next) => {
   const user = await User.findByPk(req.user.id, {
     attributes: { exclude: ['password', 'totpSecret'] },
@@ -91,6 +96,7 @@ const getMe = async (req, res, next) => {
   res.json({ success: true, data: user });
 };
 
+// HTTP handler: changes and saves change my pin. It reads req data, uses models/services, and sends JSON with res.
 const changeMyPin = async (req, res, next) => {
   const currentPin = String(req.body?.currentPin || '');
   const newPin = String(req.body?.newPin || '');
@@ -106,6 +112,7 @@ const changeMyPin = async (req, res, next) => {
   res.json({ success: true, message: 'PIN changed successfully' });
 };
 
+// HTTP handler: runs the impersonate user step. It reads req data, uses models/services, and sends JSON with res.
 const impersonateUser = async (req, res, next) => {
   const user = await User.findByPk(req.params.id, {
     include: [{ model: Role, as: 'role', include: [{ association: 'Permissions' }] }]
@@ -130,6 +137,7 @@ const impersonateUser = async (req, res, next) => {
   });
 };
 
+// HTTP handler: loads get all user data. It reads req data, uses models/services, and sends JSON with res.
 const getAllUser = async (req, res, next) => {
   const users = await User.findAll({
     attributes: { exclude: ['password'] },
@@ -152,6 +160,7 @@ const getAllUser = async (req, res, next) => {
   });
 };
 
+// HTTP handler: changes and saves update user. It reads req data, uses models/services, and sends JSON with res.
 const updateUser = async (req, res, next) => {
   const { id } = req.params;
   const { fullName, email, password, pin, isActive, staffCode, roleId } = req.body;
@@ -217,6 +226,7 @@ const updateUser = async (req, res, next) => {
   });
 };
 
+// HTTP handler: changes and saves update user status. It reads req data, uses models/services, and sends JSON with res.
 const updateUserStatus = async (req, res, next) => {
   const { id } = req.params;
   if (typeof req.body?.isActive !== 'boolean') {
@@ -242,6 +252,7 @@ const updateUserStatus = async (req, res, next) => {
   });
 };
 
+// HTTP handler: removes, closes, or resets delete user. It reads req data, uses models/services, and sends JSON with res.
 const deleteUser = async (req, res, next) => {
   const { id } = req.params;
   const user = await User.findByPk(id);

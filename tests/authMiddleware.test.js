@@ -1,3 +1,4 @@
+// Test file: checks authMiddleware.test behavior and protects it from later changes.
 const request = require('supertest');
 const app = require('../src/server');
 

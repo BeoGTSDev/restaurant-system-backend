@@ -1,7 +1,10 @@
+// Middleware: checks or prepares a request before its controller runs.
+// Change a staff token into a current active user before a protected controller runs.
 const jwt = require('jsonwebtoken');
 const { User, Role, Permission } = require('../models');
 
 // Support both 'auth-token' and 'Authorization: Bearer <token>' formats
+// Request check: runs the extract token step. It calls next() only when the request may continue.
 const extractToken = (req) => {
     let token = req.header('auth-token');
     if (!token) {
@@ -11,6 +14,7 @@ const extractToken = (req) => {
     return token;
 };
 
+// Request check: checks verify token and returns a safe yes/no result. It calls next() only when the request may continue.
 const verifyToken = async (req, res, next) => {
     const token = extractToken(req);
     if (!token) return res.status(401).json({ message: 'Access Denied: No Token Provided' });
@@ -47,12 +51,14 @@ const verifyToken = async (req, res, next) => {
     }
 };
 
+// Request check: checks verify admin and returns a safe yes/no result. It calls next() only when the request may continue.
 const verifyAdmin = (req, res, next) => {
     if (req.user && req.user.role === 'Admin') return next();
     return res.status(403).json({ message: 'Admin role required' });
 };
 
 // authorize by permission name (string) or allow array of permissions
+// Request check: runs the authorize step. It calls next() only when the request may continue.
 const authorize = (required) => {
     return (req, res, next) => {
         if (!req.user) return res.status(401).json({ message: 'Unauthorized' });

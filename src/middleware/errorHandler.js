@@ -1,4 +1,6 @@
+// Middleware: checks or prepares a request before its controller runs.
 // Centralized error handler middleware
+// Request check: runs the error handler step. It calls next() only when the request may continue.
 const errorHandler = (err, req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || 'Internal Server Error';

@@ -1,3 +1,4 @@
+// Test file: checks productAvailability.test behavior and protects it from later changes.
 const { Op } = require('sequelize');
 const {
     getBusinessDate, resetExpiredDailyAvailability

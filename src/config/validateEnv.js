@@ -1,4 +1,6 @@
+// Startup configuration shared by the application.
 // Validate required environment variables
+// Function: checks validate env and returns a safe yes/no result and returns its result to the caller.
 const validateEnv = () => {
     const requiredEnv = [
         'DB_USER',

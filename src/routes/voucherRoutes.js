@@ -1,3 +1,4 @@
+// Route file: maps URLs to checks and controller functions.
 const router = require('express').Router();
 const { verifyToken } = require('../middleware/authMiddleware');
 const authorize = require('../middleware/authorize');

@@ -1,3 +1,4 @@
+// Middleware: checks or prepares a request before its controller runs.
 const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');

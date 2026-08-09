@@ -1,3 +1,4 @@
+// Test file: checks availabilityService.test behavior and protects it from later changes.
 const {
     parseRemainingQty, availabilityValues, reserveAvailability
 } = require('../src/services/availabilityService');

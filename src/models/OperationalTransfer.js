@@ -1,3 +1,4 @@
+// Database model: defines fields and storage rules for OperationalTransfer records.
 const { DataTypes } = require('sequelize');
 module.exports = sequelize => sequelize.define('OperationalTransfer', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },

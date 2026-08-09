@@ -1,8 +1,10 @@
+// Middleware: checks or prepares a request before its controller runs.
 const { verifyToken } = require('./authMiddleware');
 const { Role } = require('../models');
 const cache = require('../utils/permCache');
 
 // authorize accepts a permission name, an array of permissions, or role names.
+// Request check: runs the authorize step. It calls next() only when the request may continue.
 const authorize = (required) => {
     const requiredList = Array.isArray(required) ? required : [required];
 
@@ -28,6 +30,7 @@ const authorize = (required) => {
     };
 };
 
+// Request check: handles the perform check action. It calls next() only when the request may continue.
 async function performCheck(req, res, next, requiredList) {
     // Admin bypass
     if (req.user.role === 'Admin') return next();

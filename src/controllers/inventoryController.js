@@ -1,5 +1,7 @@
+// Controller file: receives request data, applies inventoryController rules, and returns JSON.
 const { Ingredient, InventoryMovement, ProductIngredient, Product, User, BusinessDay, sequelize } = require('../models');
 
+// HTTP handler: loads list data. It reads req data, uses models/services, and sends JSON with res.
 const list = async (req, res) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.set('Pragma', 'no-cache');
@@ -23,12 +25,14 @@ const list = async (req, res) => {
     res.json({ ingredients, movements });
 };
 
+// HTTP handler: creates or starts create. It reads req data, uses models/services, and sends JSON with res.
 const create = async (req, res) => {
     const { name, category, unit, quantity, reorderLevel, supplier } = req.body;
     const ingredient = await Ingredient.create({ name, category, unit, quantity, reorderLevel, supplier });
     res.status(201).json(ingredient);
 };
 
+// HTTP handler: changes and saves update. It reads req data, uses models/services, and sends JSON with res.
 const update = async (req, res, next) => {
     const ingredient = await Ingredient.findByPk(req.params.id);
     if (!ingredient) return next(Object.assign(new Error('Ingredient not found'), { status: 404 }));
@@ -44,6 +48,7 @@ const update = async (req, res, next) => {
     res.json(ingredient);
 };
 
+// HTTP handler: runs the move step. It reads req data, uses models/services, and sends JSON with res.
 const move = async (req, res, next) => {
     const transaction = await sequelize.transaction();
     try {

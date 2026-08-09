@@ -1,5 +1,8 @@
+// Service file: holds reusable billingService business rules.
+// Calculate in order: item total -> voucher -> manager discount -> tax and service charge.
 const ALCOHOL_CATEGORY_PATTERN = /beer|wine|cocktail|alcohol|spirit/i;
 
+// Business rule: runs the line total step. A controller passes values in and receives the result.
 const lineTotal = item => Number(item.price) * Number(item.quantity);
 
 const calculateBillTotals = ({
@@ -50,6 +53,7 @@ const calculateBillTotals = ({
     };
 };
 
+// Business rule: turns input values into calculate cash settlement. A controller passes values in and receives the result.
 const calculateCashSettlement = ({ totalAmount, cashReceived, availableDrawerCash }) => {
     const total = Number(totalAmount);
     const received = Number(cashReceived);

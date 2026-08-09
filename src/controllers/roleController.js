@@ -1,5 +1,7 @@
+// Controller file: receives request data, applies roleController rules, and returns JSON.
 const { Role, Permission, User } = require('../models');
 
+// HTTP handler: loads list roles data. It reads req data, uses models/services, and sends JSON with res.
 const listRoles = async (req, res, next) => {
     try {
         const roles = await Role.findAll({ include: [{ association: 'Permissions' }] });
@@ -7,6 +9,7 @@ const listRoles = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
+// HTTP handler: loads get role data. It reads req data, uses models/services, and sends JSON with res.
 const getRole = async (req, res, next) => {
     try {
         const role = await Role.findByPk(req.params.id, { include: [{ association: 'Permissions' }] });
@@ -15,6 +18,7 @@ const getRole = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
+// HTTP handler: creates or starts create role. It reads req data, uses models/services, and sends JSON with res.
 const createRole = async (req, res, next) => {
     try {
         const { name, label, description } = req.body;
@@ -23,6 +27,7 @@ const createRole = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
+// HTTP handler: changes and saves update role. It reads req data, uses models/services, and sends JSON with res.
 const updateRole = async (req, res, next) => {
     try {
         const role = await Role.findByPk(req.params.id);
@@ -36,6 +41,7 @@ const updateRole = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
+// HTTP handler: removes, closes, or resets delete role. It reads req data, uses models/services, and sends JSON with res.
 const deleteRole = async (req, res, next) => {
     try {
         const role = await Role.findByPk(req.params.id);
@@ -45,6 +51,7 @@ const deleteRole = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
+// HTTP handler: loads list permissions data. It reads req data, uses models/services, and sends JSON with res.
 const listPermissions = async (req, res, next) => {
     try {
         const perms = await Permission.findAll();
@@ -52,6 +59,7 @@ const listPermissions = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
+// HTTP handler: creates or starts create permission. It reads req data, uses models/services, and sends JSON with res.
 const createPermission = async (req, res, next) => {
     try {
         const { name, description } = req.body;
@@ -60,6 +68,7 @@ const createPermission = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
+// HTTP handler: changes and saves update role permissions. It reads req data, uses models/services, and sends JSON with res.
 const updateRolePermissions = async (req, res, next) => {
     try {
         const role = await Role.findByPk(req.params.id);
@@ -75,6 +84,7 @@ const updateRolePermissions = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
+// HTTP handler: changes and saves assign role to user. It reads req data, uses models/services, and sends JSON with res.
 const assignRoleToUser = async (req, res, next) => {
     try {
         const role = await Role.findByPk(req.params.id);

@@ -1,6 +1,8 @@
+// Controller file: receives request data, applies orderTransferController rules, and returns JSON.
 const { Order, OrderItem, Table, OrderTransfer, BusinessDay, ShiftRecord, User, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
+// HTTP handler: runs the transfer items step. It reads req data, uses models/services, and sends JSON with res.
 const transferItems = async (req, res, next) => {
     const transaction = await sequelize.transaction();
     try {
@@ -188,6 +190,7 @@ const transferItems = async (req, res, next) => {
     }
 };
 
+// HTTP handler: loads get transfer history data. It reads req data, uses models/services, and sends JSON with res.
 const getTransferHistory = async (req, res, next) => {
     const { orderId } = req.params;
 
@@ -224,6 +227,7 @@ const getTransferHistory = async (req, res, next) => {
     });
 };
 
+// HTTP handler: runs the reverse transfer step. It reads req data, uses models/services, and sends JSON with res.
 const reverseTransfer = async (req, res, next) => {
     const transaction = await sequelize.transaction();
     try {
@@ -328,6 +332,7 @@ const reverseTransfer = async (req, res, next) => {
 
 
 
+// HTTP handler: loads get all transfers data. It reads req data, uses models/services, and sends JSON with res.
 const getAllTransfers = async (req, res, next) => {
     const transfers = await OrderTransfer.findAll({
         include: [

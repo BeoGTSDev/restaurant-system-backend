@@ -1,9 +1,11 @@
+// Controller file: receives request data, applies revenueController rules, and returns JSON.
 const {
     Order, BusinessDay, ShiftRecord, OrderTransfer, CashMovement, User, Receipt, ReceiptItem
 } = require('../models');
 const { Op, fn, col } = require('sequelize');
 
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+// HTTP handler: runs the vietnam day boundary step. It reads req data, uses models/services, and sends JSON with res.
 const vietnamDayBoundary = (value, endOfDay = false) => {
     if (!DATE_ONLY.test(String(value || ''))) return null;
     const [year, month, day] = String(value).split('-').map(Number);
@@ -13,6 +15,7 @@ const vietnamDayBoundary = (value, endOfDay = false) => {
     return new Date(`${value}T${endOfDay ? '23:59:59.999' : '00:00:00.000'}+07:00`);
 };
 
+// HTTP handler: loads get daily revenue data. It reads req data, uses models/services, and sends JSON with res.
 const getDailyRevenue = async (req, res, next) => {
     const businessDay = await BusinessDay.findOne({
         where: { status: 'open' },
@@ -47,6 +50,7 @@ const getDailyRevenue = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get best selling products data. It reads req data, uses models/services, and sends JSON with res.
 const getBestSellingProducts = async (req, res, next) => {
     const { limit = 10, startDate, endDate } = req.query;
     const receiptWhere = {};
@@ -104,6 +108,7 @@ const getBestSellingProducts = async (req, res, next) => {
     }
 };
 
+// HTTP handler: loads get monthly revenue data. It reads req data, uses models/services, and sends JSON with res.
 const getMonthlyRevenue = async (req, res, next) => {
     const { year, month } = req.query;
     const dayWhere = {};
@@ -182,6 +187,7 @@ const getMonthlyRevenue = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get operations report data. It reads req data, uses models/services, and sends JSON with res.
 const getOperationsReport = async (req, res) => {
     const businessDay = req.query.businessDayId
         ? await BusinessDay.findByPk(req.query.businessDayId)
@@ -228,6 +234,7 @@ const getOperationsReport = async (req, res) => {
 
     const cashIn = cashMovements.filter(item => item.type === 'in').reduce((s, item) => s + Number(item.amount), 0);
     const cashOut = cashMovements.filter(item => item.type === 'out').reduce((s, item) => s + Number(item.amount), 0);
+    // HTTP handler: runs the sum receipt step. It reads req data, uses models/services, and sends JSON with res.
     const sumReceipt = field => receipts.reduce((sum, receipt) => sum + Number(receipt[field] || 0), 0);
     const paymentBreakdown = receipts.reduce((result, receipt) => {
         const method = receipt.paymentMethod || 'Other';

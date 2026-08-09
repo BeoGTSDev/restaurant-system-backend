@@ -1,3 +1,4 @@
+// Database model: defines fields and storage rules for Product records.
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 const Category = require('./Category');

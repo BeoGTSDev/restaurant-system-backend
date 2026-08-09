@@ -1,9 +1,11 @@
+// Controller file: receives request data, applies tableController rules, and returns JSON.
 const { Table, Bill, Zone, Order, OperationalTransfer, BusinessDay, ShiftRecord, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const { generateTableQrCode } = require('../utils/tableQr');
 const { GUEST_LANGUAGES, GUEST_ALLERGIES } = require('../constants/customerPreferences');
 
+// HTTP handler: creates or starts open table. It reads req data, uses models/services, and sends JSON with res.
 const openTable = async (req, res, next) => {
     const { id } = req.params;
     const table = await Table.findByPk(id);
@@ -47,6 +49,7 @@ const openTable = async (req, res, next) => {
     });
 };
 
+// HTTP handler: creates or starts create customer table session. It reads req data, uses models/services, and sends JSON with res.
 const createCustomerTableSession = async (req, res, next) => {
     const qrCode = String(req.body?.qrCode || '').trim();
     if (!qrCode) return next(Object.assign(new Error('Table QR code is required'), { status: 400 }));
@@ -75,6 +78,7 @@ const createCustomerTableSession = async (req, res, next) => {
     });
 };
 
+// HTTP handler: changes and saves update customer preferences. It reads req data, uses models/services, and sends JSON with res.
 const updateCustomerPreferences = async (req, res, next) => {
     const language = String(req.body?.language || '').trim().toLowerCase();
     const allergies = Array.isArray(req.body?.allergies) ? [...new Set(req.body.allergies)] : [];
@@ -107,6 +111,7 @@ const updateCustomerPreferences = async (req, res, next) => {
     });
 };
 
+// HTTP handler: creates or starts create table. It reads req data, uses models/services, and sends JSON with res.
 const createTable = async (req, res, next) => {
     if (Array.isArray(req.body)) {
         const sanitized = req.body.map(item => ({ name: item.name, zoneId: item.zoneId || null, qrCode: generateTableQrCode() }));
@@ -152,6 +157,7 @@ const createTable = async (req, res, next) => {
     });
 };
 
+// HTTP handler: loads get all tables data. It reads req data, uses models/services, and sends JSON with res.
 const getAllTables = async (req, res, next) => {
     const tables = await Table.findAll({
         include: [
@@ -176,6 +182,7 @@ const getAllTables = async (req, res, next) => {
     });
 };
 
+// HTTP handler: runs the request order check step. It reads req data, uses models/services, and sends JSON with res.
 const requestOrderCheck = async (req, res, next) => {
     const { id } = req.params;
     await Table.update({ status: 'OrderCheck' }, { where: { id } });
@@ -185,6 +192,7 @@ const requestOrderCheck = async (req, res, next) => {
     });
 };
 
+// HTTP handler: runs the request bill check step. It reads req data, uses models/services, and sends JSON with res.
 const requestBillCheck = async (req, res, next) => {
     const { id } = req.params;
     await Table.update({ status: 'BillCheck' }, { where: { id } });
@@ -194,6 +202,7 @@ const requestBillCheck = async (req, res, next) => {
     });
 };
 
+// HTTP handler: runs the customer self pay step. It reads req data, uses models/services, and sends JSON with res.
 const customerSelfPay = async (req, res, next) => {
     const { id } = req.params;
     const { amount } = req.body; 
@@ -217,6 +226,7 @@ const customerSelfPay = async (req, res, next) => {
     });
 };
 
+// HTTP handler: removes, closes, or resets clean table. It reads req data, uses models/services, and sends JSON with res.
 const cleanTable = async (req, res, next) => {
     const { id } = req.params;
     await Table.update({
@@ -237,6 +247,7 @@ const cleanTable = async (req, res, next) => {
     });
 };
 
+// HTTP handler: changes and saves update table. It reads req data, uses models/services, and sends JSON with res.
 const updateTable = async (req, res, next) => {
     const { id } = req.params;
     const { name, zoneId } = req.body;
@@ -292,6 +303,7 @@ const updateTable = async (req, res, next) => {
     });
 };
 
+// HTTP handler: removes, closes, or resets delete table. It reads req data, uses models/services, and sends JSON with res.
 const deleteTable = async (req, res, next) => {
     const { id } = req.params;
 
@@ -310,6 +322,7 @@ const deleteTable = async (req, res, next) => {
     });
 };
 
+// HTTP handler: runs the transfer table step. It reads req data, uses models/services, and sends JSON with res.
 const transferTable = async (req, res, next) => {
     const { id } = req.params;
     const { targetTableId } = req.body;

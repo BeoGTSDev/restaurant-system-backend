@@ -1,3 +1,4 @@
+// Startup configuration shared by the application.
 const PERMISSIONS = [
     ['view_dashboard', 'View dashboard and daily operational summary'],
     ['view_menu', 'View menu management and availability'],

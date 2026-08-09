@@ -1,3 +1,4 @@
+// Database model: defines fields and storage rules for IdempotencyRecord records.
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 

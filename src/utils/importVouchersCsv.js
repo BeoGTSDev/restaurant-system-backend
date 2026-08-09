@@ -1,8 +1,10 @@
+// Reusable helper code used by startup or business files.
 const fs = require('fs');
 const path = require('path');
 const { sequelize, Voucher } = require('../models');
 const { validateVoucherCodeFormat } = require('../services/voucherService');
 
+// Helper: runs the import vouchers csv step and returns the value to its caller.
 const importVouchersCsv = async () => {
     const csvPath = path.join(__dirname, 'data', 'vouchers_database.csv');
     const lines = fs.readFileSync(csvPath, 'utf8').replace(/^\uFEFF/, '').trim().split(/\r?\n/);

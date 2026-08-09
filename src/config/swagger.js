@@ -1,3 +1,4 @@
+// Startup configuration shared by the application.
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
@@ -43,6 +44,7 @@ const options = {
 
 const swaggerSpec = swaggerJsdoc(options);
 
+// Function: runs the swagger setup step and returns its result to the caller.
 const swaggerSetup = (app) => {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     console.log('API Documentation available at http://localhost:3000/api-docs');

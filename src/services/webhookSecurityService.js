@@ -1,5 +1,7 @@
+// Service file: holds reusable webhookSecurityService business rules.
 const crypto = require('crypto');
 
+// Business rule: creates or starts create webhook signature. A controller passes values in and receives the result.
 const createWebhookSignature = ({ secret, timestamp, rawBody }) => crypto
     .createHmac('sha256', secret)
     .update(`${timestamp}.${Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : String(rawBody)}`)

@@ -1,5 +1,7 @@
+// Controller file: receives request data, applies operationalTransferController rules, and returns JSON.
 const { OperationalTransfer, Table, User, BusinessDay, ShiftRecord } = require('../models');
 
+// HTTP handler: loads list data. It reads req data, uses models/services, and sends JSON with res.
 const list = async (req, res) => {
     const where = req.query.type ? { type: req.query.type } : {};
     const data = await OperationalTransfer.findAll({
@@ -16,6 +18,7 @@ const list = async (req, res) => {
     res.json({ success: true, data });
 };
 
+// HTTP handler: runs the transfer staff step. It reads req data, uses models/services, and sends JSON with res.
 const transferStaff = async (req, res, next) => {
     const { tableId, toStaffId, reason } = req.body;
     const table = await Table.findByPk(tableId);

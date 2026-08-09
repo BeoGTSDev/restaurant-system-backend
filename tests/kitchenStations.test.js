@@ -1,3 +1,4 @@
+// Test file: checks kitchenStations.test behavior and protects it from later changes.
 const {
     KITCHEN_STATIONS, stationForCategory, stationConfig
 } = require('../src/constants/kitchenStations');

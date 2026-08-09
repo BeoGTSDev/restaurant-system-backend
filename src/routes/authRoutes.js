@@ -1,3 +1,4 @@
+// Route file: maps URLs to checks and controller functions.
 const express = require('express');
 const router = express.Router();
 const { login, staffLogin, register, authorizeSupervisorAction } = require('../controllers/authControllers');

@@ -1,3 +1,4 @@
+// Controller file: receives request data, applies authControllers rules, and returns JSON.
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -6,6 +7,7 @@ const jwt = require('jsonwebtoken');
 let speakeasy = null;
 try { speakeasy = require('speakeasy'); } catch (e) { /* will handle absence when 2FA required */ }
 
+// HTTP handler: runs the login step. It reads req data, uses models/services, and sends JSON with res.
 const login = async (req, res, next) => {
   const { email, password } = req.body;
   const normalizedEmail = String(email || '').trim().toLowerCase();
@@ -94,6 +96,7 @@ const login = async (req, res, next) => {
   });
 };
 
+// HTTP handler: runs the staff login step. It reads req data, uses models/services, and sends JSON with res.
 const staffLogin = async (req, res, next) => {
   const { staffCode, pin } = req.body;
 
@@ -137,6 +140,7 @@ const staffLogin = async (req, res, next) => {
   });
 };
 
+// HTTP handler: runs the register step. It reads req data, uses models/services, and sends JSON with res.
 const register = async (req, res, next) => {
   const { fullName, password, email } = req.body;
   const normalizedEmail = String(email || '').trim().toLowerCase();
@@ -160,6 +164,7 @@ const register = async (req, res, next) => {
   });
 };
 
+// HTTP handler: runs the authorize supervisor action step. It reads req data, uses models/services, and sends JSON with res.
 const authorizeSupervisorAction = async (req, res, next) => {
   const { staffCode } = req.body;
   const user = await User.findOne({ where: { staffCode }, include: [{ association: 'role' }] });
